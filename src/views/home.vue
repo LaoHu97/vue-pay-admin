@@ -53,7 +53,7 @@
           </el-button>
         </el-col>
         <el-col :span="10">
-          <el-menu :default-active="$route.path" mode="horizontal" router>
+          <el-menu :default-active="activeIndex" mode="horizontal" router>
             <template v-for="(route, index) in $router.options.routes">
               <el-menu-item :key="index" :route="route" :index="route.path" v-if="!route.meat.hidden">
                 <span slot="title">{{route.meat.name}}</span>
@@ -64,7 +64,7 @@
         <el-col :span="6" class="header_text header_top_xian">
           <div class="header_top_btn">
             <el-button type="warning" size="mini" round @click="clickEditPassword">修改密码<i class="iconfont icon-xiugai"></i></el-button>
-            <el-button type="danger" size="mini" round>退出登录<i class="iconfont icon-tuichu"></i></el-button>
+            <el-button type="danger" size="mini" round @click="loginOut">退出登录<i class="iconfont icon-tuichu"></i></el-button>
           </div>
         </el-col>
       </el-row>
@@ -105,10 +105,13 @@
   </el-container>
 </template>
 <script>
+import {
+  loginOut
+} from '@/api/api'
 export default {
   data () {
     return {
-
+      activeIndex: '/deal'
     }
   },
   computed: {
@@ -116,15 +119,20 @@ export default {
       return this.$store.state.viewCollapse.isCollapse
     }
   },
+  mounted () {
+    console.log(this)
+  },
   methods: {
-    mounted () {
-      console.log(this.$router)
-    },
     clickEditPassword () {
-      this.$router.push({path: '/account/password'})
+      this.$router.push({ path: '/account/password' })
     },
     uploadCollapse () {
       this.$store.dispatch('upload_collapse')
+    },
+    loginOut () {
+      loginOut().then(res => {
+        this.$router.replace({ path: '/' })
+      })
     }
   }
 }

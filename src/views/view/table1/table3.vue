@@ -1,6 +1,6 @@
 <style scoped>
 .shop_from {
-  max-width: 380px;
+  max-width: 450px;
   margin: 45px auto;
 }
 .avatar-uploader-icon {
@@ -35,7 +35,6 @@
     <el-form ref="form" :model="form" class="shop_from" label-position="left" label-width="120px">
       <p style="text-align:center">
         <i class="el-icon-edit"></i>商户信息</p>
-      <p class="bottom_waring">注： * 号为必填项</p>
       <el-form-item label="商户全称">
         <el-input v-model="form.name"></el-input>
       </el-form-item>

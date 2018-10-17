@@ -50,25 +50,25 @@
           <el-col :span="8">
             <img src="../../assets/images/webwxgetmsgimg.png" alt="logo" height="25px;">
           </el-col>
-          <el-col :span="6" class="header_text">
-            <el-row type="flex" class="row-bg" justify="space-around">
-              <el-col :span="8">
-                <router-link to="/pay/web/shop.html">
-                  <el-button plain size="mini" round>商户登陆</el-button>
-                </router-link>
-              </el-col>
-              <el-col :span="8">
-                <router-link to="/pay/web/store.html">
-                  <el-button plain size="mini" round>门店登录</el-button>
-                </router-link>
-              </el-col>
-              <el-col :span="8">
-                <router-link to="/pay/web/emp.html">
-                  <el-button plain size="mini" round>款台登录</el-button>
-                </router-link>
-              </el-col>
-            </el-row>
-          </el-col>
+            <el-col :span="6" class="header_text">
+              <el-row type="flex" class="row-bg" justify="space-around">
+                <el-col :span="8">
+                  <router-link to="/pay/web/shop.html">
+                    <el-button plain size="mini" round>商户登陆</el-button>
+                  </router-link>
+                </el-col>
+                <el-col :span="8">
+                  <router-link to="/pay/web/store.html">
+                    <el-button plain size="mini" round>门店登录</el-button>
+                  </router-link>
+                </el-col>
+                <el-col :span="8">
+                  <router-link to="/pay/web/emp.html">
+                    <el-button plain size="mini" round>款台登录</el-button>
+                  </router-link>
+                </el-col>
+              </el-row>
+            </el-col>
         </el-row>
       </el-header>
       <el-main>
@@ -77,30 +77,34 @@
             <img src="@/assets/images/57be6c6cb3d28_1024.jpg" alt="轮播图">
           </el-carousel-item>
         </el-carousel>
-        <el-form class="main_login">
+        <el-form ref="loginForm" :model="loginForm" class="main_login">
           <h3 class="title">登录</h3>
-          <el-form-item prop="account">
-            <el-input type="text" size="medium" placeholder="请输入用户名">
+          <el-form-item>
+            <el-input v-model="loginForm.account" type="text" size="medium" placeholder="请输入用户名">
               <template slot="prepend">
-                <i class="iconfont icon-mine"></i>
+                <svg class="icon" aria-hidden="true">
+                  <use xlink:href="#icon-iconzh1"></use>
+                </svg>
               </template>
             </el-input>
           </el-form-item>
-          <el-form-item prop="checkPass">
-            <el-input type="password" size="medium" placeholder="请输入密码">
+          <el-form-item prop="password">
+            <el-input v-model="loginForm.password" type="password" size="medium" placeholder="请输入密码">
               <template slot="prepend">
-                <i class="iconfont icon-lock"></i>
+                <svg class="icon" aria-hidden="true">
+                  <use xlink:href="#icon-mima"></use>
+                </svg>
               </template>
             </el-input>
           </el-form-item>
-          <el-form-item prop="passCode">
-            <el-row>
+          <el-form-item prop="inCode">
+            <el-row :gutter="20">
               <el-col :span="12">
-                <el-input type="text" size="medium" placeholder="请输入验证码"></el-input>
+                <el-input v-model="loginForm.inCode" @keyup.enter.native="loginSubmit" type="text" size="medium" placeholder="验证码"></el-input>
               </el-col>
               <el-col :span="12">
                 <el-tooltip content="看不清？请点击" placement="top" effect="light">
-                  <img @click="clickCode" alt="验证码">
+                  <img @click="clickCode" :src="authCode" width="100%" height="36px" alt="验证码">
                 </el-tooltip>
               </el-col>
             </el-row>
@@ -143,11 +147,21 @@
 </template>
 
 <script>
+import {
+  getCode,
+  loginVerify
+} from '@/api/api'
 export default {
   data () {
     return {
       bImg: require('../../assets/images/57be6c6cb3d28_1024.jpg'),
-      isBtnLoading: false
+      isBtnLoading: false,
+      authCode: '',
+      loginForm: {
+        account: '',
+        password: '',
+        inCode: ''
+      }
     }
   },
   computed: {
@@ -158,14 +172,27 @@ export default {
   },
   methods: {
     clickCode () {
-
+      this.getAuthCode()
+    },
+    getAuthCode () {
+      this.authCode = `${getCode}?timestamp=${new Date().getTime()}`
     },
     loginSubmit () {
       this.isBtnLoading = true
+      let para = this.loginForm
+      para.password = this.md5(para.password + para.account)
+      loginVerify(para).then(res => {
+        this.isBtnLoading = false
+        this.$router.replace({ path: 'deal' })
+      }).catch(err => {
+        this.isBtnLoading = false
+        this.$refs.loginForm.resetFields()
+        this.getAuthCode()
+      })
     }
   },
   mounted () {
-    console.log(process.env)
+    this.getAuthCode()
   }
 }
 </script>

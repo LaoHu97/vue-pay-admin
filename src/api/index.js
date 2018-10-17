@@ -1,4 +1,5 @@
 import axios from 'axios'
+import router from '../router'
 import * as util from '../util/util.js'
 
 const instance = axios.create({
@@ -18,9 +19,11 @@ instance.interceptors.response.use(response => {
   if (response.data.status === 200) {
     return response
   } else {
+    router.replace({
+      path: '/'
+    })
     util.catchError(response)
   }
-  return response
 }, error => {
   util.catchError(error)
 })

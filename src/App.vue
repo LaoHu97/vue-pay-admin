@@ -23,4 +23,11 @@ html,body{
   height: 100%;
   margin: 0;
 }
+.icon {
+  width: 1.5em;
+  height: 1.5em;
+  vertical-align: -0.3em;
+  fill: currentColor;
+  overflow: hidden;
+}
 </style>

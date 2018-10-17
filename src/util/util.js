@@ -152,19 +152,13 @@ export const catchError = function (error) {
       case 301:
         Vue.prototype.$message({
           message: error.data.message || '登录超时！请重新登录',
-          type: 'warning',
-          onClose: function () {
-            location.reload()
-          }
+          type: 'warning'
         })
         break
       case 302:
         Vue.prototype.$message({
           message: error.data.message || '尚未登陆！请重新登录',
-          type: 'warning',
-          onClose: function () {
-            location.reload()
-          }
+          type: 'warning'
         })
         break
       default:
@@ -177,7 +171,8 @@ export const catchError = function (error) {
     Vue.prototype.$message({
       message: '请检查网络连接，或稍后再试',
       type: 'error',
-      showClose: true
+      showClose: true,
+      duration: 8000
     })
   }
   return Promise.reject(error)

@@ -9,12 +9,13 @@ module.exports = {
     }
   },
 
-  baseUrl: undefined,
+  baseUrl: '',
   outputDir: undefined,
-  assetsDir: undefined,
   runtimeCompiler: true,
   productionSourceMap: false,
   parallel: undefined,
   css: undefined,
-  lintOnSave: false
+  lintOnSave: false,
+  indexPath: 'admin.html',
+  assetsDir: 'admin'
 }

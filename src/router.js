@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import login from './views/login/index.vue'
-import home from './views/main/home.vue'
-import index from './views/main/view/index.vue'
+import home from './views/home.vue'
+import index from './views/view/index.vue'
 
 Vue.use(Router)
 
@@ -30,17 +30,19 @@ export default new Router({
           name: '账号中心',
           icon: ''
         },
-        component: () => import('./views/main/home/index.vue')
+        component: () => import('./views/home/index.vue')
       }]
     }, {
       path: '/deal',
-      name: '交易中心',
+      redirect: '/deal/shop/table1',
+      name: '管理中心',
       meat: {
-        name: '交易中心'
+        name: '管理中心'
       },
       component: home,
       children: [{
         path: 'shop',
+        redirect: '/deal/shop/table1',
         name: '商户管理',
         meat: {
           name: '商户管理',
@@ -53,21 +55,42 @@ export default new Router({
           meat: {
             name: '商户列表'
           },
-          component: () => import('./views/main/view/table1/table1.vue')
+          component: () => import('./views/view/table1/table1.vue')
         }, {
           path: 'table2',
           name: '门店列表',
           meat: {
             name: '门店列表'
           },
-          component: () => import('./views/main/view/table1/table2.vue')
+          component: () => import('./views/view/table1/table2.vue')
+        }, {
+          path: 'table4',
+          name: '款台列表',
+          meat: {
+            name: '款台列表'
+          },
+          component: () => import('./views/view/table1/table4.vue')
         }, {
           path: 'table3',
           name: '新增商户',
           meat: {
             name: '新增商户'
           },
-          component: () => import('./views/main/view/table1/table3.vue')
+          component: () => import('./views/view/table1/table3.vue')
+        }, {
+          path: 'table5',
+          name: '商户信息',
+          meat: {
+            name: '商户信息'
+          },
+          component: () => import('./views/view/table1/table5.vue')
+        }, {
+          path: 'table6',
+          name: '审核商户',
+          meat: {
+            name: '审核商户'
+          },
+          component: () => import('./views/view/table1/table6.vue')
         }]
       }, {
         path: '/shop',
@@ -83,7 +106,30 @@ export default new Router({
           meat: {
             name: '支付配置'
           },
-          component: () => import('./views/main/view/table2/payPage.vue')
+          component: () => import('./views/view/table2/payPage.vue')
+        }]
+      }, {
+        path: '/shop',
+        name: '终端管理',
+        meat: {
+          name: '终端管理',
+          icon: 'icon-shouyin'
+        },
+        component: index,
+        children: [{
+          path: 'emppage1',
+          name: '扫呗终端',
+          meat: {
+            name: '扫呗终端'
+          },
+          component: () => import('./views/view/table3/emppage1.vue')
+        }, {
+          path: 'emppage2',
+          name: '新大陆终端',
+          meat: {
+            name: '新大陆终端'
+          },
+          component: () => import('./views/view/table3/emppage2.vue')
         }]
       }]
     }, {
@@ -100,7 +146,7 @@ export default new Router({
           name: '密码管理',
           icon: ''
         },
-        component: () => import('./views/main/account/password.vue')
+        component: () => import('./views/account/password.vue')
       }]
     }
   ]

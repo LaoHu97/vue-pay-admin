@@ -54,3 +54,16 @@ export const optionsPayState = [{
   value: 'UNKNOWN',
   label: '未知'
 }]
+export const optionsFormDetail = [{
+  value: 'id',
+  label: '支付成功'
+}, {
+  value: 'REFUND',
+  label: '退款成功'
+}, {
+  value: 'FAIL',
+  label: '支付失败'
+}, {
+  value: 'UNKNOWN',
+  label: '未知'
+}]

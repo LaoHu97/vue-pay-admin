@@ -104,7 +104,7 @@
             <el-form-item>
               <el-button type="primary" v-on:click="getUsers" round icon="el-icon-search">查询</el-button>
               <el-button @click="resetForm('filters')" round>重置</el-button>
-              <el-button type="success" round icon="el-icon-circle-plus">新增门店</el-button>
+              <el-button type="success" round icon="el-icon-circle-plus" @click="addStoreDialogVisible = true">新增款台</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -136,6 +136,81 @@
         </el-table-column>
       </el-table>
     </div>
+    <el-dialog title="新增款台" :visible.sync="addStoreDialogVisible" width="580px" center>
+      <el-form :model="addStoreForm" label-position="left" label-width="95px">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="门店名">
+              <el-input v-model="addStoreForm.storeName" placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="分店名">
+              <el-input v-model="addStoreForm.branchStoreName" placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="详细地址">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="门店图片">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="电话">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="渠道门店ID">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="人均价格">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="营业时间">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="推荐(选填)">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="特色服务">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="简介(选填)">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addStoreDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addStoreDialogVisible = false">提 交</el-button>
+      </span>
+    </el-dialog>
     <!--工具条-->
     <el-row>
       <el-pagination layout="prev, pager, next" :current-page="page" @current-change="handleCurrentChange" :page-size="20" :total="total" background style="text-align:center;background:#fff;padding:15px;">
@@ -156,7 +231,9 @@ export default {
       filters: {},
       optionsPayState: optionsPayState,
       optionsPayment: optionsPayment,
-      optionsBank: optionsBank
+      optionsBank: optionsBank,
+      addStoreDialogVisible: false,
+      addStoreForm: {}
     }
   },
   methods: {

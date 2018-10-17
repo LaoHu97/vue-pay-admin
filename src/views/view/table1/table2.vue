@@ -104,9 +104,7 @@
             <el-form-item>
               <el-button type="primary" v-on:click="getUsers" round icon="el-icon-search">查询</el-button>
               <el-button @click="resetForm('filters')" round>重置</el-button>
-              <router-link to="table3" tag="el-button" class="is-round el-button--success">
-                <i class="el-icon-circle-plus"></i> 新增商户
-              </router-link>
+              <el-button type="success" round icon="el-icon-circle-plus" @click="addStoreDialogVisible = true">新增门店</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -117,12 +115,12 @@
     </el-form>
     <!--列表-->
     <div v-loading="listLoading">
-      <el-table :data="users" border stripe highlight-current-row>
-        <el-table-column prop="payTime" align="center" label="商户号" min-width="165">
+      <el-table :data="users" border highlight-current-row>
+        <el-table-column prop="payTime" align="center" label="付款时间" min-width="165">
         </el-table-column>
-        <el-table-column prop="orderId" align="center" label="商户全称" min-width="285">
+        <el-table-column prop="orderId" align="center" label="订单号" min-width="285">
         </el-table-column>
-        <el-table-column prop="goodsPrice" align="center" label="商户账号" width="120" :formatter="format_amount">
+        <el-table-column prop="goodsPrice" align="center" label="交易金额" width="120" :formatter="format_amount">
         </el-table-column>
         <el-table-column prop="payWay" align="center" label="支付方式" width="120" :formatter="format_payWay">
         </el-table-column>
@@ -130,29 +128,89 @@
         </el-table-column>
         <el-table-column prop="storeName" align="center" label="收款门店" width="120">
         </el-table-column>
-        <el-table-column align="center" label="审核状态" width="120">
-          <el-switch style="display: block" v-model="value4" active-color="#13ce66" inactive-color="#ff4949" active-text="按月付费" inactive-text="按年付费">
-          </el-switch>
-        </el-table-column>
         <el-table-column label="操作" align="center" width="180">
           <template slot-scope="scope">
-            <el-dropdown trigger="click">
-              <el-button type="primary" size="mini">
-                更多菜单
-                <i class="el-icon-arrow-down el-icon--right"></i>
-              </el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>生成二维码</el-dropdown-item>
-                <el-dropdown-item>查看门店</el-dropdown-item>
-                <el-dropdown-item>查看款台</el-dropdown-item>
-                <el-dropdown-item>重置密码</el-dropdown-item>
-                <el-dropdown-item>分配代理商</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <el-button type="success" size="mini" @click="handleDetail(scope.$index, scope.row)">订单详情</el-button>
+            <el-button type="danger" size="mini" @click="handleRefund(scope.$index, scope.row)">退款</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
+    <el-dialog title="新增门店" :visible.sync="addStoreDialogVisible" width="580px" center>
+      <el-form :model="addStoreForm" label-position="left" label-width="95px">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="门店名">
+              <el-input v-model="addStoreForm.storeName" placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="分店名">
+              <el-input v-model="addStoreForm.branchStoreName" placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="详细地址">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="门店图片">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="电话">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="渠道门店ID">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="人均价格">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="营业时间">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="推荐(选填)">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="特色服务">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="简介(选填)">
+              <el-input placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addStoreDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addStoreDialogVisible = false">提 交</el-button>
+      </span>
+    </el-dialog>
     <!--工具条-->
     <el-row>
       <el-pagination layout="prev, pager, next" :current-page="page" @current-change="handleCurrentChange" :page-size="20" :total="total" background style="text-align:center;background:#fff;padding:15px;">
@@ -163,7 +221,6 @@
 
 <script>
 import { optionsPayState, optionsPayment, optionsBank } from '@/util/mockData.js'
-import { loginShopVerify } from '@/api/loginApi'
 import getUsersList from '@/mixins/Users'
 import getRemoteSearch from '@/mixins/RemoteSearch'
 
@@ -175,25 +232,8 @@ export default {
       optionsPayState: optionsPayState,
       optionsPayment: optionsPayment,
       optionsBank: optionsBank,
-      users: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }
-      ]
+      addStoreDialogVisible: false,
+      addStoreForm: {}
     }
   },
   methods: {
@@ -209,11 +249,6 @@ export default {
     getList () {
 
     }
-  },
-  mounted () {
-    loginShopVerify().then(res => {
-
-    })
   }
 }
 
