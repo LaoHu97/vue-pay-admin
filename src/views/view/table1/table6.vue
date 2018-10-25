@@ -271,7 +271,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="借记卡费率">
-              <span>{{formDetail.debit_rate}}</span>
+              <span>{{formDetail.debit_rate}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<el-tag>费率峰值：{{formDetail.reserve1}}元</el-tag>
             </el-form-item>
           </el-col>
         </el-row><el-row>
@@ -293,20 +293,23 @@
         <el-card class="box-card">
           <div slot="header">
             <span>证件照片</span>
+            <!-- <router-link to="/bar">Go to Bar</router-link> -->
+            <a :href="downloadAgentImages" style="float: right;">下载图片</a>
+            <!-- <el-button style="float: right; padding: 3px 0" type="text" icon="el-icon-download">下载图片</el-button> -->
           </div>
           <div>
         <el-row>
           <el-col :span="12">
             <el-form-item label="营业执照照片">
               <a :href="formDetail.img_business_license" v-if="formDetail.img_business_license" target='_blank'>
-                <img class="box_card_img" :src="formDetail.img_business_license" alt="证件照片">
+                <img class="box_card_img" :src="formDetail.thum_img_business_license" alt="证件照片">
               </a>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="法人身份证正面">
               <a :href="formDetail.img_idcard_a" v-if="formDetail.img_idcard_a" target='_blank'>
-                <img class="box_card_img" :src="formDetail.img_idcard_a" alt="证件照片">
+                <img class="box_card_img" :src="formDetail.thum_img_idcard_a" alt="证件照片">
               </a>
             </el-form-item>
           </el-col>
@@ -314,14 +317,14 @@
           <el-col :span="12">
             <el-form-item label="法人身份证反面">
               <a :href="formDetail.img_idcard_b" v-if="formDetail.img_idcard_b" target='_blank'>
-                <img class="box_card_img" :src="formDetail.img_idcard_b" alt="证件照片">
+                <img class="box_card_img" :src="formDetail.thum_img_idcard_b" alt="证件照片">
               </a>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="银行卡正面照片">
               <a :href="formDetail.img_bankcard_a" v-if="formDetail.img_bankcard_a" target='_blank'>
-                <img class="box_card_img" :src="formDetail.img_bankcard_a" alt="证件照片">
+                <img class="box_card_img" :src="formDetail.thum_img_bankcard_a" alt="证件照片">
               </a>
             </el-form-item>
           </el-col>
@@ -329,14 +332,14 @@
           <el-col :span="12">
             <el-form-item label="银行卡反面照片">
               <a :href="formDetail.img_bankcard_b" v-if="formDetail.img_bankcard_b" target='_blank'>
-                <img class="box_card_img" :src="formDetail.img_bankcard_b" alt="证件照片">
+                <img class="box_card_img" :src="formDetail.thum_img_bankcard_b" alt="证件照片">
               </a>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="商户门头照片">
               <a :href="formDetail.img_logo" v-if="formDetail.img_logo" target='_blank'>
-                <img class="box_card_img" :src="formDetail.img_logo" alt="证件照片">
+                <img class="box_card_img" :src="formDetail.thum_img_logo" alt="证件照片">
               </a>
             </el-form-item>
           </el-col>
@@ -344,14 +347,14 @@
           <el-col :span="12">
             <el-form-item label="内部前台照片">
               <a :href="formDetail.img_indoor" v-if="formDetail.img_indoor" target='_blank'>
-                <img class="box_card_img" :src="formDetail.img_indoor" alt="证件照片">
+                <img class="box_card_img" :src="formDetail.thum_img_indoor" alt="证件照片">
               </a>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="开户许可证照片">
               <a :href="formDetail.img_open_permits" v-if="formDetail.img_open_permits" target='_blank'>
-                <img class="box_card_img" :src="formDetail.img_open_permits" alt="证件照片">
+                <img class="box_card_img" :src="formDetail.thum_img_open_permits" alt="证件照片">
               </a>
             </el-form-item>
           </el-col>
@@ -359,14 +362,14 @@
           <el-col :span="12">
             <el-form-item label="商户关系证明">
               <a :href="formDetail.img_relation" v-if="formDetail.img_relation" target='_blank'>
-                <img class="box_card_img" :src="formDetail.img_relation" alt="证件照片">
+                <img class="box_card_img" :src="formDetail.thum_img_relation" alt="证件照片">
               </a>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="结算人身份证正面">
               <a :href="formDetail.img_private_idcard_a" v-if="formDetail.img_private_idcard_a" target='_blank'>
-                <img class="box_card_img" :src="formDetail.img_private_idcard_a" alt="证件照片">
+                <img class="box_card_img" :src="formDetail.thum_img_private_idcard_a" alt="证件照片">
               </a>
             </el-form-item>
           </el-col>
@@ -375,14 +378,14 @@
           <el-col :span="12">
             <el-form-item label="结算人身份证反面">
               <a :href="formDetail.img_private_idcard_b" v-if="formDetail.img_private_idcard_b" target='_blank'>
-                <img class="box_card_img" :src="formDetail.img_private_idcard_b" alt="证件照片">
+                <img class="box_card_img" :src="formDetail.thum_img_private_idcard_b" alt="证件照片">
               </a>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="商户总分店关系证明">
               <a :href="formDetail.img_mer_relation" v-if="formDetail.img_mer_relation" target='_blank'>
-                <img class="box_card_img" :src="formDetail.img_mer_relation" alt="证件照片">
+                <img class="box_card_img" :src="formDetail.thum_img_mer_relation" alt="证件照片">
               </a>
             </el-form-item>
           </el-col>
@@ -391,7 +394,23 @@
           <el-col :span="12">
             <el-form-item label="商户增值协议">
               <a :href="formDetail.img_mer_increment" v-if="formDetail.img_mer_increment" target='_blank'>
-                <img class="box_card_img" :src="formDetail.img_mer_increment" alt="证件照片">
+                <img class="box_card_img" :src="formDetail.thum_img_mer_increment" alt="证件照片">
+              </a>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="组织机构代码证照片">
+              <a :href="formDetail.img_org_code" v-if="formDetail.img_org_code" target='_blank'>
+                <img class="box_card_img" :src="formDetail.thum_img_org_code" alt="证件照片">
+              </a>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="税务登记证照片">
+              <a :href="formDetail.img_tax_reg" v-if="formDetail.img_tax_reg" target='_blank'>
+                <img class="box_card_img" :src="formDetail.thum_img_tax_reg" alt="证件照片">
               </a>
             </el-form-item>
           </el-col>
@@ -429,7 +448,7 @@
 </template>
 
 <script>
-import { changeAgentMerEnter, ChangeAgentShop, changeStatus } from '@/api/api'
+import { changeAgentMerEnter, ChangeAgentShop, changeStatus, downloadAgentImages } from '@/api/api'
 import { optionsFormDetail } from '@/util/mockData.js'
 import getUsersList from '@/mixins/Users'
 import getRemoteSearch from '@/mixins/RemoteSearch'
@@ -440,6 +459,7 @@ export default {
   data () {
     return {
       filters: {},
+      downloadAgentImages: '',
       dialogDetailVisible: false,
       dialogRefundVisible: false,
       id: '',
@@ -533,6 +553,9 @@ export default {
     handleDetail (index, row) {
       this.dialogDetailVisible = true
       this.getListDetail(row.id, row.shop_id)
+      this.downloadAgentImages = `${downloadAgentImages}?id=${row.id}&shop_id=${row.shop_id}&filename=${row.merchant_name}&agent_id=${row.agent_id}`
+      console.log(this.downloadAgentImages);
+      
     }
   }
 }
