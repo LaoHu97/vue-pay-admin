@@ -44,49 +44,102 @@
 <template>
   <el-container>
     <el-header>
-      <el-row type="flex" justify="space-between" class="header_top">
-        <el-col :span="8" class="header_top_xian">
-          <img src="@/assets/images/webwxgetmsgimg.png" alt="logo" height="25px;">
-          <el-button type="text" size="mini" class="header_top_collaspe" @click="uploadCollapse">
-            <i class="iconfont icon-ego-menu-copy" v-if="isCollapse"></i>
-            <i class="iconfont icon-ego-menu" v-else></i>
+      <el-row
+        type="flex"
+        justify="space-between"
+        class="header_top">
+        <el-col
+          :span="8"
+          class="header_top_xian">
+          <img
+            src="@/assets/images/webwxgetmsgimg.png"
+            alt="logo"
+            height="25px;">
+          <el-button
+            type="text"
+            size="mini"
+            class="header_top_collaspe"
+            @click="uploadCollapse">
+            <i
+              class="iconfont icon-ego-menu-copy"
+              v-if="isCollapse"/>
+            <i
+              class="iconfont icon-ego-menu"
+              v-else/>
           </el-button>
         </el-col>
         <el-col :span="10">
-          <el-menu :default-active="activeIndex" mode="horizontal" router>
+          <el-menu
+            :default-active="activeIndex"
+            mode="horizontal"
+            router>
             <template v-for="(route, index) in $router.options.routes">
-              <el-menu-item :key="index" :route="route" :index="route.path" v-if="!route.meat.hidden">
-                <span slot="title">{{route.meat.name}}</span>
+              <el-menu-item
+                :key="index"
+                :route="route"
+                :index="route.path"
+                v-if="!route.meat.hidden">
+                <span slot="title">{{ route.meat.name }}</span>
               </el-menu-item>
             </template>
           </el-menu>
         </el-col>
-        <el-col :span="6" class="header_text header_top_xian">
+        <el-col
+          :span="6"
+          class="header_text header_top_xian">
           <div class="header_top_btn">
-            <el-button type="warning" size="mini" round @click="clickEditPassword">修改密码<i class="iconfont icon-xiugai"></i></el-button>
-            <el-button type="danger" size="mini" round @click="loginOut">退出登录<i class="iconfont icon-tuichu"></i></el-button>
+            <el-button
+              type="warning"
+              size="mini"
+              round
+              @click="clickEditPassword">修改密码<i class="iconfont icon-xiugai"/></el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              round
+              @click="loginOut">退出登录<i class="iconfont icon-tuichu"/></el-button>
           </div>
         </el-col>
       </el-row>
     </el-header>
     <el-container>
-      <el-menu :default-active="$route.name" :collapse="isCollapse" class="el-menu-vertical" background-color="#414F61" text-color="#fff" active-text-color="#409EFF" router unique-opened>
+      <el-menu
+        :default-active="$route.name"
+        :collapse="isCollapse"
+        class="el-menu-vertical"
+        background-color="#414F61"
+        text-color="#fff"
+        active-text-color="#409EFF"
+        router
+        unique-opened>
         <template v-for="(route, index) in $router.options.routes[2].children">
           <template v-if="route.children">
-            <el-submenu :key="index" :index="route.name">
+            <el-submenu
+              :key="index"
+              :index="route.name">
               <template slot="title">
-                <i class="iconfont" v-bind:class="[route.meat.icon]"></i>
-                <span slot="title">{{route.meat.name}}</span>
+                <i
+                  class="iconfont"
+                  :class="[route.meat.icon]"/>
+                <span slot="title">{{ route.meat.name }}</span>
               </template>
-              <el-menu-item v-for="(cRoute, cIndex) in route.children" :key="cIndex" :index="cRoute.name" :route="cRoute">
-                {{cRoute.meat.name}}
+              <el-menu-item
+                v-for="(cRoute, cIndex) in route.children"
+                :key="cIndex"
+                :index="cRoute.name"
+                :route="cRoute">
+                {{ cRoute.meat.name }}
               </el-menu-item>
             </el-submenu>
           </template>
           <template v-else>
-            <el-menu-item :key="index" :route="route">
-              <i class="iconfont" v-bind:class="[route.meat.icon]"></i>
-              <span slot="title">{{route.meat.name}}</span>
+            <el-menu-item
+              :key="index"
+              :route="route">
+              <i
+                class="iconfont"
+                :class="[route.meat.icon]"/>
+              <span slot="title">{{ route.meat.name }}</span>
             </el-menu-item>
           </template>
         </template>
@@ -95,10 +148,10 @@
         <el-main>
           <el-breadcrumb separator="/">
             <template v-for="(item, index) in $route.matched">
-              <el-breadcrumb-item :key="index">{{item.name}}</el-breadcrumb-item>
+              <el-breadcrumb-item :key="index">{{ item.name }}</el-breadcrumb-item>
             </template>
           </el-breadcrumb>
-          <router-view></router-view>
+          <router-view/>
         </el-main>
       </el-container>
     </el-container>

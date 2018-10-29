@@ -20,36 +20,71 @@
 <template>
   <section>
     <el-row>
-      <el-alert title="可查询最近30天的交易" type="warning" class="top_alert" center close-text="知道了" show-icon>
-      </el-alert>
+      <el-alert
+        title="可查询最近30天的交易"
+        type="warning"
+        class="top_alert"
+        center
+        close-text="知道了"
+        show-icon/>
     </el-row>
-    <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="80px">
+    <el-form
+      :inline="true"
+      :model="filters"
+      label-position="left"
+      ref="filters"
+      label-width="80px">
       <div class="search_top">
         <el-row>
           <el-col :span="6">
-            <el-form-item label="商户名称" prop="mname">
-              <el-input v-model="filters.mname" placeholder="请输入关键字查询"></el-input>
+            <el-form-item
+              label="商户名称"
+              prop="mname">
+              <el-input
+                v-model="filters.mname"
+                placeholder="请输入关键字查询"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="商户账号" prop="maccount">
-              <el-input v-model="filters.maccount" placeholder="请输入内容"></el-input>
+            <el-form-item
+              label="商户账号"
+              prop="maccount">
+              <el-input
+                v-model="filters.maccount"
+                placeholder="请输入内容"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="商户类型" prop="mtype">
-              <el-select v-model="filters.mtype" clearable placeholder="请选择">
-                <el-option v-for="item in mtypeOptions" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
+            <el-form-item
+              label="商户类型"
+              prop="mtype">
+              <el-select
+                v-model="filters.mtype"
+                clearable
+                placeholder="请选择">
+                <el-option
+                  v-for="item in mtypeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"/>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item>
-              <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
-              <el-button @click="resetForm('filters')" round>重置</el-button>
-              <router-link to="table3" tag="el-button" class="is-round el-button--success">
-                <i class="el-icon-circle-plus"></i> 新增商户
+              <el-button
+                type="primary"
+                @click="getUsers"
+                round
+                icon="el-icon-search">查询</el-button>
+              <el-button
+                @click="resetForm('filters')"
+                round>重置</el-button>
+              <router-link
+                to="table3"
+                tag="el-button"
+                class="is-round el-button--success">
+                <i class="el-icon-circle-plus"/> 新增商户
               </router-link>
             </el-form-item>
           </el-col>
@@ -58,21 +93,40 @@
     </el-form>
     <!--列表-->
     <div v-loading="listLoading">
-      <el-table :data="users" border stripe highlight-current-row>
-        <el-table-column prop="mid" align="center" label="商户ID">
-        </el-table-column>
-        <el-table-column prop="mname" align="center" label="商户全称">
-        </el-table-column>
-        <el-table-column prop="maccount" align="center" label="商户账号">
-        </el-table-column>
-        <el-table-column prop="mtype" align="center" label="商户类型">
-        </el-table-column>
-        <el-table-column label="操作" align="center" width="180">
+      <el-table
+        :data="users"
+        border
+        stripe
+        highlight-current-row>
+        <el-table-column
+          prop="mid"
+          align="center"
+          label="商户ID"/>
+        <el-table-column
+          prop="mname"
+          align="center"
+          label="商户全称"/>
+        <el-table-column
+          prop="maccount"
+          align="center"
+          label="商户账号"/>
+        <el-table-column
+          prop="mtype"
+          align="center"
+          label="商户类型"/>
+        <el-table-column
+          label="操作"
+          align="center"
+          width="180">
           <template slot-scope="scope">
-            <el-dropdown trigger="click" @command="changMoreCommand">
-              <el-button type="primary" size="mini">
+            <el-dropdown
+              trigger="click"
+              @command="changMoreCommand">
+              <el-button
+                type="primary"
+                size="mini">
                 更多菜单
-                <i class="el-icon-arrow-down el-icon--right"></i>
+                <i class="el-icon-arrow-down el-icon--right"/>
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item command="a">生成二维码</el-dropdown-item>
@@ -88,8 +142,14 @@
     </div>
     <!--工具条-->
     <el-row>
-      <el-pagination layout="prev, pager, next" :current-page="page" @current-change="handleCurrentChange" :page-size="20" :total="total" background style="text-align:center;background:#fff;padding:15px;">
-      </el-pagination>
+      <el-pagination
+        layout="prev, pager, next"
+        :current-page="page"
+        @current-change="handleCurrentChange"
+        :page-size="20"
+        :total="total"
+        background
+        style="text-align:center;background:#fff;padding:15px;"/>
     </el-row>
   </section>
 </template>
@@ -120,10 +180,6 @@ export default {
         {
           value: '选项4',
           label: '龙须面'
-        },
-        {
-          value: '选项5',
-          label: '北京烤鸭'
         }
       ]
     }

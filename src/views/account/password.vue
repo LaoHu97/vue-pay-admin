@@ -13,23 +13,40 @@
 
 <template>
   <section class="password_main">
-    <el-form ref="passWordForm" :model="passWordForm" :rules="passWordFormRules" label-width="80px" class="pass_word">
+    <el-form
+      ref="passWordForm"
+      :model="passWordForm"
+      :rules="passWordFormRules"
+      label-width="80px"
+      class="pass_word">
       <p>修改密码</p>
-      <el-form-item label="原始密码" prop="usedPass">
-        <el-input v-model="passWordForm.usedPass"></el-input>
+      <el-form-item
+        label="原始密码"
+        prop="usedPass">
+        <el-input v-model="passWordForm.usedPass"/>
       </el-form-item>
-      <el-form-item label="新密码" prop="pass">
-        <el-input v-model="passWordForm.pass"></el-input>
+      <el-form-item
+        label="新密码"
+        prop="pass">
+        <el-input v-model="passWordForm.pass"/>
       </el-form-item>
-      <el-form-item label="再次输入" prop="checkPass">
-        <el-input v-model="passWordForm.checkPass"></el-input>
+      <el-form-item
+        label="再次输入"
+        prop="checkPass">
+        <el-input v-model="passWordForm.checkPass"/>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">确认修改</el-button>
+        <el-button
+          type="primary"
+          @click="onSubmit">确认修改</el-button>
         <el-button @click="giveUpEditPassword">放弃修改</el-button>
       </el-form-item>
-      <el-alert title="密码修改成功后需要重新登录" type="warning" center show-icon :closable="false">
-      </el-alert>
+      <el-alert
+        title="密码修改成功后需要重新登录"
+        type="warning"
+        center
+        show-icon
+        :closable="false"/>
     </el-form>
   </section>
 </template>

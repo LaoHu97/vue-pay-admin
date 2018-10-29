@@ -15,7 +15,7 @@ module.exports = {
   productionSourceMap: false,
   parallel: undefined,
   css: undefined,
-  lintOnSave: false,
+  lintOnSave: undefined,
   indexPath: 'admin.html',
   assetsDir: 'admin'
 }
