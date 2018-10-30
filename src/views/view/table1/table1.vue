@@ -19,38 +19,42 @@
 
 <template>
   <section>
-    <el-row>
-      <el-alert title="可查询最近30天的交易" type="warning" class="top_alert" center close-text="知道了" show-icon>
-      </el-alert>
-    </el-row>
-    <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="80px">
+    <el-form
+      :inline="true"
+      :model="filters"
+      label-position="left"
+      ref="filters"
+      label-width="80px">
       <div class="search_top">
         <el-row>
           <el-col :span="6">
-            <el-form-item label="商户名称" prop="mname">
-              <el-input v-model="filters.mname" placeholder="请输入关键字查询"></el-input>
+            <el-form-item
+              label="商户名称"
+              prop="mname">
+              <el-input
+                v-model="filters.mname"
+                placeholder="请输入关键字查询"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="商户账号" prop="maccount">
-              <el-input v-model="filters.maccount" placeholder="请输入内容"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="商户类型" prop="mtype">
-              <el-select v-model="filters.mtype" clearable placeholder="请选择">
-                <el-option v-for="item in mtypeOptions" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
+            <el-form-item
+              label="商户账号"
+              prop="maccount">
+              <el-input
+                v-model="filters.maccount"
+                placeholder="请输入商户账号"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item>
-              <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
-              <el-button @click="resetForm('filters')" round>重置</el-button>
-              <router-link to="table3" tag="el-button" class="is-round el-button--success">
-                <i class="el-icon-circle-plus"></i> 新增商户
-              </router-link>
+              <el-button
+                type="primary"
+                @click="getUsers"
+                round
+                icon="el-icon-search">查询</el-button>
+              <el-button
+                @click="resetForm('filters')"
+                round>重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -58,114 +62,125 @@
     </el-form>
     <!--列表-->
     <div v-loading="listLoading">
-      <el-table :data="users" border stripe highlight-current-row>
-        <el-table-column prop="mid" align="center" label="商户ID">
-        </el-table-column>
-        <el-table-column prop="mname" align="center" label="商户全称">
-        </el-table-column>
-        <el-table-column prop="maccount" align="center" label="商户账号">
-        </el-table-column>
-        <el-table-column prop="mtype" align="center" label="商户类型">
-        </el-table-column>
-        <el-table-column label="操作" align="center" width="180">
+      <el-table
+        :data="users"
+        border
+        stripe
+        highlight-current-row>
+        <el-table-column
+          prop="mname"
+          align="center"
+          label="商户名称"/>
+        <el-table-column
+          prop="maccount"
+          align="center"
+          label="商户账号"/>
+        <el-table-column
+          align="center"
+          label="登陆状态">
           <template slot-scope="scope">
-            <el-dropdown trigger="click" @command="changMoreCommand">
-              <el-button type="primary" size="mini">
-                更多菜单
-                <i class="el-icon-arrow-down el-icon--right"></i>
-              </el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="a">生成二维码</el-dropdown-item>
-                <el-dropdown-item command="b">查看门店</el-dropdown-item>
-                <el-dropdown-item command="c">查看款台</el-dropdown-item>
-                <el-dropdown-item command="d">重置密码</el-dropdown-item>
-                <el-dropdown-item command="e">分配代理商</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+              <el-switch
+                :active-value="1"
+                :inactive-value="0"
+                @change="editStatus(scope.$index, scope.row)"
+                v-model="scope.row.status">
+              </el-switch>
           </template>
         </el-table-column>
+        <el-table-column
+          prop="create_time"
+          align="center"
+          :formatter="formatCreate_time"
+          label="创建时间"/>
+        <el-table-column
+          prop="saleName"
+          align="center"
+          label="业务员"/>
       </el-table>
     </div>
     <!--工具条-->
     <el-row>
-      <el-pagination layout="prev, pager, next" :current-page="page" @current-change="handleCurrentChange" :page-size="20" :total="total" background style="text-align:center;background:#fff;padding:15px;">
-      </el-pagination>
+      <el-pagination
+        layout="prev, pager, next"
+        :current-page="page"
+        @current-change="handleCurrentChange"
+        :page-size="20"
+        :total="total"
+        background
+        style="text-align:center;background:#fff;padding:15px;"/>
     </el-row>
   </section>
 </template>
 
 <script>
-import { queryMerchant } from '@/api/api'
-import getUsersList from '@/mixins/Users'
-import getRemoteSearch from '@/mixins/RemoteSearch'
+import * as util from "../../../util/util.js";
+import { queryMerchant, updateMerStatus } from "@/api/api";
+import getUsersList from "@/mixins/Users";
+import getRemoteSearch from "@/mixins/RemoteSearch";
 
 export default {
   mixins: [getUsersList, getRemoteSearch],
-  data () {
+  data() {
     return {
-      filters: {},
-      mtypeOptions: [
-        {
-          value: '选项1',
-          label: '黄金糕'
-        },
-        {
-          value: '选项2',
-          label: '双皮奶'
-        },
-        {
-          value: '选项3',
-          label: '蚵仔煎'
-        },
-        {
-          value: '选项4',
-          label: '龙须面'
-        },
-        {
-          value: '选项5',
-          label: '北京烤鸭'
-        }
-      ]
-    }
+      filters: {
+        mname: '',
+        maccount:''
+      }
+    };
   },
   methods: {
-    changMoreCommand (change) {
-      if (change === 'd') {
-        this.resetPassword()
-      }
+    formatCreate_time(row, column) {
+      return (row.create_time = util.formatDate.format(
+        new Date(row.create_time),
+        "yyyy/MM/dd hh:MM:ss"
+      ));
     },
-    resetPassword () {
-      this.$prompt('请输入密码', '提示', {
+    editStatus (index, row) {
+      this.$confirm('此操作将修改商户状态, 确定修改?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-        inputErrorMessage: '邮箱格式不正确'
-      })
-        .then(({ value }) => {
-          this.$message({
-            type: 'success',
-            message: '你的邮箱是: ' + value
-          })
+        closeOnClickModal: false,
+        type: 'warning'
+      }).then(() => {
+        let para = {
+          mid: row.mid.toString(),
+          status: row.status.toString()
+        }
+        updateMerStatus(para).then((res) => {
+          let {
+            status,
+            message
+          } = res
+          if (status == 200) {
+            this.$message({
+              type: 'success',
+              message: message
+            });
+          } else {
+            this.getUsers();
+            this.$message.error(message);
+          }
         })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '取消输入'
-          })
-        })
+      }).catch(() => {
+        this.getUsers();
+        this.$message({
+          type: 'info',
+          message: '取消修改'
+        });
+      });
     },
-    getList () {
-      let para = this.filters
-      para.pageNum = this.page.toString()
+    getList() {
+      let para = this.filters;
+      para.pageNum = this.page.toString();
       queryMerchant(para).then(res => {
-        this.users = res.data.merchantsList
-        this.total = res.data.totalCount
-      })
+        this.users = res.data.merchantsList;
+        this.total = res.data.totalCount;
+      });
     },
-    resetForm (formName) {
-      this.$refs[formName].resetFields()
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
     }
   },
-  mounted () {}
-}
+  mounted() {}
+};
 </script>

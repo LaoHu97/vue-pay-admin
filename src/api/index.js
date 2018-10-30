@@ -18,6 +18,8 @@ instance.interceptors.request.use(config => {
 instance.interceptors.response.use(response => {
   if (response.data.status === 200) {
     return response
+  } else if(response.data.status === 300) {
+    return response
   } else {
     router.replace({
       path: '/'

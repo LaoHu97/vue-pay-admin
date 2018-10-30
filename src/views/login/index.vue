@@ -46,53 +46,92 @@
   <div>
     <el-container>
       <el-header>
-        <el-row type="flex" justify="space-between" class="header_top">
+        <el-row
+          type="flex"
+          justify="space-between"
+          class="header_top">
           <el-col :span="8">
-            <img src="../../assets/images/webwxgetmsgimg.png" alt="logo" height="25px;">
+            <img
+              src="../../assets/images/webwxgetmsgimg.png"
+              alt="logo"
+              height="25px;">
           </el-col>
-            <el-col :span="6" class="header_text">
-              <el-row type="flex" class="row-bg" justify="space-around">
-                <el-col :span="8">
-                  <router-link to="/pay/web/shop.html">
-                    <el-button plain size="mini" round>商户登陆</el-button>
-                  </router-link>
-                </el-col>
-                <el-col :span="8">
-                  <router-link to="/pay/web/store.html">
-                    <el-button plain size="mini" round>门店登录</el-button>
-                  </router-link>
-                </el-col>
-                <el-col :span="8">
-                  <router-link to="/pay/web/emp.html">
-                    <el-button plain size="mini" round>款台登录</el-button>
-                  </router-link>
-                </el-col>
-              </el-row>
-            </el-col>
+          <el-col
+            :span="6"
+            class="header_text">
+            <el-row
+              type="flex"
+              class="row-bg"
+              justify="space-around">
+              <el-col :span="8">
+                <router-link to="/pay/web/shop.html">
+                  <el-button
+                    plain
+                    size="mini"
+                    round>商户登陆</el-button>
+                </router-link>
+              </el-col>
+              <el-col :span="8">
+                <router-link to="/pay/web/store.html">
+                  <el-button
+                    plain
+                    size="mini"
+                    round>门店登录</el-button>
+                </router-link>
+              </el-col>
+              <el-col :span="8">
+                <router-link to="/pay/web/emp.html">
+                  <el-button
+                    plain
+                    size="mini"
+                    round>款台登录</el-button>
+                </router-link>
+              </el-col>
+            </el-row>
+          </el-col>
         </el-row>
       </el-header>
       <el-main>
         <el-carousel height="360px">
-          <el-carousel-item v-for="item in 4" :key="item">
-            <img src="@/assets/images/57be6c6cb3d28_1024.jpg" alt="轮播图">
+          <el-carousel-item
+            v-for="item in 4"
+            :key="item">
+            <img
+              src="@/assets/images/57be6c6cb3d28_1024.jpg"
+              alt="轮播图">
           </el-carousel-item>
         </el-carousel>
-        <el-form ref="loginForm" :model="loginForm" class="main_login">
+        <el-form
+          ref="loginForm"
+          :model="loginForm"
+          class="main_login">
           <h3 class="title">登录</h3>
           <el-form-item>
-            <el-input v-model="loginForm.account" type="text" size="medium" placeholder="请输入用户名">
+            <el-input
+              v-model="loginForm.account"
+              type="text"
+              size="medium"
+              placeholder="请输入用户名">
               <template slot="prepend">
-                <svg class="icon" aria-hidden="true">
-                  <use xlink:href="#icon-iconzh1"></use>
+                <svg
+                  class="icon"
+                  aria-hidden="true">
+                  <use xlink:href="#icon-iconzh1"/>
                 </svg>
               </template>
             </el-input>
           </el-form-item>
           <el-form-item prop="password">
-            <el-input v-model="loginForm.password" type="password" size="medium" placeholder="请输入密码">
+            <el-input
+              v-model="loginForm.password"
+              type="password"
+              size="medium"
+              placeholder="请输入密码">
               <template slot="prepend">
-                <svg class="icon" aria-hidden="true">
-                  <use xlink:href="#icon-mima"></use>
+                <svg
+                  class="icon"
+                  aria-hidden="true">
+                  <use xlink:href="#icon-mima"/>
                 </svg>
               </template>
             </el-input>
@@ -100,17 +139,34 @@
           <el-form-item prop="inCode">
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-input v-model="loginForm.inCode" @keyup.enter.native="loginSubmit" type="text" size="medium" placeholder="验证码"></el-input>
+                <el-input
+                  v-model="loginForm.inCode"
+                  @keyup.enter.native="loginSubmit"
+                  type="text"
+                  size="medium"
+                  placeholder="验证码"/>
               </el-col>
               <el-col :span="12">
-                <el-tooltip content="看不清？请点击" placement="top" effect="light">
-                  <img @click="clickCode" :src="authCode" width="100%" height="36px" alt="验证码">
+                <el-tooltip
+                  content="看不清？请点击"
+                  placement="top"
+                  effect="light">
+                  <img
+                    @click="clickCode"
+                    :src="authCode"
+                    width="100%"
+                    height="36px"
+                    alt="验证码">
                 </el-tooltip>
               </el-col>
             </el-row>
           </el-form-item>
           <el-form-item>
-            <el-button type="success" class="login_btn" @click.native.prevent="loginSubmit" :loading="isBtnLoading">{{btnText}}</el-button>
+            <el-button
+              type="success"
+              class="login_btn"
+              @click.native.prevent="loginSubmit"
+              :loading="isBtnLoading">{{ btnText }}</el-button>
           </el-form-item>
         </el-form>
       </el-main>
@@ -135,10 +191,12 @@
       </div>
       <div class="steps_nav">
         <h2>商户入驻流程</h2>
-        <el-steps :active="1" align-center>
-          <el-step title="提交资料"> </el-step>
-          <el-step title="审核认证"> </el-step>
-          <el-step title="开始使用"> </el-step>
+        <el-steps
+          :active="1"
+          align-center>
+          <el-step title="提交资料"/>
+          <el-step title="审核认证"/>
+          <el-step title="开始使用"/>
         </el-steps>
       </div>
       <el-footer class="footer_fix">版权所有：西安万鼎网络科技有限公司 | ICP备 陕17002918号</el-footer>
