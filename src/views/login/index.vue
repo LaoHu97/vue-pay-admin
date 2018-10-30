@@ -64,7 +64,7 @@
               class="row-bg"
               justify="space-around">
               <el-col :span="8">
-                <router-link to="/pay/web/shop.html">
+                <router-link to="../admin/web/shop.html">
                   <el-button
                     plain
                     size="mini"
@@ -72,7 +72,7 @@
                 </router-link>
               </el-col>
               <el-col :span="8">
-                <router-link to="/pay/web/store.html">
+                <router-link to="../admin/web/store.html">
                   <el-button
                     plain
                     size="mini"
@@ -80,7 +80,7 @@
                 </router-link>
               </el-col>
               <el-col :span="8">
-                <router-link to="/pay/web/emp.html">
+                <router-link to="../admin/web/emp.html">
                   <el-button
                     plain
                     size="mini"
