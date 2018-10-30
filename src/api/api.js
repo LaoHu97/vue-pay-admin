@@ -17,4 +17,6 @@ export const ChangeAgentShop = params => { return instance.post(`${preUrlPath}/a
 
 export const changeStatus = params => { return instance.post(`${preUrlPath}/admin/wp/admin/changeStatus`, params).then(res => res.data) }
 
+export const updateMerStatus = params => { return instance.post(`${preUrlPath}/admin/wp/admin/updateMerStatus`, params).then(res => res.data) }
+
 export const downloadAgentImages = `${preUrlPath}/admin/wp/ag/downloadAgentImages`
