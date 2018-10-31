@@ -64,28 +64,28 @@
               class="row-bg"
               justify="space-around">
               <el-col :span="8">
-                <router-link target="_blank" to="../admin/web/shop.html">
+                <a target="_blank" href="/admin/web/shop.html">
                   <el-button
                     plain
                     size="mini"
                     round>商户登陆</el-button>
-                </router-link>
+                </a>
               </el-col>
               <el-col :span="8">
-                <router-link target="_blank" to="../admin/web/store.html">
+                <a target="_blank" href="/admin/web/store.html">
                   <el-button
                     plain
                     size="mini"
                     round>门店登录</el-button>
-                </router-link>
+                </a>
               </el-col>
               <el-col :span="8">
-                <router-link target="_blank" to="../admin/web/emp.html">
+                <a target="_blank" href="/admin/web/emp.html">
                   <el-button
                     plain
                     size="mini"
                     round>款台登录</el-button>
-                </router-link>
+                </a>
               </el-col>
             </el-row>
           </el-col>
