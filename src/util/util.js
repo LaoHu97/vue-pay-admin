@@ -3,7 +3,7 @@ import Vue from 'vue'
 var SIGN_REGEXP = /([yMdhsm])(\1*)/g
 var DEFAULT_PATTERN = 'yyyy-MM-dd'
 
-function padding (s, len) {
+function padding(s, len) {
   var len = len - (s + '').length
   for (var i = 0; i < len; i++) {
     s = '0' + s
@@ -137,6 +137,49 @@ export const dateFormat = function (source, ignore_minute) {
   } else {
     return source
   }
+}
+// ajax错误处理
+export const axiosCatchError = function (error) {
+  if (error.status) {
+    if (error.data.code === '000000') {
+      switch (error.data.subCode) {
+        case '100000':
+          Vue.prototype.$message({
+            message: error.data.subMsg || '操作失败，请稍候再试',
+            type: 'error',
+            showClose: true,
+            center: true,
+            duration: 10000
+          })
+          break
+        default:
+          Vue.prototype.$message({
+            message: error.data.subMsg || '操作失败，请稍候再试',
+            type: 'error',
+            showClose: true,
+            center: true,
+            duration: 10000
+          })
+      }
+    } else {
+      Vue.prototype.$message({
+        message: error.data.msg || '服务器通信失败，请联系技术人员',
+        type: 'error',
+        showClose: true,
+        center: true,
+        duration: 10000
+      })
+    }
+  } else {
+    Vue.prototype.$message({
+      message: '请检查网络连接，或稍后再试',
+      type: 'error',
+      showClose: true,
+      center: true,
+      duration: 10000
+    })
+  }
+  return Promise.reject(error)
 }
 // ajax错误处理
 export const catchError = function (error) {

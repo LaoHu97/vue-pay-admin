@@ -67,3 +67,49 @@ export const optionsFormDetail = [{
   value: 'UNKNOWN',
   label: '未知'
 }]
+export const terminalTypeOptions = [
+  {
+    value: "11",
+    label: "富友POS"
+  },
+  {
+    value: "12",
+    label: "新大陆POS"
+  },
+  {
+    value: "13",
+    label: "插件"
+  }
+]
+export const terminalVersionOptions = [
+  {
+    value: "A8",
+    label: "A8"
+  },
+  {
+    value: "波普",
+    label: "波普"
+  },
+  {
+    value: "N910",
+    label: "N910"
+  },
+  {
+    value: "WSY",
+    label: "WSY"
+  }
+]
+export const applyTypeOptions = [
+  {
+    value: "1",
+    label: "审核中"
+  },
+  {
+    value: "2",
+    label: "已解绑"
+  },
+  {
+    value: "3",
+    label: "已绑定"
+  }
+]
