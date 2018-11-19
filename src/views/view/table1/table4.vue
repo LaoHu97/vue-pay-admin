@@ -19,354 +19,176 @@
 
 <template>
   <section>
-    <el-row>
-      <el-alert
-        title="可查询最近30天的交易"
-        type="warning"
-        class="top_alert"
-        center
-        close-text="知道了"
-        show-icon/>
-    </el-row>
-    <el-form
-      :inline="true"
-      :model="filters"
-      label-position="left"
-      ref="filters"
-      label-width="98px">
+    <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="98px">
       <div class="search_top">
         <el-row>
-          <el-col :span="6">
-            <el-form-item
-              label="商户名称"
-              prop="storeName">
-              <el-select
-                v-model="filters.storeName"
-                class="fixed_search_input"
-                placeholder="商户名称"
-                :multiple="false"
-                filterable
-                remote
-                :remote-method="remoteShop"
-                :loading="storeSearchLoading"
-                clearable
-                @focus="clickShop" 
-@change="selectStoreChange">
-                <el-option
-                  v-for="item in optionsStore"
-                  :key="item.id"
-                  :value="item.id"
-                  :label="item.value"/>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item
-              label="门店名称"
-              prop="storeName">
-              <el-select
-                v-model="filters.storeName"
-                class="fixed_search_input"
-                placeholder="门店名称"
-                :multiple="false"
-                filterable
-                remote
-                :remote-method="remoteShop"
-                :loading="storeSearchLoading"
-                clearable
-                @focus="clickShop" 
-@change="selectStoreChange">
-                <el-option
-                  v-for="item in optionsStore"
-                  :key="item.id"
-                  :value="item.id"
-                  :label="item.value"/>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item
-              label="款台名称"
-              prop="empName">
-              <el-select
-                v-model="filters.empName"
-                class="fixed_search_input"
-                placeholder="款台名称"
-                :multiple="false"
-                filterable
-                remote
-                :remote-method="remoteEmp"
-                :loading="empSearchLoading"
-                clearable
-                @focus="clickEmp">
-                <el-option
-                  v-for="item in optionsEmp"
-                  :key="item.eid"
-                  :value="item.eid"
-                  :label="item.value"/>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item
-              label="支付状态"
-              prop="state">
-              <el-select
-                v-model="filters.state"
-                class="fixed_search_input"
-                clearable
-                placeholder="支付状态">
-                <el-option
-                  v-for="item in optionsPayState"
-                  :label="item.label"
-                  :value="item.value"
-                  :key="item.value"/>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="6">
-            <el-form-item
-              label="支付方式"
-              prop="play">
-              <el-select
-                v-model="filters.play"
-                class="fixed_search_input"
-                clearable
-                placeholder="支付方式">
-                <el-option
-                  v-for="item in optionsPayment"
-                  :label="item.label"
-                  :value="item.value"
-                  :key="item.value"/>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item
-              label="银行卡类型"
-              prop="cardType">
-              <el-select
-                v-model="filters.cardType"
-                class="fixed_search_input"
-                clearable
-                placeholder="银行卡类型">
-                <el-option
-                  v-for="item in optionsBank"
-                  :label="item.label"
-                  :value="item.value"
-                  :key="item.value"/>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item
-              label="交易金额"
-              prop="goodsprice">
+          <el-col :span="9">
+            <el-form-item label="款台名称" prop="username">
               <el-input
-                v-model.trim="filters.goodsprice"
+                v-model="filters.username"
                 class="fixed_search_input"
-                placeholder="交易金额"/>
+                placeholder="请输入款台名称关键字"
+              ></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
-            <el-form-item
-              label="订单号"
-              prop="orderId">
+          <el-col :span="9">
+            <el-form-item label="款台账号" prop="account">
               <el-input
-                v-model.trim="filters.orderId"
+                v-model="filters.account"
                 class="fixed_search_input"
-                placeholder="订单号"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="6">
-            <el-form-item
-              label="第三方订单号"
-              prop="transaction_id">
-              <el-input
-                v-model.trim="filters.transaction_id"
-                class="fixed_search_input"
-                placeholder="第三方订单号"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="日期时间">
-              <el-date-picker
-                v-model="filters.value4"
-                type="datetimerange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"/>
+                placeholder="请输入款台账号查询"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item>
-              <el-button
-                type="primary"
-                @click="getUsers"
-                round
-                icon="el-icon-search">查询</el-button>
-              <el-button
-                @click="resetForm('filters')"
-                round>重置</el-button>
+              <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
+              <el-button @click="resetForm('filters')" round>重置</el-button>
               <el-button
                 type="success"
                 round
                 icon="el-icon-circle-plus"
-                @click="addStoreDialogVisible = true">新增款台</el-button>
+                @click="openStoreDialog"
+              >新增款台</el-button>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row/>
       </div>
     </el-form>
     <!--列表-->
     <div v-loading="listLoading">
       <el-table
         :data="users"
-        border
-        highlight-current-row>
-        <el-table-column
-          prop="payTime"
-          align="center"
-          label="付款时间"
-          min-width="165"/>
-        <el-table-column
-          prop="orderId"
-          align="center"
-          label="订单号"
-          min-width="285"/>
-        <el-table-column
-          prop="goodsPrice"
-          align="center"
-          label="交易金额"
-          width="120"
-          :formatter="format_amount"/>
-        <el-table-column
-          prop="payWay"
-          align="center"
-          label="支付方式"
-          width="120"
-          :formatter="format_payWay"/>
-        <el-table-column
-          prop="status"
-          align="center"
-          label="交易状态"
-          width="150"
-          :formatter="format_status"/>
-        <el-table-column
-          prop="storeName"
-          align="center"
-          label="收款门店"
-          width="120"/>
-        <el-table-column
-          label="操作"
-          align="center"
-          width="180">
+        border=""
+        highlight-current-row
+        v-loading="listLoading"
+        style="width: 100%;"
+      >
+        <el-table-column prop="username" label="款台名称" min-width="120"></el-table-column>
+        <el-table-column prop="account" label="登录帐号" min-width="120"></el-table-column>
+        <el-table-column label="款台状态" min-width="80">
+          <template slot-scope="scope">
+            <el-switch
+              name="value"
+              @change="test(scope.$index, scope.row)"
+              v-model="scope.row.status"
+            ></el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="二维码" width="100">
+          <template slot-scope="scope">
+            <el-button type="success" size="mini" @click="handleCode(scope.$index, scope.row)">二维码</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="会员支付二维码" width="140">
           <template slot-scope="scope">
             <el-button
               type="success"
               size="mini"
-              @click="handleDetail(scope.$index, scope.row)">订单详情</el-button>
-            <el-button
-              type="danger"
-              size="mini"
-              @click="handleRefund(scope.$index, scope.row)">退款</el-button>
+              @click="handleVipCode(scope.$index, scope.row)"
+            >会员支付二维码</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="260">
+          <template slot-scope="scope">
+            <el-button type="danger" size="mini" @click="handleReset(scope.$index, scope.row)">密码重置</el-button>
+            <el-button type="warning" size="mini" @click="handleModify(scope.$index, scope.row)">修改</el-button>
+            <el-button type="info" size="mini" @click="handleEdit(scope.$index, scope.row)">详情</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <el-dialog
-      title="新增款台"
+      :title="dialogType ? '新增款台' : '修改款台'"
       :visible.sync="addStoreDialogVisible"
-      width="580px"
-      center>
+      width="600px"
+      center
+    >
       <el-form
         :model="addStoreForm"
+        :rules="addStoreFormRules"
+        ref="addStoreForm"
         label-position="left"
-        label-width="95px">
+        label-width="120px"
+      >
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="门店名">
-              <el-input
-                v-model="addStoreForm.storeName"
-                placeholder=""/>
+            <el-form-item label="款台名称" prop="username">
+              <el-input v-model="addStoreForm.username" placeholder="请输入2-20个字符或数字"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="分店名">
-              <el-input
-                v-model="addStoreForm.branchStoreName"
-                placeholder=""/>
+            <el-form-item label="联系电话" prop="phone">
+              <el-input v-model="addStoreForm.phone" placeholder="请输入电话"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="详细地址">
-              <el-input placeholder=""/>
+            <el-form-item label="联系邮箱" prop="email">
+              <el-input v-model="addStoreForm.email" placeholder="请输入邮箱地址"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="门店图片">
-              <el-input placeholder=""/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="电话">
-              <el-input placeholder=""/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="渠道门店ID">
-              <el-input placeholder=""/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="人均价格">
-              <el-input placeholder=""/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="营业时间">
-              <el-input placeholder=""/>
+            <el-form-item label="所属门店" prop="storeId">
+              <el-select
+                v-model="addStoreForm.storeId"
+                class="fixed_search_input"
+                placeholder="请选择所属门店"
+                :multiple="false"
+                filterable
+                remote
+                :remote-method="remoteStore"
+                :loading="storeLoading"
+                clearable
+                @focus="clickStore"
+              >
+                <el-option
+                  v-for="item in optionsStore"
+                  :key="item.id"
+                  :value="item.id"
+                  :label="item.value"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="推荐(选填)">
-              <el-input placeholder=""/>
+            <el-form-item label="扫呗终端ID" prop="terminal_id">
+              <el-input v-model="addStoreForm.terminal_id" placeholder="请输入扫呗终端ID"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="特色服务">
-              <el-input placeholder=""/>
+            <el-form-item label="支付宝操作员编号" prop="ali_operation_id">
+              <el-input v-model="addStoreForm.ali_operation_id" placeholder="请输入支付宝操作员编号"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="简介(选填)">
-              <el-input placeholder=""/>
+            <el-form-item label="微收银设备号" prop="wsy_num">
+              <el-input v-model="addStoreForm.wsy_num" placeholder="请输入微收银设备号"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="新大陆设备号" prop="ndl_num">
+              <el-input v-model="addStoreForm.ndl_num" placeholder="请输入新大陆设备号"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="富友设备号" prop="fuiou_id">
+              <el-input v-model="addStoreForm.fuiou_id" placeholder="请输入富友设备号"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
-      <span
-        slot="footer"
-        class="dialog-footer">
+      <span slot="footer" class="dialog-footer">
         <el-button @click="addStoreDialogVisible = false">取 消</el-button>
-        <el-button
-          type="primary"
-          @click="addStoreDialogVisible = false">提 交</el-button>
+        <el-button type="primary" v-if="dialogType" @click="addStoreSubmit('addStoreForm')">提 交</el-button>
+        <el-button type="primary" v-else @click="editStoreSubmit('addStoreForm')">修 改</el-button>
       </span>
     </el-dialog>
     <!--工具条-->
@@ -377,43 +199,170 @@
         @current-change="handleCurrentChange"
         :page-size="20"
         :total="total"
-        background
-        style="text-align:center;background:#fff;padding:15px;"/>
+        style="text-align:center;background:#fff;padding:15px;"
+      />
     </el-row>
   </section>
 </template>
 
 <script>
-import { optionsPayState, optionsPayment, optionsBank } from '@/util/mockData.js'
-import getUsersList from '@/mixins/Users'
-import getRemoteSearch from '@/mixins/RemoteSearch'
+import {
+  queryAdminEmp,
+  addEmployee,
+  updateAdminStore,
+  resetStorePwd,
+  selectStoreList
+} from "@/api/api";
+import * as util from "@/util/util.js";
+import * as async from "@/util/async-validator/addEmpFormRules";
+import getUsersList from "@/mixins/Users";
+import getRemoteSearch from "@/mixins/RemoteSearch";
 
 export default {
   mixins: [getUsersList, getRemoteSearch],
-  data () {
+  data() {
     return {
-      filters: {},
-      optionsPayState: optionsPayState,
-      optionsPayment: optionsPayment,
-      optionsBank: optionsBank,
+      filters: {
+        username: "",
+        account: ""
+      },
       addStoreDialogVisible: false,
-      addStoreForm: {}
-    }
+      addStoreForm: {
+        mid: this.$route.query.mid,
+        username: "",
+        phone: "",
+        email: "",
+        storeId: "",
+        terminal_id: "",
+        ali_operation_id: "",
+        wsy_num: "",
+        ndl_num: "",
+        fuiou_id: ""
+      },
+      addStoreFormRules: async.addEmpFormRules,
+      dialogType: false,
+      storeLoading: false
+    };
   },
   methods: {
-    format_amount () {
-
+    handleReset(index, row) {
+      this.$prompt("请输入密码", "密码重置", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputPattern: /\S/,
+        inputErrorMessage: "密码格式不正确",
+        inputValue: "123456"
+      })
+        .then(({ value }) => {
+          let para = {
+            sid: row.id,
+            password: this.md5(value + row.saccount)
+          };
+          resetStorePwd(para).then(res => {
+            this.$message({
+              message: res.message,
+              type: "success"
+            });
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "取消输入"
+          });
+        });
     },
-    format_payWay () {
-
+    getList() {
+      let para = {
+        mid: this.$route.query.mid,
+        pageNum: this.page.toString(),
+        username: this.filters.username,
+        account: this.filters.account
+      };
+      this.listLoading = true;
+      queryAdminEmp(para).then(res => {
+        this.total = res.data.totalCount;
+        this.users = res.data.employeeList;
+        this.listLoading = false;
+      });
     },
-    format_status () {
-
+    openStoreDialog() {
+      this.addStoreDialogVisible = true;
+      this.dialogType = true;
+      this.$nextTick(() => {
+        this.$refs.addStoreForm.resetFields();
+        console.log(this.addStoreForm);
+      });
     },
-    getList () {
-
+    editStore(index, row) {
+      this.addStoreDialogVisible = true;
+      this.dialogType = false;
+      this.$nextTick(() => {
+        this.addStoreForm = c;
+      });
+    },
+    addStoreSubmit(formName) {
+      this.$refs[formName].validate(valid => {
+        if (!valid) {
+          return;
+        }
+        let para = util.deepcopy(this.addStoreForm);
+        para.storeId = para.storeId.toString()
+        addEmployee(para).then(res => {
+          if (res.status === 200) {
+            this.$message({
+              message: res.message,
+              type: "success"
+            });
+            this.getUsers();
+          }
+          this.addStoreDialogVisible = false;
+        });
+      });
+    },
+    editStoreSubmit(formName) {
+      this.$refs[formName].validate(valid => {
+        if (!valid) {
+          return;
+        }
+        let para = util.deepcopy(this.addStoreForm);
+        para.storeId = para.storeId.toString()
+        updateAdminStore(para).then(res => {
+          if (res.status === 200) {
+            this.$message({
+              message: res.message,
+              type: "success"
+            });
+            this.getUsers();
+          }
+          this.addStoreDialogVisible = false;
+        });
+      });
+    },
+    clickStore() {
+      this.storeLoading = true;
+      selectStoreList({ mid: this.$route.query.mid }).then(res => {
+        this.storeLoading = false;
+        let { status, data } = res;
+        this.optionsStore = data.storeList;
+      });
+    },
+    remoteStore(query) {
+      if (query !== "") {
+        this.storeLoading = true;
+        setTimeout(() => {
+          this.storeLoading = false;
+          selectStoreList({
+            sname: query
+          }).then(res => {
+            let { status, data } = res;
+            this.optionsStore = data.storeList;
+          });
+        }, 200);
+      } else {
+        this.optionsStore = [];
+      }
     }
   }
-}
-
+};
 </script>

@@ -1,3 +1,4 @@
+
 <style scoped>
 .search_top {
   background: #f2f2f2;
@@ -14,6 +15,29 @@
     <el-form :inline="true" :model="filters" label-position="left" label-width="100px">
       <div class="search_top">
         <el-row>
+          <el-col :span="6">
+            <el-form-item label="所属商户">
+              <el-select
+                v-model="filters.mid"
+                class="fixed_search_input"
+                placeholder="商户名称"
+                :multiple="false"
+                filterable
+                remote
+                :remote-method="remoteMer"
+                :loading="merLoading"
+                clearable
+                @focus="clickMer"
+              >
+                <el-option
+                  v-for="item in optionsMer"
+                  :key="item.id"
+                  :value="item.id"
+                  :label="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
           <el-col :span="6">
             <el-form-item label="所属门店">
               <el-select
@@ -66,6 +90,7 @@
                 v-model="filters.terminal_type"
                 class="fixed_search_input"
                 placeholder="请选择"
+                clearable
               >
                 <el-option
                   v-for="item in terminalTypeOptions"
@@ -76,9 +101,16 @@
               </el-select>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="6">
-            <el-form-item label="申请类型">
-              <el-select v-model="filters.apply_type" class="fixed_search_input" placeholder="请选择">
+            <el-form-item label="审核状态">
+              <el-select
+                v-model="filters.apply_type"
+                clearable
+                class="fixed_search_input"
+                placeholder="请选择"
+              >
                 <el-option
                   v-for="item in applyTypeOptions"
                   :key="item.value"
@@ -88,9 +120,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="18">
+          <el-col :span="12">
             <el-form-item label="日期时间">
               <el-date-picker
                 v-model="filters.queryDateTime"
@@ -104,7 +134,6 @@
           <el-col :span="6">
             <el-form-item>
               <el-button type="primary" @click="getUsers" round>查询</el-button>
-              <el-button type="primary" @click="printAdd" round>新增</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -113,7 +142,8 @@
     <!--列表-->
     <div v-loading="listLoading">
       <el-table :data="users" border="" style="width: 100%;">
-        <el-table-column prop="id" label="终端ID" min-width="80"></el-table-column>
+        <el-table-column prop="store_name" label="门店名称" min-width="120"></el-table-column>
+        <el-table-column prop="emp_name" label="款台名称" min-width="120"></el-table-column>
         <el-table-column
           prop="terminal_type"
           label="终端类型"
@@ -127,22 +157,28 @@
           min-width="120"
           :formatter="formatterGmtCreate"
         ></el-table-column>
-        <el-table-column align="center" label="申请类型" min-width="120">
+        <el-table-column align="center" label="审核状态" min-width="120">
           <template slot-scope="scope">
             <el-tag
-              :type="scope.row.apply_type === '1' ? 'warning' : scope.row.apply_type === '2' ? 'info': scope.row.merchant_status === '3' ? 'success' : 'danger'"
+              :type="scope.row.apply_type === '1' ? 'warning' : scope.row.apply_type === '2' ? 'info': scope.row.apply_type === '3' ? 'success' : 'danger'"
               disable-transitions
             >{{formatterApplyType(scope.row, scope.$index)}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="操作" width="160">
+        <el-table-column align="center" label="操作" width="240">
           <template slot-scope="scope">
-            <!-- <el-button type="warning" size="mini" @click="handleEdit(scope.$index, scope.row)">修改</el-button> -->
+            <el-button
+              type="success"
+              size="mini"
+              @click="checkTerminal(scope.$index, scope.row)"
+              :disabled="scope.row.apply_type !== '1'"
+            >审 核</el-button>
             <el-button
               type="warning"
               size="mini"
-              @click="checkTerminal(scope.$index, scope.row)"
-            >审 核</el-button>
+              :disabled="scope.row.apply_type !== '3'"
+              @click="unBind(scope.$index, scope.row)"
+            >解 绑</el-button>
             <el-button type="info" size="mini" @click="handleDet(scope.$index, scope.row)">详 情</el-button>
           </template>
         </el-table-column>
@@ -160,20 +196,32 @@
     </el-row>
     <el-dialog title="终端审核" :visible.sync="dialogRefundVisible" width="420px">
       <el-form :model="formDialog" ref="formDialog">
-        <el-form-item prop="apply_type">
-          <el-radio v-model="formDialog.apply_type" label="3">通过</el-radio>
-          <el-radio v-model="formDialog.apply_type" label="2">解绑</el-radio>
-        </el-form-item>
         <el-form-item
-          label="激活码"
+          :label="formDialog.terminal_type === '13' ? '设备号' : '设备激活码'"
           prop="active_code"
-          :rules="[{ required: true, message: '请输入激活码', trigger: 'blur' }]"
-          v-if="formDialog.terminal_type !== '11'"
+          :rules="formDialog.terminal_type === '13' ? [{ required: true, message: '请输入设备号', trigger: 'blur' }] : [{ required: true, message: '请输入设备激活码', trigger: 'blur' }]"
+          v-if="formDialog.terminal_type !== '11' && formDialog.apply_type === '3'"
         >
           <el-input
             v-model="formDialog.active_code"
-            placeholder="请输入激活码"
+            :placeholder="formDialog.terminal_type === '13' ? '请输入设备号' : '请输入设备激活码'"
           />
+        </el-form-item>
+        <el-form-item
+          label="设备号"
+          prop="mCode"
+          :rules="[{ required: true, message: '请输入设备号', trigger: 'blur' }]"
+          v-if="formDialog.terminal_type !== '13' && formDialog.apply_type === '3'"
+        >
+          <el-input v-model="formDialog.mCode" placeholder="请输入设备号"/>
+        </el-form-item>
+        <el-form-item
+          label="商户号"
+          prop="reserve1"
+          :rules="[{ required: true, message: '请输入商户号', trigger: 'blur' }]"
+          v-if="formDialog.terminal_type !== '13' && formDialog.apply_type === '3'"
+        >
+          <el-input v-model="formDialog.reserve1" placeholder="请输入商户号"/>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -190,7 +238,7 @@
         <el-form-item label="所属款台：">
           <span>{{detForm.emp_name}}</span>
         </el-form-item>
-        <el-form-item label="申请类型：">
+        <el-form-item label="审核状态：">
           <span>{{formatterApplyType(detForm)}}</span>
         </el-form-item>
         <el-form-item label="终端类型：">
@@ -202,10 +250,8 @@
         <el-form-item label="型号：">
           <span>{{detForm.terminal_version}}</span>
         </el-form-item>
-        <el-form-item label="激活码：">
-          <el-tag
-            :type="detForm.active_code ? 'success' : 'danger'"
-          >{{detForm.active_code || '暂未审核或审核驳回'}}</el-tag>
+        <el-form-item label="设备激活码：" v-if="detForm.active_code">
+          <span>{{detForm.active_code}}</span>
         </el-form-item>
         <el-form-item label="创建时间：">
           <span>{{formatterGmtCreate(detForm)}}</span>
@@ -232,7 +278,8 @@ import {
   queryTerminal,
   updateTerminal,
   selectStoreList,
-  selectEmpsBySid
+  selectEmpsBySid,
+  queryAgentMer
 } from "@/api/api";
 export default {
   mixins: [getUsersList],
@@ -252,15 +299,20 @@ export default {
       detForm: {},
       empLoading: false,
       storeLoading: false,
+      merLoading: false,
       optionsEmp: [],
       optionsStore: [],
+      optionsMer: [],
       editFormRules: async.addTerminalFormRules,
       dialogRefundVisible: false,
       formDialog: {
-        id: '',
-        terminal_type: '',
-        apply_type: '3',
-        active_code: ''
+        id: "",
+        eid: "",
+        terminal_type: "",
+        apply_type: "3",
+        active_code: "",
+        mCode: "",
+        reserve1: ""
       }
     };
   },
@@ -280,7 +332,7 @@ export default {
         : row.terminal_type === "12"
           ? "新大陆POS"
           : row.terminal_type === "13"
-            ? "插件"
+            ? "微收银"
             : "未知";
     },
     formatterGmtCreate(row, column) {
@@ -289,29 +341,67 @@ export default {
         "yyyy/MM/dd hh:mm:ss"
       ));
     },
-    submitRefund (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          let para = this.formDialog
-          updateTerminal(para).then(res => {
-            this.dialogRefundVisible = false
-            this.getUsers()
-            this.$refs[formName].resetFields()
-            this.$message({
-              message: '审核完成',
-              type: 'success'
-            })
-          })
-        }
+    // 解绑
+    unBind(index, row) {
+      this.$confirm("此操作将解除终端绑定, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
       })
+        .then(() => {
+          this.formDialog.apply_type = "2";
+          let c = util.deepcopy(row);
+          this.formDialog.id = c.id;
+          this.formDialog.eid = c.eid;
+          this.formDialog.terminal_type = c.terminal_type;
+          this.$nextTick(() => {
+            let para = this.formDialog;
+            para.mid = this.$route.query.mid;
+            updateTerminal(para).then(res => {
+              this.dialogRefundVisible = false;
+              this.$message({
+                message: res.subMsg,
+                type: "success"
+              });
+              this.getUsers();
+              this.$refs[formName].resetFields();
+            });
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    submitRefund(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          let para = this.formDialog;
+          para.mid = this.$route.query.mid;
+          updateTerminal(para).then(res => {
+            this.dialogRefundVisible = false;
+            this.getUsers();
+            this.$refs[formName].resetFields();
+            this.$message({
+              message: res.subMsg,
+              type: "success"
+            });
+          });
+        }
+      });
     },
     checkTerminal(index, row) {
       this.dialogRefundVisible = true;
       this.$nextTick(() => {
-        let c = util.deepcopy(row)
+        let c = util.deepcopy(row);
         this.formDialog.id = c.id;
-        this.formDialog.terminal_type = c.terminal_type
-      })
+        this.formDialog.eid = c.eid;
+        this.formDialog.terminal_type = c.terminal_type;
+        this.formDialog.apply_type = "3";
+        this.$refs.formDialog.resetFields();
+      });
     },
     //款台远程搜索
     clickEmp: function() {
@@ -359,7 +449,8 @@ export default {
         setTimeout(() => {
           this.storeLoading = false;
           selectStoreList({
-            sname: query
+            sname: query,
+            mid: this.$route.query.mid
           }).then(res => {
             let { status, data } = res;
             this.optionsStore = data.storeList;
@@ -369,42 +460,37 @@ export default {
         this.optionsStore = [];
       }
     },
-    editStatus(index, row) {
-      this.$confirm("此操作将修改款台状态, 确定修改?", "提示", {
-        cancelButtonText: "取消",
-        confirmButtonText: "确定",
-        closeOnClickModal: false,
-        type: "warning"
-      })
-        .then(() => {
-          let para = {
-            printId: row.id,
-            isOpen: row.isOpen
-          };
-          updatePStatus(para)
-            .then(res => {
-              this.$message({
-                type: "success",
-                message: res.msg
-              });
-            })
-            .catch(() => {
-              this.getUsers();
-            });
-        })
-        .catch(() => {
-          this.getUsers();
-          this.$message({
-            type: "info",
-            message: "取消修改"
+    clickMer() {
+      this.merLoading = true;
+      queryAgentMer().then(res => {
+        this.merLoading = false;
+        let { status, data } = res;
+        this.optionsMer = data.merList;
+      });
+    },
+    remoteMer(query) {
+      if (query !== "") {
+        this.merLoading = true;
+        setTimeout(() => {
+          this.merLoading = false;
+          queryAgentMer({
+            mname: query,
+            mid: this.$route.query.mid
+          }).then(res => {
+            let { status, data } = res;
+            this.optionsMer = data.merList;
           });
-        });
+        }, 200);
+      } else {
+        this.optionsMer = [];
+      }
     },
     //获取用户列表
     getList() {
       this.listLoading = true;
       let para = util.deepcopy(this.filters);
       para.pageNum = this.page;
+      para.mid = this.$route.query.mid;
       para.start_time = para.queryDateTime ? para.queryDateTime[0] : "";
       para.end_time = para.queryDateTime ? para.queryDateTime[1] : "";
       queryTerminals(para).then(res => {
@@ -421,38 +507,6 @@ export default {
       queryTerminal({ id: row.id }).then(res => {
         if (res.code === "000000") {
           this.detForm = res.data;
-        }
-      });
-    },
-    //显示编辑界面
-    handleEdit(index, row) {
-      this.editFormVisible = true;
-      let form = util.deepcopy(row);
-      form.mCode = form.machineCode;
-      form.mKey = form.machineKey;
-      this.editForm = form;
-      this.optionsEmp = [{ eid: form.eid, value: form.ename }];
-    },
-    //显示新增界面
-    printAdd() {
-      this.editFormVisible = true;
-      if (this.$refs.editForm) {
-        this.$refs.editForm.resetFields();
-      }
-    },
-    //新增
-    addSubmit() {
-      this.$refs.editForm.validate(valid => {
-        if (valid) {
-          this.$confirm("确认提交吗？", "提示").then(() => {
-            this.editLoading = true;
-            let para = util.deepcopy(this.editForm);
-            addTerminal(para).then(res => {
-              this.editLoading = false;
-              this.editFormVisible = false;
-              this.getUsers();
-            });
-          });
         }
       });
     }

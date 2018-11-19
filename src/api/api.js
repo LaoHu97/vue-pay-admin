@@ -48,6 +48,11 @@ export const queryStoresShop = params => { return instance.post(`${preUrlPath}/a
 export const addAdminStore = params => { return instance.post(`${preUrlPath}/admin/wp/admin/addAdminStore`,params).then(res => res.data); };
 //门店修改
 export const updateAdminStore = params => { return instance.post(`${preUrlPath}/admin/wp/admin/updateAdminStore`,params).then(res => res.data); };
+//门店密码重置
+export const resetStorePwd = params => { return instance.post(`${preUrlPath}/admin/wp/admin/resetStorePwd`, params).then(res => res.data); };
+
+//款台查询
+export const queryAdminEmp = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryAdminEmp`, params).then(res => res.data); };
 
 // 2018-11-02
 
@@ -58,6 +63,22 @@ export const queryTerminal = params => { return Axios.post(`${preUrlPath}/admin/
 // 查询列表
 export const queryTerminals = params => { return Axios.post(`${preUrlPath}/admin/wp/admin/queryTerminals`,params).then(res => res.data); };
 //门店模糊查询
-export const selectStoreList = params => { return Axios.post(`${preUrlPath}/admin/wp/ag/selectStoreList`,params).then(res => res.data); };
+export const selectStoreList = params => { return instance.post(`${preUrlPath}/admin/wp/ag/selectStoreList`,params).then(res => res.data); };
+
+export const queryAgentMer = params => { return instance.post(`${preUrlPath}/admin/wp/ag/queryAgentMer`, params).then(res => res.data); };
+
 //款台查询
-export const selectEmpsBySid = params => { return Axios.post(`${preUrlPath}/admin/wp/comm/selectEmpsBySid`,params).then(res => res.data); };
+export const selectEmpsBySid = params => { return instance.post(`${preUrlPath}/admin/wp/comm/selectEmpsBySid`,params).then(res => res.data); };
+// 添加款台
+export const addEmployee = params => { return instance.post(`${preUrlPath}/admin/wp/admin/addEmployee`, params).then(res => res.data); };
+
+
+export const queryReplacementOrder = params => { return Axios.post(`${preUrlPath}/admin/repair/queryReplacementOrder`, params).then(res => res.data); };
+
+export const replaceOrderInsertOrder = params => { return Axios.post(`${preUrlPath}/admin/repair/replaceOrderInsertOrder`, params).then(res => res.data); };
+
+export const queryAwaitStatement = params => { return Axios.post(`${preUrlPath}/admin/repair/queryAwaitStatement`, params).then(res => res.data); };
+
+export const updateStatementData = params => { return Axios.post(`${preUrlPath}/admin/repair/updateStatementData`, params).then(res => res.data); };
+
+export const updateReplaceOrder = params => { return Axios.post(`${preUrlPath}/admin/repair/updateReplaceOrder`, params).then(res => res.data); };

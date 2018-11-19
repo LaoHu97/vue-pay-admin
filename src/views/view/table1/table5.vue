@@ -241,7 +241,7 @@
             <svg class="box-card-pay-icon" aria-hidden="true">
               <use xlink:href="#icon-qian"></use>
             </svg>
-            <router-link :to="{path: '/index2/page8', query: { mid: $route.query.mid }}">
+            <router-link :to="{path: '/deal/shop/table4', query: { mid: $route.query.mid }}">
               <el-button type="text" size="medium">查看款台</el-button>
             </router-link>
           </el-col>
@@ -540,6 +540,7 @@ export default {
               message: res.message,
               type: "success"
             });
+            this.getMerDetails();
           } else {
             this.$message.error(res.message);
           }
