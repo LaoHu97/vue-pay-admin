@@ -14,6 +14,32 @@ export const optionsPayment = [{
 }, {
   value: 'UNIONPAY',
   label: '银联二维码'
+}, {
+  value: 'UNKNOW',
+  label: '未知'
+}]
+// 支付方式
+export const optionsPaymentAll = [{
+  value: 'WX',
+  label: '微信'
+}, {
+  value: 'ALI',
+  label: '支付宝'
+}, {
+  value: 'DEBIT',
+  label: '借记卡'
+}, {
+  value: 'CREDIT',
+  label: '贷记卡'
+}, {
+  value: 'BEST',
+  label: '翼支付'
+}, {
+  value: 'UNIONPAY',
+  label: '银联二维码'
+}, {
+  value: 'UNKNOW',
+  label: '未知'
 }]
 export const optionsPaymentExcel = [{
   value: '',
@@ -78,7 +104,7 @@ export const terminalTypeOptions = [
   },
   {
     value: "13",
-    label: "插件"
+    label: "微收银"
   }
 ]
 export const terminalVersionOptions = [

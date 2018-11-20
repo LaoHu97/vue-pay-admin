@@ -229,7 +229,7 @@
       </div>
       <div class="box-card-pay">
         <el-row>
-          <el-col :span="8">
+          <!-- <el-col :span="8">
             <svg class="box-card-pay-icon" aria-hidden="true">
               <use xlink:href="#icon-mendian"></use>
             </svg>
@@ -241,18 +241,18 @@
             <svg class="box-card-pay-icon" aria-hidden="true">
               <use xlink:href="#icon-qian"></use>
             </svg>
-            <router-link :to="{path: '/index2/page8', query: { mid: $route.query.mid }}">
+            <router-link :to="{path: '/deal/shop/table4', query: { mid: $route.query.mid }}">
               <el-button type="text" size="medium">查看款台</el-button>
             </router-link>
-          </el-col>
+          </el-col> -->
           <el-col :span="8">
             <svg class="box-card-pay-icon" aria-hidden="true">
               <use xlink:href="#icon-bangongdianhuayewu"></use>
             </svg>
-            <el-button type="text" size="medium" @click="allotSale">分配业务员</el-button>
+            <router-link :to="{path: '/deal/shop/table7', query: { mid: $route.query.mid }}">
+              <el-button type="text" size="medium">查看终端</el-button>
+            </router-link>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="8">
             <svg class="box-card-pay-icon" aria-hidden="true">
               <use xlink:href="#icon-zhongzhi"></use>
@@ -263,14 +263,15 @@
             <svg class="box-card-pay-icon" aria-hidden="true">
               <use xlink:href="#icon-bangongdianhuayewu"></use>
             </svg>
-            <router-link :to="{path: '/deal/shop/table7', query: { mid: $route.query.mid }}">
-              <el-button type="text" size="medium">查看终端</el-button>
-            </router-link>
+            <el-button type="text" size="medium" @click="allotSale">分配业务员</el-button>
           </el-col>
+        </el-row>
+        <el-row>
+
         </el-row>
       </div>
     </el-card>
-    <el-card class="box-card">
+    <!-- <el-card class="box-card">
       <div slot="header">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-caidan"></use>
@@ -287,7 +288,7 @@
           </el-col>
         </el-row>
       </div>
-    </el-card>
+    </el-card> -->
     <!--修改分配业务员界面-->
     <el-dialog title="分配业务员" :visible.sync="editFormVisible" width="30%">
       <el-form :model="editSaleForm">
@@ -540,6 +541,7 @@ export default {
               message: res.message,
               type: "success"
             });
+            this.getMerDetails();
           } else {
             this.$message.error(res.message);
           }

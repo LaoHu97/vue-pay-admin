@@ -180,7 +180,7 @@
 </template>
 
 <script>
-import { queryStoresShop, addAdminStore, updateAdminStore } from "@/api/api";
+import { queryStoresShop, addAdminStore, updateAdminStore, resetStorePwd } from "@/api/api";
 import * as util from "@/util/util.js";
 import * as async from "@/util/async-validator/addStoreFormRules";
 import getUsersList from "@/mixins/Users";
@@ -212,6 +212,33 @@ export default {
     };
   },
   methods: {
+    handleReset(index, row) {
+      this.$prompt("请输入密码", "密码重置", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputPattern: /\S/,
+        inputErrorMessage: "密码格式不正确",
+        inputValue: '123456'
+      })
+        .then(({ value }) => {
+          let para = {
+            sid: row.id,
+            password: this.md5(value + row.saccount)
+          }
+          resetStorePwd(para).then(res => {
+            this.$message({
+              message: res.message,
+              type: "success"
+            });
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "取消输入"
+          });
+        });
+    },
     getList() {
       let para = {
         mid: this.$route.query.mid,
@@ -230,6 +257,7 @@ export default {
       this.dialogType = true;
       this.$nextTick(() => {
         this.$refs.addStoreForm.resetFields();
+        console.log(this.addStoreForm);
       });
     },
     editStore(index, row) {
@@ -255,6 +283,7 @@ export default {
               message: res.message,
               type: "success"
             });
+            this.getUsers();
           }
           this.addStoreDialogVisible = false;
         });
@@ -274,6 +303,7 @@ export default {
               message: res.message,
               type: "success"
             });
+            this.getUsers();
           }
           this.addStoreDialogVisible = false;
         });
