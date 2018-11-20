@@ -75,8 +75,12 @@ export default new Router({
           path: 'table3',
           name: '新增商户',
           meat: {
+<<<<<<< HEAD
             name: '新增商户',
             hidden: true
+=======
+            name: '新增商户'
+>>>>>>> 8ebc1d3d55aa1e234642bcf87cc4dc432e38725e
           },
           component: () => import('./views/view/table1/table3.vue')
         }, {
@@ -100,7 +104,11 @@ export default new Router({
           name: '终端审核',
           meat: {
             name: '终端审核',
+<<<<<<< HEAD
             hidden: true
+=======
+            hidden: false
+>>>>>>> 8ebc1d3d55aa1e234642bcf87cc4dc432e38725e
           },
           component: () => import('./views/view/table1/table7.vue')
         }]
