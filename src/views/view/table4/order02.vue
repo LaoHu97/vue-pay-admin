@@ -22,14 +22,30 @@
     <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="80px">
       <div class="search_top">
         <el-row>
-          <el-col :span="6">
-            <el-form-item label="商户名称" prop="mname">
-              <el-input v-model="filters.mname" placeholder="请输入关键字查询"/>
+          <el-col :span="10">
+            <el-form-item label="查询日期" prop="dateTime">
+              <el-date-picker
+                v-model="filters.dateTime"
+                type="datetimerange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                value-format="timestamp"
+                :default-time="['00:00:00', '23:59:59']"
+                :clearable = false
+              ></el-date-picker>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="商户账号" prop="maccount">
-              <el-input v-model="filters.maccount" placeholder="请输入商户账号"/>
+            <el-form-item label="订单状态" prop="status">
+              <el-select v-model="filters.status" placeholder="请选择">
+                <el-option
+                  v-for="item in statusOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -44,28 +60,16 @@
     <!--列表-->
     <div v-loading="listLoading">
       <el-table :data="users" border="" stripe highlight-current-row>
-        <el-table-column prop="mname" align="center" label="商户名称"/>
-        <el-table-column prop="maccount" align="center" label="商户账号"/>
-        <el-table-column align="center" label="登陆状态">
-          <template slot-scope="scope">
-            <el-switch
-              :active-value="1"
-              :inactive-value="0"
-              @change="editStatus(scope.$index, scope.row)"
-              v-model="scope.row.status"
-            ></el-switch>
-          </template>
-        </el-table-column>
+        <el-table-column prop="mname" label="商户名称"/>
+        <el-table-column prop="sname" label="门店名称"/>
         <el-table-column
-          prop="create_time"
-          align="center"
           :formatter="formatCreate_time"
           label="创建时间"
         />
-        <el-table-column prop="saleName" align="center" label="业务员"/>
-        <el-table-column label="操作" align="center" width="100">
+        <el-table-column label="补录状态" :formatter="formatStatus"/>
+        <el-table-column label="操作" align="center" width="120">
           <template slot-scope="scope">
-              <el-button type="primary" size="mini" @click="clickLook(scope.$index, scope.row)">查看</el-button>
+            <el-button type="success" size="mini" @click="fillOrder(scope.$index, scope.row)">补录订单</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -87,7 +91,7 @@
 
 <script>
 import * as util from "../../../util/util.js";
-import { queryMerchant, updateMerStatus } from "@/api/api";
+import { queryAwaitStatement, updateStatementData } from "@/api/api";
 import getUsersList from "@/mixins/Users";
 import getRemoteSearch from "@/mixins/RemoteSearch";
 
@@ -96,20 +100,60 @@ export default {
   data() {
     return {
       filters: {
-        mname: "",
-        maccount: ""
-      }
+        startTime: "",
+        endTime: "",
+        dateTime: [new Date((new Date).getFullYear(), (new Date).getMonth(), (new Date).getDate()).getTime(), new Date((new Date).getFullYear(), (new Date).getMonth(), (new Date).getDate(), 23, 59, 59).getTime()],
+        status: "0"
+      },
+      statusOptions: [
+        {
+          value: "0",
+          label: "未处理"
+        },
+        {
+          value: "1",
+          label: "已处理"
+        }
+      ]
     };
   },
   methods: {
     formatCreate_time(row, column) {
-      return (row.create_time = util.formatDate.format(
-        new Date(row.create_time),
+      return (row.gmt_create = util.formatDate.format(
+        new Date(row.settled_date),
         "yyyy/MM/dd hh:MM:ss"
       ));
     },
-    clickLook (index, row) {
-      this.$router.push({ path: '/deal/shop/table5', query: { mid: row.mid.toString(), maccount: row.maccount } })
+    formatStatus(row, column) {
+      return row.status === '0' ? '未处理' : row.status === '1' ? '已处理' : '未知'
+    },
+    fillOrder(index, row) {
+      this.$confirm("是否补录此订单？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          let para = {
+            awaitId: row.id.toString(),
+            date: row.settled_date.toString(),
+            mid: row.mid.toString(),
+            sid: row.sid.toString()
+          }
+          updateStatementData(para).then(res => {
+            this.$message({
+              type: "success",
+              message: res.subMsg
+            });
+            this.getUsers()
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     },
     editStatus(index, row) {
       this.$confirm("此操作将修改商户状态, 确定修改?", "提示", {
@@ -123,7 +167,7 @@ export default {
             mid: row.mid.toString(),
             status: row.status.toString()
           };
-          updateMerStatus(para).then(res => {
+          updateStatementData(para).then(res => {
             let { status, message } = res;
             if (status == 200) {
               this.$message({
@@ -147,8 +191,10 @@ export default {
     getList() {
       let para = this.filters;
       para.pageNum = this.page.toString();
-      queryMerchant(para).then(res => {
-        this.users = res.data.merchantsList;
+      para.startTime = para.dateTime ? para.dateTime[0].toString() : "";
+      para.endTime = para.dateTime ? para.dateTime[1].toString() : "";
+      queryAwaitStatement(para).then(res => {
+        this.users = res.data.awaitStatementList;
         this.total = res.data.totalCount;
       });
     },

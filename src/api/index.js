@@ -9,8 +9,8 @@ const instance = axios.create({
 
 instance.defaults.headers.post['Content-Type'] = 'application/json'
 // 错误处理
-instance.interceptors.request.use(config => {
-  return config
+instance.interceptors.request.use(request => {
+  return request
 }, error => {
   util.catchError(error)
 })
@@ -18,13 +18,11 @@ instance.interceptors.request.use(config => {
 instance.interceptors.response.use(response => {
   if (response.data.status === 200) {
     return response
-  } else if(response.data.status === 300) {
-    return response
   } else {
+    util.catchError(response)
     router.replace({
       path: '/'
     })
-    util.catchError(response)
   }
 }, error => {
   util.catchError(error)
