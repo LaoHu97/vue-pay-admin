@@ -68,11 +68,11 @@
         </el-col>
         <el-col :span="6" class="header_text header_top_xian">
           <div class="header_top_btn">
-            <el-button
+            <!-- <el-button
               type="warning"
               size="mini"
               round
-            @click="clickEditPassword">修改密码<i class="iconfont icon-xiugai"/></el-button>
+            @click="clickEditPassword">修改密码<i class="iconfont icon-xiugai"/></el-button> -->
             <el-button type="danger" size="mini" round @click="loginOut">退出登录
               <i class="iconfont icon-tuichu"/>
             </el-button>

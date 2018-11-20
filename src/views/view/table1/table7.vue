@@ -39,29 +39,6 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="所属商户">
-              <el-select
-                v-model="filters.mid"
-                class="fixed_search_input"
-                placeholder="商户名称"
-                :multiple="false"
-                filterable
-                remote
-                :remote-method="remoteMer"
-                :loading="merLoading"
-                clearable
-                @focus="clickMer"
-              >
-                <el-option
-                  v-for="item in optionsMer"
-                  :key="item.id"
-                  :value="item.id"
-                  :label="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
             <el-form-item label="所属门店">
               <el-select
                 v-model="filters.sid"
@@ -389,7 +366,6 @@ export default {
                 type: "success"
               });
               this.getUsers();
-              this.$refs[formName].resetFields();
             });
           });
         })

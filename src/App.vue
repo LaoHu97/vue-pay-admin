@@ -6,8 +6,8 @@
 
 <script>
 export default {
-  name: 'App'
-}
+  name: "App"
+};
 </script>
 
 <style>
@@ -19,7 +19,8 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
 }
-html,body{
+html,
+body {
   height: 100%;
   margin: 0;
 }

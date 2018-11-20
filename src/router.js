@@ -127,48 +127,7 @@ export default new Router({
           },
           component: () => import('./views/view/table4/order02.vue')
         }]
-      }
-        // {
-        //   path: '/shop',
-        //   name: '系统配置',
-        //   meat: {
-        //     name: '系统配置',
-        //     icon: 'icon-xitong'
-        //   },
-        //   component: index,
-        //   children: [{
-        //     path: 'paypage',
-        //     name: '支付配置',
-        //     meat: {
-        //       name: '支付配置'
-        //     },
-        //     component: () => import('./views/view/table2/payPage.vue')
-        //   }]
-        // }, {
-        //   path: '/shop',
-        //   name: '终端管理',
-        //   meat: {
-        //     name: '终端管理',
-        //     icon: 'icon-shouyin'
-        //   },
-        //   component: index,
-        //   children: [{
-        //     path: 'emppage1',
-        //     name: '扫呗终端',
-        //     meat: {
-        //       name: '扫呗终端'
-        //     },
-        //     component: () => import('./views/view/table3/emppage1.vue')
-        //   }, {
-        //     path: 'emppage2',
-        //     name: '新大陆终端',
-        //     meat: {
-        //       name: '新大陆终端'
-        //     },
-        //     component: () => import('./views/view/table3/emppage2.vue')
-        //   }]
-        // }
-      ]
+      }]
     }, {
       path: '/account',
       name: '账户中心',
