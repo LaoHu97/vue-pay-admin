@@ -65,11 +65,7 @@ export const queryTerminals = params => { return Axios.post(`${preUrlPath}/admin
 //门店模糊查询
 export const selectStoreList = params => { return instance.post(`${preUrlPath}/admin/wp/ag/selectStoreList`,params).then(res => res.data); };
 
-<<<<<<< HEAD
 export const queryMerMname = params => { return Axios.post(`${preUrlPath}/admin/wp/admin/queryMerMname`, params).then(res => res.data); };
-=======
-export const queryAgentMer = params => { return instance.post(`${preUrlPath}/admin/wp/ag/queryAgentMer`, params).then(res => res.data); };
->>>>>>> 8ebc1d3d55aa1e234642bcf87cc4dc432e38725e
 
 //款台查询
 export const selectEmpsBySid = params => { return instance.post(`${preUrlPath}/admin/wp/comm/selectEmpsBySid`,params).then(res => res.data); };

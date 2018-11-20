@@ -302,11 +302,7 @@ import {
   updateTerminal,
   selectStoreList,
   selectEmpsBySid,
-<<<<<<< HEAD
   queryMerMname
-=======
-  queryAgentMer
->>>>>>> 8ebc1d3d55aa1e234642bcf87cc4dc432e38725e
 } from "@/api/api";
 export default {
   mixins: [getUsersList],
@@ -334,10 +330,7 @@ export default {
       editFormRules: async.addTerminalFormRules,
       dialogRefundVisible: false,
       formDialog: {
-<<<<<<< HEAD
         mid: "",
-=======
->>>>>>> 8ebc1d3d55aa1e234642bcf87cc4dc432e38725e
         id: "",
         eid: "",
         terminal_type: "",
@@ -411,10 +404,6 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           let para = this.formDialog;
-<<<<<<< HEAD
-=======
-          para.mid = this.$route.query.mid;
->>>>>>> 8ebc1d3d55aa1e234642bcf87cc4dc432e38725e
           updateTerminal(para).then(res => {
             this.dialogRefundVisible = false;
             this.getUsers();
@@ -431,10 +420,7 @@ export default {
       this.dialogRefundVisible = true;
       this.$nextTick(() => {
         let c = util.deepcopy(row);
-<<<<<<< HEAD
         this.formDialog.mid = c.mid;
-=======
->>>>>>> 8ebc1d3d55aa1e234642bcf87cc4dc432e38725e
         this.formDialog.id = c.id;
         this.formDialog.eid = c.eid;
         this.formDialog.terminal_type = c.terminal_type;
@@ -489,11 +475,7 @@ export default {
           this.storeLoading = false;
           selectStoreList({
             sname: query,
-<<<<<<< HEAD
             mid: this.$route.query.mid || this.filters.mid
-=======
-            mid: this.$route.query.mid
->>>>>>> 8ebc1d3d55aa1e234642bcf87cc4dc432e38725e
           }).then(res => {
             let { status, data } = res;
             this.optionsStore = data.storeList;
@@ -505,16 +487,9 @@ export default {
     },
     clickMer() {
       this.merLoading = true;
-<<<<<<< HEAD
       queryMerMname({mname: '',}).then(res => {
         this.merLoading = false;
         this.optionsMer = res.data;
-=======
-      queryAgentMer().then(res => {
-        this.merLoading = false;
-        let { status, data } = res;
-        this.optionsMer = data.merList;
->>>>>>> 8ebc1d3d55aa1e234642bcf87cc4dc432e38725e
       });
     },
     remoteMer(query) {
@@ -522,19 +497,10 @@ export default {
         this.merLoading = true;
         setTimeout(() => {
           this.merLoading = false;
-<<<<<<< HEAD
           queryMerMname({
             mname: query,
           }).then(res => {
             this.optionsMer = res.data;
-=======
-          queryAgentMer({
-            mname: query,
-            mid: this.$route.query.mid
-          }).then(res => {
-            let { status, data } = res;
-            this.optionsMer = data.merList;
->>>>>>> 8ebc1d3d55aa1e234642bcf87cc4dc432e38725e
           });
         }, 200);
       } else {
