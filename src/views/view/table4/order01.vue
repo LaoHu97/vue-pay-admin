@@ -138,7 +138,7 @@
           <span>{{detailsForm.replacement_status === '0' ? '未处理' : detailsForm.replacement_status === '1' ? '已处理' : '未知'}}</span>
         </el-form-item>
         <el-form-item label="支付时间：">
-          <span>{{detailsForm.pay_time}}</span>
+          <span>{{formatCreate_time(detailsForm)}}</span>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
