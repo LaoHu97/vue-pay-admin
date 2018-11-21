@@ -20,9 +20,6 @@ instance.interceptors.response.use(response => {
     return response
   } else {
     util.catchError(response)
-    router.replace({
-      path: '/'
-    })
   }
 }, error => {
   util.catchError(error)

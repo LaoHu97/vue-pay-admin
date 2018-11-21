@@ -1,6 +1,6 @@
 <template>
   <section>
-    <el-form :inline="true" :model="filters" ref="filters" size="medium">
+    <el-form :inline="true" :model="filters" ref="filters">
       <div class="search_top">
         <el-row>
           <el-form-item label="商户名称">
@@ -17,8 +17,8 @@
             </el-select>
           </el-form-item>
           <el-form-item style="float: right;">
-            <el-button type="primary" v-on:click="getUsers" size="medium" round>查询</el-button>
-            <el-button type="primary" @click="getShop" size="medium" round>新增商户</el-button>
+            <el-button type="primary" v-on:click="getUsers" icon="el-icon-search" round>查询</el-button>
+            <el-button type="success" @click="getShop" icon="el-icon-plus" round>新增商户</el-button>
           </el-form-item>
         </el-row>
       </div>
@@ -69,6 +69,7 @@
 
 <script>
 import * as util from "@/util/util.js";
+import getUsersList from "@/mixins/Users";
 import {
   agentMerEnter,
   addAgentMer,
@@ -85,6 +86,7 @@ import {
 } from "@/api/api";
 
 export default {
+  mixins: [getUsersList],
   data() {
     return {
       whole: {
@@ -95,10 +97,6 @@ export default {
         mname: "",
         status: ""
       },
-      total: 0,
-      page: 1,
-      users: [],
-      listLoading: false,
       statusOptions: [
         {
           value: "0",
@@ -130,17 +128,12 @@ export default {
         "yyyy/MM/dd hh:mm:ss"
       ));
     },
-    // showErrMessage(index, row) {
-    //   this.$alert(row.error_msg, "驳回原因", {
-    //     type: 'warning'
-    //   });
-    // },
     //新增商户
     getShop: function() {
-      this.$router.push("/index2/page6");
+      this.$router.push("/deal/shop/table8");
     },
     handleModify(index, row) {
-      this.$router.push({ path: "/index2/page6", query: { id: row.id } });
+      this.$router.push({ path: "/deal/shop/table8", query: { id: row.id, agent_id: row.agent_id } });
     },
     //状态转换
     formatMerchantStatus: function(row, column) {
@@ -153,14 +146,6 @@ export default {
             : row.merchant_status === "2" && row.timely_sign === "1"
               ? "审核驳回"
               : "审核通过";
-    },
-    handleCurrentChange(val) {
-      this.page = val;
-      this.getList();
-    },
-    getUsers() {
-      this.page = 1;
-      this.getList();
     },
     //获取用户列表
     getList() {
@@ -181,10 +166,6 @@ export default {
         this.listLoading = false;
       });
     }
-  },
-
-  mounted() {
-    this.getUsers();
   }
 };
 </script>

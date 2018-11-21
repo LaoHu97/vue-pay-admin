@@ -82,3 +82,27 @@ export const queryAwaitStatement = params => { return Axios.post(`${preUrlPath}/
 export const updateStatementData = params => { return Axios.post(`${preUrlPath}/admin/repair/updateStatementData`, params).then(res => res.data); };
 
 export const updateReplaceOrder = params => { return Axios.post(`${preUrlPath}/admin/repair/updateReplaceOrder`, params).then(res => res.data); };
+
+//商户入住
+export const agentMerEnter = params => { return instance.post(`${preUrlPath}/admin/wp/admin/agentMerEnter`, params).then(res => res.data); };
+export const addAgentMertwo = params => { return instance.post(`${preUrlPath}/admin/wp/admin/addAgentMertwo`, params).then(res => res.data); };
+//行业类目
+export const addLcShopView = params => { return instance.post(`${preUrlPath}/admin/wp/comm/addLcShopView`, params).then(res => res.data); };
+export const showBusinessType = params => { return instance.post(`${preUrlPath}/admin/wp/comm/showBusinessType`, params).then(res => res.data); };
+//开户银行
+export const selectBank = params => { return instance.post(`${preUrlPath}/admin/wp/comm/selectBank`, params).then(res => res.data); };
+//开户银行省
+export const getProvince = params => { return instance.post(`${preUrlPath}/admin/wp/comm/getProvince`, params).then(res => res.data); };
+//开户银行市
+export const queryCityCounty = params => { return instance.post(`${preUrlPath}/admin/wp/comm/queryCityCounty`, params).then(res => res.data); };
+
+export const queryCity = params => { return instance.post(`${preUrlPath}/admin/wp/comm/queryCity`, params).then(res => res.data); };
+//开户银行支行
+export const selectbranch = params => { return instance.post(`${preUrlPath}/admin/wp/comm/selectbranch`, params).then(res => res.data); };
+
+//新增商户
+export const addAgentMerone = params => { return instance.post(`${preUrlPath}/admin/wp/admin/addAgentMerone`, params).then(res => res.data); };
+
+export const uploadImage = `${preUrlPath}/admin/wp/admin/uploadAgentImage`;
+
+export const agentShopPage = params => { return instance.post(`${preUrlPath}/admin/wp/admin/agentShopPage`, params).then(res => res.data); };

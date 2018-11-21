@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import router from '../router'
 
 var SIGN_REGEXP = /([yMdhsm])(\1*)/g
 var DEFAULT_PATTERN = 'yyyy-MM-dd'
@@ -152,6 +153,18 @@ export const axiosCatchError = function (error) {
             duration: 10000
           })
           break
+        case '4001':
+          Vue.prototype.$message({
+            message: error.data.subMsg || '系统超时，请重新登录',
+            type: 'warning',
+            showClose: true,
+            center: true,
+            duration: 10000
+          })
+          router.replace({
+            path: '/'
+          })
+          break
         default:
           Vue.prototype.$message({
             message: error.data.subMsg || '操作失败，请稍候再试',
@@ -197,11 +210,8 @@ export const catchError = function (error) {
           message: error.data.message || '登录超时！请重新登录',
           type: 'warning'
         })
-        break
-      case 302:
-        Vue.prototype.$message({
-          message: error.data.message || '尚未登陆！请重新登录',
-          type: 'warning'
+        router.replace({
+          path: '/'
         })
         break
       default:
