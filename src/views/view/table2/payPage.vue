@@ -47,7 +47,7 @@
               <el-select
                 v-model="filters.storeName"
                 class="fixed_search_input"
-                placeholder="商户名称"
+                placeholder="请输入商户名称关键字查询"
                 :multiple="false"
                 filterable
                 remote

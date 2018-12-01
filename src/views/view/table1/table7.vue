@@ -20,12 +20,13 @@
               <el-select
                 v-model="filters.mid"
                 class="fixed_search_input"
-                placeholder="商户名称"
+                placeholder="请输入商户关键字查询"
                 :multiple="false"
                 filterable
                 remote
                 :remote-method="remoteMer"
                 :loading="merLoading"
+                @change="changeMer"
                 clearable
                 @focus="clickMer"
               >
@@ -43,12 +44,13 @@
               <el-select
                 v-model="filters.sid"
                 class="fixed_search_input"
-                placeholder="门店名称"
+                placeholder="请输入门店关键字查询"
                 :multiple="false"
                 filterable
                 remote
                 :remote-method="remoteStore"
                 :loading="storeLoading"
+                @change="changeStore"
                 clearable
                 @focus="clickStore"
               >
@@ -66,7 +68,7 @@
               <el-select
                 v-model="filters.eid"
                 class="fixed_search_input"
-                placeholder="款台名称"
+                placeholder="请输入款台关键字查询"
                 :multiple="false"
                 filterable
                 remote
@@ -128,6 +130,8 @@
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 value-format="timestamp"
+                :picker-options="pickerOptions"
+                :default-time="['00:00:00', '23:59:59']"
               ></el-date-picker>
             </el-form-item>
           </el-col>
@@ -142,6 +146,7 @@
     <!--列表-->
     <div v-loading="listLoading">
       <el-table :data="users" border="" style="width: 100%;">
+        <el-table-column prop="mer_name" label="商户名称" min-width="120"></el-table-column>
         <el-table-column prop="store_name" label="门店名称" min-width="120"></el-table-column>
         <el-table-column prop="emp_name" label="款台名称" min-width="120"></el-table-column>
         <el-table-column
@@ -189,6 +194,8 @@
       <el-pagination
         layout="prev, pager, next"
         @current-change="handleCurrentChange"
+        :current-page="page"
+        background=""
         :page-size="20"
         :total="total"
         style="text-align:center;background:#fff;padding:15px;"
@@ -287,7 +294,7 @@ export default {
     return {
       filters: {
         queryDateTime: "",
-        mid: this.$route.query.mid || '',
+        mid: this.$route.query.mid || "",
         sid: "",
         eid: "",
         terminal_type: "",
@@ -315,6 +322,18 @@ export default {
         active_code: "",
         mCode: "",
         reserve1: ""
+      },
+      pickerOptions: {
+        disabledDate(time) {
+          return (
+            time.getTime() >
+            new Date(
+              new Date(new Date().toLocaleDateString()).getTime() +
+                24 * 60 * 60 * 1000 -
+                1
+            )
+          );
+        }
       }
     };
   },
@@ -342,6 +361,13 @@ export default {
         new Date(row.gmt_create),
         "yyyy/MM/dd hh:mm:ss"
       ));
+    },
+    changeStore() {
+      this.filters.eid = ''
+    },
+    changeMer() {
+      this.filters.sid = ''
+      this.filters.eid = ''
     },
     // 解绑
     unBind(index, row) {
@@ -438,11 +464,13 @@ export default {
     },
     clickStore() {
       this.storeLoading = true;
-      selectStoreList({ mid: this.$route.query.mid || this.filters.mid }).then(res => {
-        this.storeLoading = false;
-        let { status, data } = res;
-        this.optionsStore = data.storeList;
-      });
+      selectStoreList({ mid: this.$route.query.mid || this.filters.mid }).then(
+        res => {
+          this.storeLoading = false;
+          let { status, data } = res;
+          this.optionsStore = data.storeList;
+        }
+      );
     },
     remoteStore(query) {
       if (query !== "") {
@@ -463,7 +491,7 @@ export default {
     },
     clickMer() {
       this.merLoading = true;
-      queryMerMname({mname: '',}).then(res => {
+      queryMerMname({ mname: "" }).then(res => {
         this.merLoading = false;
         this.optionsMer = res.data;
       });
@@ -474,7 +502,7 @@ export default {
         setTimeout(() => {
           this.merLoading = false;
           queryMerMname({
-            mname: query,
+            mname: query
           }).then(res => {
             this.optionsMer = res.data;
           });
@@ -488,7 +516,6 @@ export default {
       this.listLoading = true;
       let para = util.deepcopy(this.filters);
       para.pageNum = this.page;
-      para.mid = this.$route.query.mid;
       para.start_time = para.queryDateTime ? para.queryDateTime[0] : "";
       para.end_time = para.queryDateTime ? para.queryDateTime[1] : "";
       queryTerminals(para).then(res => {

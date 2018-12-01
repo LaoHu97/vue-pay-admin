@@ -1,5 +1,4 @@
 import axios from 'axios'
-import router from '../router'
 import * as util from '../util/util.js'
 
 const instance = axios.create({
@@ -19,12 +18,7 @@ instance.interceptors.response.use(response => {
 	if (response.data.code === '000000') {
 		if (response.data.subCode === '000000') {
 			return response
-		} else if (response.data.subCode === '4001') {
-			router.replace({
-				path: '/'
-			})
-			util.axiosCatchError(response)
-		} else {
+		}else {
 			util.axiosCatchError(response)
 		}
 	} else {

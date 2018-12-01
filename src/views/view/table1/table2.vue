@@ -34,7 +34,6 @@
           <el-col :span="6">
             <el-form-item>
               <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
-              <el-button @click="resetForm('filters')" round>重置</el-button>
               <el-button
                 type="success"
                 round
@@ -48,21 +47,82 @@
     </el-form>
     <!--列表-->
     <div v-loading="listLoading">
-      <el-table :data="users" border="" highlight-current-row>
+      <el-table :data="users" border highlight-current-row>
         <el-table-column prop="storeName" label="门店名称" min-width="120"></el-table-column>
         <el-table-column prop="address" label="门店地址" min-width="180"></el-table-column>
         <el-table-column prop="telephone" label="联系电话" min-width="120"></el-table-column>
         <el-table-column prop="saccount" label="登录帐号" width="120"></el-table-column>
-        <el-table-column prop="status" label="门店状态" width="150"></el-table-column>
-        <el-table-column align="center" label="操作" width="280">
+        <el-table-column align="center" label="操作" width="460">
           <template slot-scope="scope">
-            <el-button type="danger" size="mini" @click="handleReset(scope.$index, scope.row)">密码重置</el-button>
             <el-button type="warning" size="mini" @click="editStore(scope.$index, scope.row)">修改</el-button>
+            <el-button
+              type="success"
+              size="mini"
+              @click="editOneStore(scope.$index, scope.row)"
+            >配置单门店收款</el-button>
+            <el-button type="danger" size="mini" @click="handleReset(scope.$index, scope.row)">密码重置</el-button>
+            <el-button type="primary" size="mini" @click="lookEmp(scope.$index, scope.row)">查看款台</el-button>
             <el-button type="info" size="mini" @click="handleDet(scope.$index, scope.row)">详情</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
+    <!--详情界面-->
+    <el-dialog
+      title="门店详情"
+      :visible.sync="detFormVisible"
+      width="450px"
+    >
+      <el-form :model="detForm" label-width="130px" ref="detForm" label-position="left">
+        <el-form-item label="门店名称：">
+          <span>{{detForm.storeName}}</span>
+        </el-form-item>
+        <el-form-item label="客服电话：">
+          <span>{{detForm.telephone}}</span>
+        </el-form-item>
+        <el-form-item label="门店编号：">
+          <span>{{detForm.saccount}}</span>
+        </el-form-item>
+        <el-form-item label="是否单门店收款：">
+          <span>{{detForm.isAloneStore ? '是' : '否'}}</span>
+        </el-form-item>
+        <el-form-item label="单门店配置商户：">
+          <span>{{detForm.alonePayMname}}</span>
+        </el-form-item>
+        <el-form-item label="详细地址：">
+          <span>{{detForm.address}}</span>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <!-- 单门店收款 -->
+    <el-dialog title="配置单门店收款" :visible.sync="oneStoreDialogVisible" width="350px">
+      <el-form :model="oneStoreForm">
+        <el-form-item label="选择商户">
+          <el-select
+            v-model="oneStoreForm.mid"
+            placeholder="请输入商户关键字查询"
+            :multiple="false"
+            filterable
+            remote
+            :remote-method="remoteMer"
+            :loading="merLoading"
+            clearable
+            @focus="clickMer"
+          >
+            <el-option
+              v-for="item in optionsMer"
+              :key="item.mid"
+              :value="item.mid"
+              :label="item.mname"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="oneStoreDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="oneStoreSubmilt">确 定</el-button>
+      </span>
+    </el-dialog>
     <el-dialog
       :title="dialogType ? '新增门店' : '修改门店'"
       :visible.sync="addStoreDialogVisible"
@@ -78,44 +138,8 @@
       >
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="门店名" prop="mname">
-              <el-input v-model="addStoreForm.mname" placeholder="请输入2-20个字符或数字"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="分店名" prop="storeName">
+            <el-form-item label="门店名称" prop="storeName">
               <el-input v-model="addStoreForm.storeName" placeholder="请输入分店名"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="详细地址" prop="address">
-              <el-input v-model="addStoreForm.address" placeholder="请输入门店详细地址"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="人均价格(￥)" prop="avgPrice">
-              <el-input-number
-                v-model="addStoreForm.avgPrice"
-                :precision="2"
-                :step="0.01"
-                :max="9999"
-              ></el-input-number>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="渠道门店ID" prop="aliStoreId">
-              <el-input v-model="addStoreForm.aliStoreId" placeholder="请输入渠道门店ID"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="特色服务" prop="special">
-              <el-input v-model="addStoreForm.special" placeholder="请输入门店特色服务"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -125,36 +149,9 @@
           </el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="推荐" prop="recommend">
-              <el-input v-model="addStoreForm.recommend" placeholder="请输入推荐信息"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item label="营业时间" prop="shopHours">
-              <el-time-picker
-                is-range
-                v-model="addStoreForm.shopHours"
-                range-separator="至"
-                start-placeholder="开始时间"
-                end-placeholder="结束时间"
-                placeholder="选择时间范围"
-                value-format="HH:mm:ss"
-              ></el-time-picker>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="门店简介" prop="introduction">
-              <el-input
-                type="textarea"
-                :autosize="{ minRows: 2, maxRows: 4}"
-                placeholder="请输入门店简介内容"
-                v-model="addStoreForm.introduction"
-              ></el-input>
+            <el-form-item label="详细地址" prop="address">
+              <el-input type="textarea" v-model="addStoreForm.address" placeholder="请输入门店详细地址"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -180,7 +177,15 @@
 </template>
 
 <script>
-import { queryStoresShop, addAdminStore, updateAdminStore, resetStorePwd } from "@/api/api";
+import {
+  queryStoresShop,
+  addAdminStore,
+  updateAdminStore,
+  resetStorePwd,
+  queryMerMname,
+  storePayConfig,
+  queryStoreDetail
+} from "@/api/api";
 import * as util from "@/util/util.js";
 import * as async from "@/util/async-validator/addStoreFormRules";
 import getUsersList from "@/mixins/Users";
@@ -196,41 +201,104 @@ export default {
       addStoreDialogVisible: false,
       addStoreForm: {
         mid: this.$route.query.mid,
-        mname: "",
         storeName: "",
         telephone: "",
-        avgPrice: "",
-        shopHours: "",
-        recommend: "",
-        special: "",
-        introduction: "",
-        address: "",
-        aliStoreId: ""
+        address: ""
       },
       addStoreFormRules: async.addStoreFormRules,
-      dialogType: false
+      dialogType: false,
+      oneStoreDialogVisible: false,
+      oneStoreForm: {
+        mid: "",
+        sid: ""
+      },
+      optionsMer: [],
+      merLoading: false,
+      detForm: {},
+      detFormVisible: false
     };
   },
   methods: {
+    lookEmp(index, row) {
+      this.$router.push({
+        path: "/deal/shop/table4",
+        query: { sid: row.id, mid: this.$route.query.mid }
+      });
+    },
+    handleDet(index, row) {
+      this.detFormVisible = true
+      queryStoreDetail({sid: row.id.toString()}).then(res => {
+        this.detForm = res.store
+        this.detForm.alonePayMname = res.alonePayMname
+        this.detForm.isAloneStore = res.isAloneStore
+      })
+    },
+    oneStoreSubmilt() {
+      if (!this.oneStoreForm.mid) {
+        return this.$message({
+          message: "请选择商户后再试",
+          center: true,
+          type: "warning"
+        });
+      }
+      let para = util.deepcopy(this.oneStoreForm);
+      para.mid = para.mid.toString();
+      storePayConfig(para).then(res => {
+        this.oneStoreDialogVisible = false;
+        this.$message({
+          message: res.message,
+          type: "success"
+        });
+      });
+    },
+    editOneStore(index, row) {
+      this.oneStoreDialogVisible = true;
+      this.$nextTick(() => {
+        this.oneStoreForm.sid = row.id.toString();
+        this.oneStoreForm.mid = "";
+      });
+    },
+    clickMer() {
+      this.merLoading = true;
+      queryMerMname({ mname: "" }).then(res => {
+        this.merLoading = false;
+        this.optionsMer = res.data;
+      });
+    },
+    remoteMer(query) {
+      if (query !== "") {
+        this.merLoading = true;
+        setTimeout(() => {
+          this.merLoading = false;
+          queryMerMname({
+            mname: query
+          }).then(res => {
+            this.optionsMer = res.data;
+          });
+        }, 200);
+      } else {
+        this.optionsMer = [];
+      }
+    },
     handleReset(index, row) {
       this.$prompt("请输入密码", "密码重置", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         inputPattern: /\S/,
         inputErrorMessage: "密码格式不正确",
-        inputValue: '123456'
+        inputValue: "123456"
       })
         .then(({ value }) => {
           let para = {
             sid: row.id,
             password: this.md5(value + row.saccount)
-          }
+          };
           resetStorePwd(para).then(res => {
             this.$message({
               message: res.message,
               type: "success"
             });
-          })
+          });
         })
         .catch(() => {
           this.$message({
@@ -256,16 +324,21 @@ export default {
       this.addStoreDialogVisible = true;
       this.dialogType = true;
       this.$nextTick(() => {
+        this.addStoreForm = {
+          mid: this.$route.query.mid,
+          storeName: "",
+          telephone: "",
+          address: ""
+        };
         this.$refs.addStoreForm.resetFields();
-        console.log(this.addStoreForm);
       });
     },
     editStore(index, row) {
       this.addStoreDialogVisible = true;
       this.dialogType = false;
       let c = util.deepcopy(row);
-      c.shopHours = c.shopHours.split("-");
       this.$nextTick(() => {
+        this.$refs.addStoreForm.resetFields();
         this.addStoreForm = c;
       });
     },
@@ -275,8 +348,6 @@ export default {
           return;
         }
         let para = util.deepcopy(this.addStoreForm);
-        para.avgPrice = para.avgPrice.toString();
-        para.shopHours = `${para.shopHours[0]}-${para.shopHours[1]}`;
         addAdminStore(para).then(res => {
           if (res.status === 200) {
             this.$message({
@@ -295,8 +366,6 @@ export default {
           return;
         }
         let para = util.deepcopy(this.addStoreForm);
-        para.avgPrice = para.avgPrice.toString();
-        para.shopHours = `${para.shopHours[0]}-${para.shopHours[1]}`;
         updateAdminStore(para).then(res => {
           if (res.status === 200) {
             this.$message({

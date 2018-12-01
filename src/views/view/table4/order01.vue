@@ -255,9 +255,6 @@ export default {
         this.editOrderForm.id = row.id;
         this.editOrderForm.status = row.replacement_status;
         this.editOrderForm.payWay = row.pay_way;
-        console.log(this.editOrderForm);
-        
-        // this.$refs.editOrderForm.resetFields();
       });
     },
     fillOrder(index, row) {
