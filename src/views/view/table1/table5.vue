@@ -47,7 +47,7 @@
           <use xlink:href="#icon-xinxi"></use>
         </svg>
         <span>商户信息</span>
-        <!-- <el-button style="float: right; padding: 3px 0" type="text" @click="clickMerEdit">修改</el-button> -->
+        <el-button style="float: right; padding: 3px 0" type="text" @click="clickMerEdit" v-show="boxCardText.id">修改</el-button>
       </div>
       <div class="box-card-text">
         <el-row>
@@ -75,7 +75,7 @@
           </el-col>
           <el-col :span="8">
             <span>账户性质：</span>
-            {{ boxCardText.account_type === '1' ? '对公' : '对私' }}
+            {{ boxCardText.account_type === '1' ? '对公' : boxCardText.account_type === '2' ? '对私' : '' }}
           </el-col>
         </el-row>
         <el-row>
@@ -120,7 +120,7 @@
             {{ boxCardText.bank_name }}
           </el-col>
         </el-row>
-        <el-row>
+        <el-row  v-show="boxCardText.id">
           <el-col :span="8">
             <span>&nbsp;</span>
           </el-col>
@@ -229,7 +229,7 @@
       </div>
       <div class="box-card-pay">
         <el-row>
-          <!-- <el-col :span="8">
+          <el-col :span="8">
             <svg class="box-card-pay-icon" aria-hidden="true">
               <use xlink:href="#icon-mendian"></use>
             </svg>
@@ -244,12 +244,12 @@
             <router-link :to="{path: '/deal/shop/table4', query: { mid: $route.query.mid }}">
               <el-button type="text" size="medium">查看款台</el-button>
             </router-link>
-          </el-col> -->
+          </el-col>
           <el-col :span="8">
             <svg class="box-card-pay-icon" aria-hidden="true">
               <use xlink:href="#icon-bangongdianhuayewu"></use>
             </svg>
-            <router-link :to="{path: '/deal/shop/table7', query: { mid: $route.query.mid }}">
+            <router-link :to="{path: '/deal/shop/table3', query: { mid: $route.query.mid }}">
               <el-button type="text" size="medium">查看终端</el-button>
             </router-link>
           </el-col>
@@ -295,7 +295,7 @@
         <el-form-item label="业务员：">
           <el-select
             v-model="editSaleForm.sale"
-            placeholder="请选择业务员"
+            placeholder="请输入业务员关键字查询"
             :multiple="false"
             filterable
             remote
@@ -437,10 +437,7 @@ export default {
   },
   methods: {
     formatCreate_time(row) {
-      return (row = util.formatDate.format(
-        new Date(row),
-        "yyyy/MM/dd hh:MM:ss"
-      ));
+      return row ? util.formatDate.format(new Date(row), "yyyy/MM/dd hh:MM:ss") : '';
     },
     //云打印
     clickPrint() {
@@ -459,7 +456,7 @@ export default {
         inputValue: "123456"
       }).then(({ value }) => {
         let para = {
-          password: CryptoJS.MD5(value + this.$route.query.maccount).toString(
+          mpwd: CryptoJS.MD5(value + this.$route.query.maccount).toString(
             CryptoJS.enc.Hex
           ),
           mid: this.$route.query.mid
@@ -476,8 +473,8 @@ export default {
     },
     clickMerEdit() {
       this.$router.push({
-        path: "/index2/page6",
-        query: { id: this.boxCardText.id }
+        path: "/deal/shop/table8",
+        query: {id: this.boxCardText.id, agent_id: this.boxCardText.agent_id}
       });
     },
     getMerDetails() {

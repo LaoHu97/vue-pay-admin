@@ -767,6 +767,7 @@ export default {
           let para = this.imageUrl
           para.shop_id = this.$route.query.shop_id,
           para.salesman_id = this.$route.query.salesman_id
+          para.agent_id = this.$route.query.agent_id
           addAgentMerthree(para).then(res => {
             if (res.status === 200) {
               this.$message({

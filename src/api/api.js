@@ -2,7 +2,9 @@ import instance from './index'
 import Axios from './axios'
 
 const preUrlPath = ''
-// const downloadPath = process.env.API_DOWNLOAD || ''
+const downloadPath = process.env
+console.log(downloadPath);
+
 
 export const getCode = `${preUrlPath}/admin/wp/comm/getCode`
 
@@ -20,7 +22,7 @@ export const changeStatus = params => { return instance.post(`${preUrlPath}/admi
 
 export const updateMerStatus = params => { return instance.post(`${preUrlPath}/admin/wp/admin/updateMerStatus`, params).then(res => res.data) }
 
-export const downloadAgentImages = `${preUrlPath}/admin/wp/ag/downloadAgentImages`
+export const downloadAgentImages = `${preUrlPath}/admin/wp/admin/downloadAgentImages`
 
 export const queryAgentShopMer = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryAgentShopMer`, params).then(res => res.data) }
 
@@ -106,3 +108,19 @@ export const addAgentMerone = params => { return instance.post(`${preUrlPath}/ad
 export const uploadImage = `${preUrlPath}/admin/wp/admin/uploadAgentImage`;
 
 export const agentShopPage = params => { return instance.post(`${preUrlPath}/admin/wp/admin/agentShopPage`, params).then(res => res.data); };
+
+export const addAgentMerthree = params => { return instance.post(`${preUrlPath}/admin/wp/admin/addAgentMerthree`, params).then(res => res.data); };
+
+export const adminGetTwoCode = `${preUrlPath}/admin/wp/admin/adminGetTwoCode`;
+
+export const getEmpMemCode = `${preUrlPath}/admin/wp/mer/getEmpMemCode`;
+
+export const resetEmpPwd = params => { return instance.post(`${preUrlPath}/admin/wp/admin/resetEmpPwd`, params).then(res => res.data); };
+
+export const queryEmployeeDetail = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryEmployeeDetail`, params).then(res => res.data); };
+
+export const storePayConfig = params => { return instance.post(`${preUrlPath}/admin/wp/admin/storePayConfig`, params).then(res => res.data); };
+
+export const updateAdminEmp = params => { return instance.post(`${preUrlPath}/admin/wp/admin/updateAdminEmp`, params).then(res => res.data); };
+
+export const queryStoreDetail = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryStoreDetail`, params).then(res => res.data); };

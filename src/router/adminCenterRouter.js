@@ -32,10 +32,10 @@ export default [{
     component: () => import('@/views/view/table1/table2.vue')
   }, {
     path: 'table3',
-    name: '新增商户',
+    name: '查看终端',
     meat: {
-      name: '新增商户',
-      hidden: false
+      name: '查看终端',
+      hidden: true
     },
     component: () => import('@/views/view/table1/table3.vue')
   }, {

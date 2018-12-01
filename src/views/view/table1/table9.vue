@@ -244,7 +244,7 @@
           <el-col>
             <el-form-item label="结算户开户支行：" prop="bank_no">
               <template>
-                <el-select v-model="form.bank_no" placeholder="请选择" @visible-change="bankBranch" :multiple="false" filterable remote :remote-method="remoteBranch" :loading="loading">
+                <el-select v-model="form.bank_no" placeholder="请输入关键字查询" @visible-change="bankBranch" :multiple="false" filterable remote :remote-method="remoteBranch" :loading="loading">
                   <el-option
                     v-for="item in branchNameList"
                     :key="item.bank_no"
@@ -260,7 +260,7 @@
           <el-col>
             <el-form-item label="业务员：" prop="salesman_id">
               <template>
-                <el-select v-model="form.salesman_id" :disabled="editDisabled" placeholder="请选择业务员" :multiple="false" filterable remote :remote-method="remoteSale" :loading="saleLoading" clearable @visible-change="clickSale">
+                <el-select v-model="form.salesman_id" :disabled="editDisabled" placeholder="请输入关键字查询" :multiple="false" filterable remote :remote-method="remoteSale" :loading="saleLoading" clearable @visible-change="clickSale">
                   <el-option v-for="item in optionsSale" :key="item.id" :value="item.id" :label="item.value">
                   </el-option>
                 </el-select>
@@ -287,7 +287,7 @@
 
 <script>
 import * as util from '@/util/util.js'
-import * as data from '@/util/mockData.js'
+import * as data from '@/util/async-validator.js'
 import {
   addAgentMerone,
   selectBank,
@@ -700,7 +700,7 @@ export default {
             if (res.status === 200) {
               this.$router.push({
                 path: '/deal/shop/table10',
-                query: {id: res.id, shop_id: res.shop_id, salesman_id: res.salesman_id, account_type: this.form.account_type, is_liable_account: this.form.is_liable_account, settlement_mer_type: this.form.settlement_mer_type, document_type: this.form.document_type}
+                query: {id: res.id, shop_id: res.shop_id, agent_id: res.agent_id, salesman_id: res.salesman_id, account_type: this.form.account_type, is_liable_account: this.form.is_liable_account, settlement_mer_type: this.form.settlement_mer_type, document_type: this.form.document_type}
               }); 
             }
           })

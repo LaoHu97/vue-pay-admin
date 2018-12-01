@@ -138,7 +138,7 @@
 
 <script>
 import * as util from '@/util/util.js'
-import * as data from '@/util/mockData.js'
+import * as data from '@/util/async-validator.js'
 import {
   addAgentMerone,
   selectBank,
@@ -397,7 +397,7 @@ export default {
             if (res.status === 200) {
               this.$router.push({
                 path: '/deal/shop/table9',
-                query: {id: res.id, shop_id: res.shop_id}
+                query: {id: res.id, shop_id: res.shop_id, agent_id: res.agent_id}
               });
             }
           })

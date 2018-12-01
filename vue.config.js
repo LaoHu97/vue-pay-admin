@@ -8,7 +8,6 @@ module.exports = {
       }
     }
   },
-
   baseUrl: '',
   outputDir: undefined,
   runtimeCompiler: true,
