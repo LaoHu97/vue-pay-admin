@@ -109,5 +109,19 @@ export default [{
       name: '待处理门店数据'
     },
     component: () => import('@/views/view/table4/order02.vue')
+  }, {
+    path: 'order3',
+    name: '支付列表',
+    meat: {
+      name: '支付列表'
+    },
+    component: () => import('@/views/view/table4/order03.vue')
+  }, {
+    path: 'order4',
+    name: '异常订单',
+    meat: {
+      name: '异常订单'
+    },
+    component: () => import('@/views/view/table4/order04.vue')
   }]
 }]

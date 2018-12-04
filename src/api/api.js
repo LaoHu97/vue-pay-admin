@@ -124,3 +124,13 @@ export const storePayConfig = params => { return instance.post(`${preUrlPath}/ad
 export const updateAdminEmp = params => { return instance.post(`${preUrlPath}/admin/wp/admin/updateAdminEmp`, params).then(res => res.data); };
 
 export const queryStoreDetail = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryStoreDetail`, params).then(res => res.data); };
+//查询异常订单列表
+export const queryExceptionOrderList = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryExceptionOrderList`, params).then(res => res.data); };
+//异常订单同步
+export const synExceptionOrderStatus = params => { return instance.post(`${preUrlPath}/admin/wp/admin/synExceptionOrderStatus`, params).then(res => res.data); };
+//查询订单详情
+export const queryOrderDetail = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryOrderDetail`, params).then(res => res.data); };
+//更新订单状态
+export const updateExceptionOrder = params => { return instance.post(`${preUrlPath}/admin/wp/admin/updateExceptionOrder`, params).then(res => res.data); };
+//查询订单列表
+export const queryOrderList = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryOrderList`, params).then(res => res.data); };
