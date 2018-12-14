@@ -179,19 +179,8 @@ export default {
         startTime: "",
         endTime: "",
         dateTime: [
-          new Date(
-            new Date().getFullYear(),
-            new Date().getMonth(),
-            new Date().getDate()
-          ).getTime(),
-          new Date(
-            new Date().getFullYear(),
-            new Date().getMonth(),
-            new Date().getDate(),
-            23,
-            59,
-            59
-          ).getTime()
+          new Date(new Date().getFullYear(), new Date().getMonth(),new Date().getDate()-1).getTime(),
+          new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()-1,23,59,59).getTime()
         ],
         status: "0"
       },
