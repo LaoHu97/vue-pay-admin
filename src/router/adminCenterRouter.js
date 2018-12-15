@@ -124,4 +124,20 @@ export default [{
     },
     component: () => import('@/views/view/table4/order04.vue')
   }]
+}, {
+  path: 'shop',
+  name: '账单管理',
+  meat: {
+    name: '账单管理',
+    icon: 'icon-tuanduicankaoxian-'
+  },
+  component: index,
+  children: [{
+    path: 'order1',
+    name: '对账单下载',
+    meat: {
+      name: '对账单下载'
+    },
+    component: () => import('@/views/view/table4/order01.vue')
+  }]
 }]
