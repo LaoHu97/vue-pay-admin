@@ -37,7 +37,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="订单状态" prop="status">
+            <el-form-item label="交易状态" prop="status">
               <el-select v-model="filters.status" placeholder="请选择">
                 <el-option
                   v-for="item in statusOptions"
@@ -49,9 +49,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
+            <el-form-item label="交易状态" prop="goodsprice">
+              <el-input v-model="filters.goodsprice" placeholder="请输入交易状态"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="2">
             <el-form-item>
               <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
-              <el-button @click="resetForm('filters')" round>重置</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -59,12 +63,12 @@
     </el-form>
     <!--列表-->
     <div v-loading="listLoading">
-      <el-table :data="users" border="" stripe highlight-current-row>
+      <el-table :data="users" border stripe highlight-current-row>
         <el-table-column prop="order_id" label="订单号"/>
-        <el-table-column prop="mname" label="商户名称"/>
-        <el-table-column prop="store_name" label="门店名称"/>
-        <el-table-column :formatter="formatCreate_time" label="支付时间"/>
-        <el-table-column prop="goods_price" label="支付金额"/>
+        <el-table-column prop="mname" label="第三方订单号"/>
+        <el-table-column prop="store_name" label="交易金额"/>
+        <el-table-column :formatter="formatCreate_time" label="付款时间"/>
+        <el-table-column prop="goods_price" label="交易状态"/>
         <el-table-column label="操作" align="center" width="280">
           <template slot-scope="scope">
             <el-button type="success" size="mini" @click="fillOrder(scope.$index, scope.row)">补录订单</el-button>
@@ -108,7 +112,7 @@
           <span>{{detailsForm.transaction_id}}</span>
         </el-form-item>
         <el-form-item label="订单来源：">
-          <span>{{detailsForm.order_source === 'NEWLAND' ? '新大陆' : detailsForm.order_source === 'FUIOU' ? '富有' : detailsForm.order_source === 'NEWLAND_Bill' ? '新大陆对账单'  : '未知'}}</span>
+          <span>{{detailsForm.order_source === 'NEWLAND' ? '新大陆' : detailsForm.order_source === 'FUIOU' ? '富有' : detailsForm.order_source === 'NEWLAND_Bill' ? '新大陆对账单' : '未知'}}</span>
         </el-form-item>
         <el-form-item label="订单类型：">
           <span>{{detailsForm.order_type === '0' ? '支付' : detailsForm.order_type === '1' ? '退款' : '未知'}}</span>
@@ -153,7 +157,7 @@
         @current-change="handleCurrentChange"
         :page-size="20"
         :total="total"
-        background=""
+        background
         style="text-align:center;background:#fff;padding:15px;"
       />
     </el-row>
@@ -163,7 +167,7 @@
 <script>
 import * as util from "../../../util/util.js";
 import {
-  queryReplacementOrder,
+  queryExceptionOrderList,
   replaceOrderInsertOrder,
   updateReplaceOrder
 } from "@/api/api";
@@ -178,20 +182,18 @@ export default {
       filters: {
         startTime: "",
         endTime: "",
-        dateTime: [
-          new Date(new Date().getFullYear(), new Date().getMonth(),new Date().getDate()-1).getTime(),
-          new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()-1,23,59,59).getTime()
-        ],
-        status: "0"
+        dateTime: [new Date().getTime(), new Date().getTime()],
+        status: "0",
+        goodsprice: ""
       },
       statusOptions: [
         {
           value: "0",
-          label: "未处理"
+          label: "支付失败"
         },
         {
           value: "1",
-          label: "已处理"
+          label: "待支付"
         }
       ],
       orderDialogVisible: false,
@@ -208,22 +210,25 @@ export default {
   },
   methods: {
     formatCreate_time(row, column) {
-      return util.formatDate.format(new Date(row.pay_time), "yyyy/MM/dd hh:mm:ss");
+      return util.formatDate.format(
+        new Date(row.pay_time),
+        "yyyy/MM/dd hh:mm:ss"
+      );
     },
     formatPay_way(row, column) {
       return util.formatPayment(row.pay_way);
     },
     formatPayment(data) {
-      return util.formatPayment(data)
+      return util.formatPayment(data);
     },
     formatOderType(data) {
-      return data === 'INSERT' ? '添加' : data === 'UPDATE' ? '更新' : '未知'
+      return data === "INSERT" ? "添加" : data === "UPDATE" ? "更新" : "未知";
     },
     detailsOrder(index, row) {
-      this.detailsDialogVisible = true
+      this.detailsDialogVisible = true;
       this.$nextTick(() => {
-        this.detailsForm = util.deepcopy(row)
-      })
+        this.detailsForm = util.deepcopy(row);
+      });
     },
     submitOrder() {
       let para = util.deepcopy(this.editOrderForm);
@@ -306,7 +311,7 @@ export default {
       para.pageNum = this.page.toString();
       para.startTime = para.dateTime ? para.dateTime[0].toString() : "";
       para.endTime = para.dateTime ? para.dateTime[1].toString() : "";
-      queryReplacementOrder(para).then(res => {
+      queryExceptionOrderList(para).then(res => {
         this.users = res.data.orderList;
         this.total = res.data.totalCount;
       });
