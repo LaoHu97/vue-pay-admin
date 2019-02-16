@@ -44,6 +44,7 @@
     <!--列表-->
     <div v-loading="listLoading">
       <el-table :data="users" border="" stripe highlight-current-row>
+        <el-table-column prop="agentName" align="center" label="所属代理"/>
         <el-table-column prop="mname" align="center" label="商户名称"/>
         <el-table-column prop="maccount" align="center" label="商户账号"/>
         <el-table-column align="center" label="登陆状态">
@@ -73,7 +74,7 @@
     <!--工具条-->
     <el-row>
       <el-pagination
-        layout="prev, pager, next"
+        layout="total, prev, pager, next"
         :current-page="page"
         @current-change="handleCurrentChange"
         :page-size="20"

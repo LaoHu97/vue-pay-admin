@@ -3,9 +3,12 @@
   color: #fff;
   margin-right: 5px;
 }
-.el-menu-vertical:not(.el-menu--collapse) {
+.el-menu-vertical {
   width: 200px;
   min-height: 800px;
+}
+.el-menu--collapse{
+  width: auto;
 }
 .el-container {
   height: 100%;

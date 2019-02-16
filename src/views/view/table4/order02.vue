@@ -31,6 +31,7 @@
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 value-format="timestamp"
+                :picker-options="pickerOptions"
                 :default-time="['00:00:00', '23:59:59']"
                 :clearable = false
               ></el-date-picker>
@@ -114,7 +115,19 @@ export default {
           value: "1",
           label: "已处理"
         }
-      ]
+      ],
+      pickerOptions: {
+        disabledDate(time) {
+          return (
+            time.getTime() >
+            new Date(
+              new Date(new Date().toLocaleDateString()).getTime() +
+                24 * 60 * 60 * 1000 -
+                1
+            )
+          );
+        }
+      }
     };
   },
   methods: {

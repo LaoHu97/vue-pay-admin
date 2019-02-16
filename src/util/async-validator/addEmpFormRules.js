@@ -14,5 +14,10 @@ export const addEmpFormRules = {
   phone: [
     { required: true, message: "请输入联系电话", trigger: "blur" },
     { validator: number_phone, trigger: 'blur' }
-  ]
+  ],
+	linkman: [{
+	  required: true,
+	  message: "请输入联系人",
+	  trigger: "blur"
+	}]
 }

@@ -31,6 +31,7 @@
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 value-format="timestamp"
+                :picker-options="pickerOptions"
                 :default-time="['00:00:00', '23:59:59']"
                 :clearable="false"
               ></el-date-picker>
@@ -49,8 +50,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="交易状态" prop="goodsprice">
-              <el-input v-model="filters.goodsprice" placeholder="请输入交易状态"></el-input>
+            <el-form-item label="交易金额" prop="goodsPrice">
+              <el-input v-model="filters.goodsPrice" placeholder="请输入交易金额"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="2">
@@ -64,31 +65,32 @@
     <!--列表-->
     <div v-loading="listLoading">
       <el-table :data="users" border stripe highlight-current-row>
-        <el-table-column prop="order_id" label="订单号"/>
-        <el-table-column prop="mname" label="第三方订单号"/>
-        <el-table-column prop="store_name" label="交易金额"/>
+        <el-table-column prop="orderId" label="订单号"/>
+        <el-table-column prop="mname" label="商户名称"/>
+        <el-table-column prop="goodsPrice" label="交易金额"/>
         <el-table-column :formatter="formatCreate_time" label="付款时间"/>
-        <el-table-column prop="goods_price" label="交易状态"/>
+        <el-table-column :formatter="formatCreate_statue" label="交易状态"/>
         <el-table-column label="操作" align="center" width="280">
           <template slot-scope="scope">
-            <el-button type="success" size="mini" @click="fillOrder(scope.$index, scope.row)">补录订单</el-button>
-            <el-button type="warning" size="mini" @click="editOrder(scope.$index, scope.row)">修 改</el-button>
-            <el-button type="info" size="mini" @click="detailsOrder(scope.$index, scope.row)">详 情</el-button>
+            <el-button type="success" size="mini" @click="fillOrder(scope.$index, scope.row)">异常订单同步</el-button>
+            <el-button type="warning" size="mini" @click="editOrder(scope.$index, scope.row)">更新订单</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <el-dialog title="修改待补订单" :visible.sync="orderDialogVisible" width="30%">
-      <el-form :model="editOrderForm" ref="editOrderForm" label-width="100px">
-        <el-form-item label="订单状态" prop="status">
-          <el-radio v-model="editOrderForm.status" label="0">处理</el-radio>
-          <el-radio v-model="editOrderForm.status" label="1">不处理</el-radio>
+    <el-dialog title="更新订单" :visible.sync="orderDialogVisible" width="30%">
+      <el-form :model="editOrderForm" ref="editOrderForm" label-width="100px" label-position="left">
+        <el-form-item label="订单号：">
+          {{editOrderForm.orderId}}
         </el-form-item>
-        <el-form-item label="订单费率(‰)" prop="rate">
-          <el-input-number v-model="editOrderForm.rate" :min="1" :max="1000" :precision="1"></el-input-number>
+        <el-form-item label="支付金额：">
+          {{editOrderForm.goodsPrice}}
         </el-form-item>
-        <el-form-item label="支付方式" prop="payWay">
-          <el-select v-model="editOrderForm.payWay" placeholder="请选择">
+        <el-form-item label="支付时间">
+          {{formatCreate_time(editOrderForm)}}
+        </el-form-item>
+        <el-form-item label="支付状态" prop="status">
+          <el-select v-model="editOrderForm.status" placeholder="请选择">
             <el-option
               v-for="item in optionsPayment"
               :key="item.value"
@@ -101,52 +103,6 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="orderDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="submitOrder">确 定</el-button>
-      </span>
-    </el-dialog>
-    <el-dialog title="订单详情" :visible.sync="detailsDialogVisible" width="35%">
-      <el-form :model="detailsForm" label-width="120px" label-position="left">
-        <el-form-item label="订单号：">
-          <span>{{detailsForm.order_id}}</span>
-        </el-form-item>
-        <el-form-item label="通道订单号：">
-          <span>{{detailsForm.transaction_id}}</span>
-        </el-form-item>
-        <el-form-item label="订单来源：">
-          <span>{{detailsForm.order_source === 'NEWLAND' ? '新大陆' : detailsForm.order_source === 'FUIOU' ? '富有' : detailsForm.order_source === 'NEWLAND_Bill' ? '新大陆对账单' : '未知'}}</span>
-        </el-form-item>
-        <el-form-item label="订单类型：">
-          <span>{{detailsForm.order_type === '0' ? '支付' : detailsForm.order_type === '1' ? '退款' : '未知'}}</span>
-        </el-form-item>
-        <el-form-item label="商户名称：">
-          <span>{{detailsForm.mname}}</span>
-        </el-form-item>
-        <el-form-item label="门店名称：">
-          <span>{{detailsForm.store_name}}</span>
-        </el-form-item>
-        <el-form-item label="支付方式：">
-          <span>{{formatPayment(detailsForm.pay_way)}}</span>
-        </el-form-item>
-        <el-form-item label="支付金额：">
-          <span>￥ {{detailsForm.goods_price}}</span>
-        </el-form-item>
-        <el-form-item label="手续费：">
-          <span>￥ {{detailsForm.reserve3}}</span>
-        </el-form-item>
-        <el-form-item label="费率(千分比)：">
-          <span>{{detailsForm.rate}}</span>
-        </el-form-item>
-        <el-form-item label="补录类型：">
-          <span>{{formatOderType(detailsForm.reserve2)}}</span>
-        </el-form-item>
-        <el-form-item label="补录状态：">
-          <span>{{detailsForm.replacement_status === '0' ? '未处理' : detailsForm.replacement_status === '1' ? '已处理' : '未知'}}</span>
-        </el-form-item>
-        <el-form-item label="支付时间：">
-          <span>{{formatCreate_time(detailsForm)}}</span>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="detailsDialogVisible = false">关 闭</el-button>
       </span>
     </el-dialog>
     <!--工具条-->
@@ -169,7 +125,9 @@ import * as util from "../../../util/util.js";
 import {
   queryExceptionOrderList,
   replaceOrderInsertOrder,
-  updateReplaceOrder
+  updateReplaceOrder,
+  synExceptionOrderStatus,
+  updateExceptionOrder,
 } from "@/api/api";
 import { optionsPaymentAll } from "@/util/mockData.js";
 import getUsersList from "@/mixins/Users";
@@ -182,59 +140,75 @@ export default {
       filters: {
         startTime: "",
         endTime: "",
-        dateTime: [new Date().getTime(), new Date().getTime()],
-        status: "0",
-        goodsprice: ""
+        dateTime: [          
+          new Date(new Date().getFullYear(), new Date().getMonth(),new Date().getDate()).getTime(),
+          new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate(),23,59,59).getTime()
+        ],
+        status: "2",
+        goodsPrice: ""
       },
       statusOptions: [
         {
-          value: "0",
+          value: "2",
           label: "支付失败"
         },
         {
-          value: "1",
+          value: "0",
           label: "待支付"
+        },
+        {
+          value: "5",
+          label: "未知"
         }
       ],
       orderDialogVisible: false,
       editOrderForm: {
-        id: "",
-        status: "0",
-        rate: "",
-        payWay: "WX"
+        orderId: '',
+        goodsPrice: '',
+        createTime: '',
+        status: ''
       },
-      optionsPayment: optionsPaymentAll,
-      detailsDialogVisible: false,
-      detailsForm: {}
+      optionsPayment:  [
+        {
+          value: "2",
+          label: "支付失败"
+        },
+        {
+          value: "0",
+          label: "待支付"
+        },
+        {
+          value: "1",
+          label: "支付成功"
+        }
+      ],
+      pickerOptions: {
+        disabledDate(time) {
+          return (
+            time.getTime() >
+            new Date(
+              new Date(new Date().toLocaleDateString()).getTime() +
+                24 * 60 * 60 * 1000 -
+                1
+            )
+          );
+        }
+      }
     };
   },
   methods: {
     formatCreate_time(row, column) {
       return util.formatDate.format(
-        new Date(row.pay_time),
+        new Date(row.createTime),
         "yyyy/MM/dd hh:mm:ss"
       );
     },
-    formatPay_way(row, column) {
-      return util.formatPayment(row.pay_way);
-    },
-    formatPayment(data) {
-      return util.formatPayment(data);
-    },
-    formatOderType(data) {
-      return data === "INSERT" ? "添加" : data === "UPDATE" ? "更新" : "未知";
-    },
-    detailsOrder(index, row) {
-      this.detailsDialogVisible = true;
-      this.$nextTick(() => {
-        this.detailsForm = util.deepcopy(row);
-      });
+    formatCreate_statue(row, column) {
+      return row.status === '0' ? '待支付' : row.status === '2' ? '支付失败' : '未知'
     },
     submitOrder() {
       let para = util.deepcopy(this.editOrderForm);
-      para.id = para.id.toString();
-      para.rate = para.rate.toString();
-      updateReplaceOrder(para).then(res => {
+      updateExceptionOrder(para).then(res => {
         this.getUsers();
         this.orderDialogVisible = false;
         this.$message({
@@ -246,19 +220,21 @@ export default {
     editOrder(index, row) {
       this.orderDialogVisible = true;
       this.$nextTick(() => {
-        this.editOrderForm.id = row.id;
-        this.editOrderForm.status = row.replacement_status;
-        this.editOrderForm.payWay = row.pay_way;
+        let form = util.deepcopy(row)
+        this.editOrderForm.orderId = form.orderId
+        this.editOrderForm.goodsPrice = form.goodsPrice
+        this.editOrderForm.createTime = form.createTime
+        this.editOrderForm.status = '1'
       });
     },
     fillOrder(index, row) {
-      this.$confirm("是否补录此订单？", "提示", {
+      this.$confirm("是否同步此订单？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          replaceOrderInsertOrder({ id: row.id.toString() }).then(res => {
+          synExceptionOrderStatus({ orderId: row.orderId.toString() }).then(res => {
             this.$message({
               type: "success",
               message: res.subMsg
@@ -269,57 +245,22 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消删除"
-          });
-        });
-    },
-    editStatus(index, row) {
-      this.$confirm("此操作将修改商户状态, 确定修改?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        closeOnClickModal: false,
-        type: "warning"
-      })
-        .then(() => {
-          let para = {
-            mid: row.mid.toString(),
-            status: row.status.toString()
-          };
-          updateMerStatus(para).then(res => {
-            let { status, message } = res;
-            if (status == 200) {
-              this.$message({
-                type: "success",
-                message: message
-              });
-            } else {
-              this.getUsers();
-              this.$message.error(message);
-            }
-          });
-        })
-        .catch(() => {
-          this.getUsers();
-          this.$message({
-            type: "info",
-            message: "取消修改"
+            message: "已取消同步此订单"
           });
         });
     },
     getList() {
+      this.listLoading = true
       let para = this.filters;
       para.pageNum = this.page.toString();
       para.startTime = para.dateTime ? para.dateTime[0].toString() : "";
       para.endTime = para.dateTime ? para.dateTime[1].toString() : "";
       queryExceptionOrderList(para).then(res => {
+        this.listLoading = false
         this.users = res.data.orderList;
-        this.total = res.data.totalCount;
+        this.total = res.data.total;
       });
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
     }
-  },
-  mounted() {}
+  }
 };
 </script>

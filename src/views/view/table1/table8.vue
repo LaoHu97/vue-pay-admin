@@ -10,7 +10,7 @@
   border-radius: 8px;
 }
 .form_contron{
-  width: 480px;
+  width: 600px;
   margin: 0 auto;
   padding: 20px 0;
 }
@@ -96,6 +96,32 @@
         </el-row>
         <el-row>
           <el-col>
+            <el-form-item label="联系人身份证号：" prop="person_id_no">
+              <el-input v-model.trim="form.person_id_no" placeholder="请输入联系人身份证号"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="16">
+            <el-form-item label="联系人证件有效期" prop="person_id_expire">
+                <el-date-picker
+                  v-model="form.person_id_expire"
+                  :picker-options="pickerOptions"
+                  :disabled="dateTimeDisabled"
+                  type="date"
+                  value-format="timestamp"
+                  placeholder="选择日期">
+                </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label-width="0">
+              <el-checkbox @change="person_id_expire_long_change" true-label="Y" false-label="N" v-model="form.person_id_expire_long">长期有效</el-checkbox>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
             <el-form-item label="联系人电话：" prop="merchant_phone">
               <el-input v-model.trim="form.merchant_phone" placeholder="请输入电话"></el-input>
             </el-form-item>
@@ -124,6 +150,20 @@
           <el-col>
             <el-form-item label="客服电话：" prop="merchant_service_phone">
               <el-input v-model.trim="form.merchant_service_phone"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="商户类型：" prop="merchant_type">
+              <el-select v-model="form.merchant_type" placeholder="请选择">
+                <el-option
+                  v-for="item in merchant_typeoptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -161,6 +201,15 @@ export default {
         callback();
       }
     };
+    var merchant_id_no = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入身份证号码'));
+      } else if (!/^(\d{6})(\d{4})(\d{2})(\d{2})(\d{3})([0-9]|X)$/.test(value)) {
+        callback(new Error('请输入正确的身份证号码'));
+      } else {
+        callback();
+      }
+    };
     return {
       form: {
         merchant_name: '',//商户名称
@@ -169,12 +218,17 @@ export default {
         merchant_city: [],
         merchant_address: '',//商户地址
         merchant_person: '',//商户联系人
+        person_id_no: "",
         merchant_phone: '',//联系人电话
         merchant_email: '',//联系人邮箱
         merchant_service_phone:'',//客服电话
-        business: []//行业类目
+        business: [],//行业类目
+        merchant_type: '',
+        person_id_expire: '',
+        person_id_expire_long: 'N'
       },
       addLoading: false,
+      dateTimeDisabled: false,
       optionsCity: [],
       cityProps: {
         value: 'sid',
@@ -186,6 +240,18 @@ export default {
         value: 'id',
         label: 'name',
         children: 'cities'
+      },
+      merchant_typeoptions: [{
+        value: '1',
+        label: '一级商户'
+      }, {
+        value: '2',
+        label: '二级商户'
+      }],
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < Date.now() + 3600 * 1000 * 24 * 90
+        }
       },
       rules: {
         merchant_name: [{
@@ -239,6 +305,19 @@ export default {
         }, {
           validator: data.regFont,
           trigger: 'blur'
+        }],
+        person_id_no: [{
+          required: true,
+          message: '请输入正确的证件号码',
+          trigger: 'blur'
+        },{
+          validator: merchant_id_no,
+          trigger: 'blur'
+        }],
+        person_id_expire: [{
+          required: true,
+          message: '请选择证件到期日期',
+          trigger: 'change'
         }],
         merchant_phone: [
           {
@@ -310,10 +389,9 @@ export default {
         page: 1
       }
       agentShopPage(para).then(res => {
-        console.log(res.data.agentMap.length);
-        
         if (res.status === 200 && res.data.isEmpty === '1') {
           this.form = res.data.agentMap
+          this.rules.person_id_expire[0].required = res.data.agentMap.person_id_expire_long === 'Y' ? false : true
           if (res.data.timely_sign && res.data.timely_sign === '1') {
             this.formDisabled = true
           }else{
@@ -329,6 +407,16 @@ export default {
           }
         }
       })
+    },
+    person_id_expire_long_change(change){
+      if (change === 'Y') {
+        this.rules.person_id_expire[0].required = false
+        this.dateTimeDisabled = true
+        this.form.person_id_expire = ''
+      }else{
+        this.rules.person_id_expire[0].required = true
+        this.dateTimeDisabled = false
+      }
     },
     cityItemChange (val) {
       queryCity({id: val[0]}).then(res => {

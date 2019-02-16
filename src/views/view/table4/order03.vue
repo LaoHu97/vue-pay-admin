@@ -112,6 +112,7 @@
                 clearable
                 class="fixed_search_input"
                 placeholder="请选择银行卡类型"
+                :disabled="filters.payWay!=='BANK'"
               >
                 <el-option
                   v-for="item in optionsCardType"
@@ -149,18 +150,18 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="平台订单号">
-              <el-input v-model="filters.orderId" class="fixed_search_input" placeholder="请输入平台订单号"></el-input>
+            <el-form-item label="订单号">
+              <el-input v-model="filters.orderId" class="fixed_search_input" placeholder="请输入订单号"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="6">
-            <el-form-item label="通道订单号">
+            <el-form-item label="渠道号">
               <el-input
                 v-model="filters.transactionId"
                 class="fixed_search_input"
-                placeholder="请输入通道订单号"
+                placeholder="请输入渠道号"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -173,6 +174,7 @@
                 end-placeholder="结束日期"
                 value-format="timestamp"
                 :picker-options="pickerOptions"
+                :clearable="false"
                 :default-time="['00:00:00', '23:59:59']"
               ></el-date-picker>
             </el-form-item>
@@ -188,8 +190,8 @@
     <!--列表-->
     <div v-loading="listLoading">
       <el-table :data="users" border style="width: 100%;">
-        <el-table-column prop="orderId" label="平台订单号" min-width="120"></el-table-column>
-        <el-table-column prop="transactionId" label="通道订单号" min-width="120"></el-table-column>
+        <el-table-column prop="orderId" label="订单号" min-width="120"></el-table-column>
+        <el-table-column prop="transactionId" label="渠道号" min-width="120"></el-table-column>
         <el-table-column prop="username" label="商户名称" min-width="120"></el-table-column>
         <el-table-column
           label="付款时间"
@@ -221,10 +223,10 @@
     <!--详情界面-->
     <el-dialog title="订单详情" :visible.sync="detFormVisible" width="30%">
       <el-form :model="detForm" label-width="120px" label-position="left">
-        <el-form-item label="平台订单号">
+        <el-form-item label="订单号">
           <span>{{detForm.orderId}}</span>
         </el-form-item>
-        <el-form-item label="通道订单号：">
+        <el-form-item label="渠道号：">
           <span>{{detForm.transactionId}}</span>
         </el-form-item>
         <el-form-item label="付款金额：">
@@ -278,7 +280,10 @@ export default {
   data() {
     return {
       filters: {
-        queryDateTime: [new Date().getTime(), new Date().getTime()],
+        queryDateTime: [          
+          new Date(new Date().getFullYear(), new Date().getMonth(),new Date().getDate()).getTime(),
+          new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate(),23,59,59).getTime()
+        ],
         mid: "",
         sid: "",
         eid: "",
@@ -295,8 +300,8 @@ export default {
           label: "贷记卡"
         },
         {
-          value: "BEST",
-          label: "翼支付"
+          value: "DEBIT",
+          label: "借记卡"
         }
       ],
       detFormVisible: false,
@@ -424,12 +429,13 @@ export default {
     //获取用户列表
     getList() {
       this.listLoading = true;
-      let para = util.deepcopy(this.filters);
-      para.pageNum = this.page;
-      para.startTime = para.queryDateTime
-        ? para.queryDateTime[0].toString()
-        : "";
-      para.endTime = para.queryDateTime ? para.queryDateTime[1].toString() : "";
+      let para = util.deepcopy(this.filters)
+      para.pageNum = this.page
+      para.startTime = para.queryDateTime ? para.queryDateTime[0].toString() : "";
+      para.endTime = para.queryDateTime ? para.queryDateTime[1].toString() : ""
+      para.mid = para.mid.toString()
+      para.sid = para.sid.toString()
+      para.eid = para.eid.toString()
       queryOrderList(para).then(res => {
         this.listLoading = false;
         this.total = res.data.totalCount;

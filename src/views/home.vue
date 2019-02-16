@@ -22,7 +22,6 @@
 }
 .el_main {
   padding: 0;
-  height: 100%;
 }
 </style>
 
@@ -30,14 +29,14 @@
   <el-container>
     <el-header>
       <el-row type="flex" justify="space-between" class="header_top">
-        <el-col :span="8" class="header_top_xian">
+        <el-col :span="22" class="header_top_xian">
           <img src="@/assets/images/webwxgetmsgimg.png" alt="logo" height="25px;">
           <el-button type="text" size="mini" class="header_top_collaspe" @click="uploadCollapse">
             <i class="iconfont icon-ego-menu-copy" v-if="isCollapse"/>
             <i class="iconfont icon-ego-menu" v-else/>
           </el-button>
         </el-col>
-        <el-col :span="10">
+        <!-- <el-col :span="10">
           <el-menu :default-active="activeIndex" mode="horizontal" router>
             <template v-for="(route, index) in $router.options.routes">
               <el-menu-item
@@ -50,8 +49,8 @@
               </el-menu-item>
             </template>
           </el-menu>
-        </el-col>
-        <el-col :span="6" class="header_text header_top_xian">
+        </el-col> -->
+        <el-col :span="2" class="header_text header_top_xian">
           <div class="header_top_btn">
             <!-- <el-button
               type="warning"
@@ -93,9 +92,20 @@ export default {
       this.$store.dispatch("upload_collapse");
     },
     loginOut() {
-      loginOut().then(res => {
-        this.$router.replace({ path: "/" });
-      });
+        this.$confirm('确定退出?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          loginOut().then(res => {
+            this.$router.replace({ path: "/" });
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消退出'
+          });          
+        });
     }
   }
 };

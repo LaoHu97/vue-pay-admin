@@ -31,6 +31,7 @@
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 value-format="timestamp"
+                :picker-options="pickerOptions"
                 :default-time="['00:00:00', '23:59:59']"
                 :clearable="false"
               ></el-date-picker>
@@ -65,9 +66,10 @@
         <el-table-column prop="store_name" label="门店名称"/>
         <el-table-column :formatter="formatCreate_time" label="支付时间"/>
         <el-table-column prop="goods_price" label="支付金额"/>
+        <el-table-column :formatter="formatCreate_orderSource" label="原因"/>
         <el-table-column label="操作" align="center" width="280">
           <template slot-scope="scope">
-            <el-button type="success" size="mini" @click="fillOrder(scope.$index, scope.row)">补录订单</el-button>
+            <el-button type="success" size="mini" @click="fillOrder(scope.$index, scope.row)">订单维护</el-button>
             <el-button type="warning" size="mini" @click="editOrder(scope.$index, scope.row)">修 改</el-button>
             <el-button type="info" size="mini" @click="detailsOrder(scope.$index, scope.row)">详 情</el-button>
           </template>
@@ -80,7 +82,7 @@
           <el-radio v-model="editOrderForm.status" label="0">处理</el-radio>
           <el-radio v-model="editOrderForm.status" label="1">不处理</el-radio>
         </el-form-item>
-        <el-form-item label="订单费率(‰)" prop="rate">
+        <!-- <el-form-item label="订单费率(‰)" prop="rate">
           <el-input-number v-model="editOrderForm.rate" :min="1" :max="1000" :precision="1"></el-input-number>
         </el-form-item>
         <el-form-item label="支付方式" prop="payWay">
@@ -92,7 +94,7 @@
               :value="item.value"
             ></el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="orderDialogVisible = false">取 消</el-button>
@@ -108,10 +110,13 @@
           <span>{{detailsForm.transaction_id}}</span>
         </el-form-item>
         <el-form-item label="订单来源：">
-          <span>{{detailsForm.order_source === 'NEWLAND' ? '新大陆' : detailsForm.order_source === 'FUIOU' ? '富有' : detailsForm.order_source === 'NEWLAND_Bill' ? '新大陆对账单'  : '未知'}}</span>
+          <span>{{detailsForm.channel === 'NEWLAND' ? '新大陆' : detailsForm.channel === 'FUIOU' ? '富有' : detailsForm.channel === 'NEWLAND_Bill' ? '新大陆对账单' : detailsForm.channel === 'BSB' ? '包商有氧金融' : '未知'}}</span>
         </el-form-item>
         <el-form-item label="订单类型：">
           <span>{{detailsForm.order_type === '0' ? '支付' : detailsForm.order_type === '1' ? '退款' : '未知'}}</span>
+        </el-form-item>
+        <el-form-item label="原因：">
+          <span>{{formatCreate_orderSource(detailsForm)}}</span>
         </el-form-item>
         <el-form-item label="商户名称：">
           <span>{{detailsForm.mname}}</span>
@@ -198,15 +203,30 @@ export default {
       editOrderForm: {
         id: "",
         status: "0",
-        rate: "",
-        payWay: "WX"
+        // rate: "",
+        // payWay: "WX"
       },
       optionsPayment: optionsPaymentAll,
       detailsDialogVisible: false,
-      detailsForm: {}
+      detailsForm: {},
+      pickerOptions: {
+        disabledDate(time) {
+          return (
+            time.getTime() >
+            new Date(
+              new Date(new Date().toLocaleDateString()).getTime() +
+                24 * 60 * 60 * 1000 -
+                1
+            )
+          );
+        }
+      }
     };
   },
   methods: {
+    formatCreate_orderSource(row, column) {
+      return row.order_source === '10' ? '漏单数据' : row.order_source === '20' ? '订单状态异常' : row.order_source === '30' ? '手续费异常' : '其他'
+    },
     formatCreate_time(row, column) {
       return util.formatDate.format(new Date(row.pay_time), "yyyy/MM/dd hh:mm:ss");
     },
@@ -228,7 +248,7 @@ export default {
     submitOrder() {
       let para = util.deepcopy(this.editOrderForm);
       para.id = para.id.toString();
-      para.rate = para.rate.toString();
+      // para.rate = para.rate.toString();
       updateReplaceOrder(para).then(res => {
         this.getUsers();
         this.orderDialogVisible = false;
@@ -243,7 +263,7 @@ export default {
       this.$nextTick(() => {
         this.editOrderForm.id = row.id;
         this.editOrderForm.status = row.replacement_status;
-        this.editOrderForm.payWay = row.pay_way;
+        // this.editOrderForm.payWay = row.pay_way;
       });
     },
     fillOrder(index, row) {

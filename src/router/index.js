@@ -35,7 +35,7 @@ export default new Router({
       }]
     }, {
       path: '/deal',
-      redirect: '/deal/shop/table1',
+      redirect: '/deal/shop/page1',
       name: '管理中心',
       meat: {
         name: '管理中心'

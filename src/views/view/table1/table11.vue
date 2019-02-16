@@ -1,0 +1,156 @@
+
+<style scoped>
+.box_card{
+  margin-top: 25px;
+}
+.box-card-pay-icon {
+  margin: 0 5px;
+  width: 4.5em;
+  height: 4.5em;
+  vertical-align: -1.6em;
+  fill: currentColor;
+  overflow: hidden;
+}
+.box-card-pay-right{
+  display: inline-block;
+}
+.box-card-pay{
+  display: flex;
+  align-items: center;
+}
+</style>
+
+<template>
+  <section>
+    <el-card class="box_card">
+      <div slot="header">
+        <span>通道配置</span>
+      </div>
+      <div class="box-card-pay">
+        <svg class="box-card-pay-icon" aria-hidden="true">
+          <use xlink:href="#icon-caidan"/>
+        </svg>
+        <div class="box-card-pay-right">
+          <p>官方通道</p>
+          <el-button type="text" @click="clickArgument">参数配置</el-button>
+        </div>
+      </div>
+    </el-card>
+    <el-dialog title="参数配置" :visible.sync="dialogFormVisibleArgument" width="460px">
+      <el-form :model="formArgument" :rules="formArgumentRules" ref="formArgument" label-width="120px" label-position="left">
+        <el-form-item label="商户类型" prop="mtype">
+          <el-select v-model="formArgument.mtype" placeholder="请选择商户类型">
+            <el-option
+              v-for="item in optionsMtype"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="费率（‰）" prop="rate">
+          <el-input-number v-model="formArgument.rate" :controls="false" :precision="1" :step="0.1" :min="3" :max="50"></el-input-number>
+          <span style="font-size:12px;color:#f00;margin-left: 5px;">最大值：50，最小值：3</span>
+        </el-form-item>
+        <!-- <el-form-item label="封顶值（￥）">
+          <el-input-number v-model="formArgument.rate_cap" :controls="false" :precision="0" :step="1" :min="18" :max="500"></el-input-number>
+        </el-form-item>
+        <el-form-item label="通道商户号">
+          <el-input v-model="formArgument.thirdMid"></el-input>
+        </el-form-item>
+        <el-form-item label="通道秘钥">
+          <el-input v-model="formArgument.thirdMkey"></el-input>
+        </el-form-item> -->
+        <el-form-item label="公众号appid">
+          <el-input v-model="formArgument.sysAppid"></el-input>
+        </el-form-item>
+        <el-form-item label="公众号appSecret">
+          <el-input v-model="formArgument.appSecret"></el-input>
+        </el-form-item>
+        <el-form-item label="公众号encodingAESKey">
+          <el-input v-model="formArgument.encodingAESKey"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleArgument = false">取 消</el-button>
+        <el-button type="primary" @click="submiltArgument('formArgument')">确 定</el-button>
+      </div>
+    </el-dialog>
+  </section>
+</template>
+
+<script>
+import * as util from "@/util/util.js";
+import {
+  queryMerPayConfig,
+  updateMerPayConfig
+} from "@/api/api";
+import { optionsPaymentAll } from "@/util/mockData.js";
+
+export default {
+  data() {
+    return {
+      dialogFormVisibleArgument: false,
+      optionsMtype: [{
+        value: '21',
+        label: '包商微信'
+      }],
+      formArgumentRules: {
+        mtype: [
+          { required: true, message: '请选择商户类型', trigger: 'change' }
+        ],
+        rate: [
+          { required: true, message: '请输入商户费率', trigger: 'blur' }
+        ]
+      },
+      formArgument: {
+        mtype: '21',
+        rate: '',
+        // rate_cap: '',
+        // thirdMid: '',
+        // thirdMkey: '',
+        sysAppid: '',
+        appSecret: '',
+        encodingAESKey: ''
+      }
+    };
+  },
+  methods: {
+    clickArgument() {
+      this.dialogFormVisibleArgument = true
+      this.$nextTick(() => {
+        this.$refs.formArgument.resetFields()
+        queryMerPayConfig({mid: parseInt(this.$route.query.mid), payType: '010'}).then(res => {
+          if (res.data.queryMerPayConfig) {
+            this.formArgument.rate = res.data.queryMerPayConfig.rate
+            // this.formArgument.rate_cap = res.data.queryMerPayConfig.rate_cap
+            // this.formArgument.thirdMid = res.data.queryMerPayConfig.thirdMid
+            // this.formArgument.thirdMkey = res.data.queryMerPayConfig.thirdMkey
+            this.formArgument.sysAppid = res.data.sysAppid 
+          }
+        })
+      })
+    },
+    submiltArgument(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          let para = util.deepcopy(this.formArgument)
+          para.mid = parseInt(this.$route.query.mid)
+          para.pay_type = '010'
+          para.rate = para.rate.toString()
+          // para.rate_cap = para.rate_cap.toString()
+          updateMerPayConfig(para).then(res => {
+            this.dialogFormVisibleArgument = false
+            this.$message({
+              message: res.message,
+              type: 'success'
+            });
+          })
+        } else {
+          return
+        }
+      });
+    }
+  }
+};
+</script>

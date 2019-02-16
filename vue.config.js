@@ -2,7 +2,12 @@ module.exports = {
   devServer: {
     proxy: {
       '/admin': {
-        target: 'http://192.168.1.193:8080',
+        target: 'http://192.168.1.110:8080',
+        ws: true,
+        changeOrigin: true
+      },
+      '/download': {
+        target: 'http://test.weupay.com:8080',
         ws: true,
         changeOrigin: true
       }

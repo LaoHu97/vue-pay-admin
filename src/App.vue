@@ -24,6 +24,16 @@ body {
   height: 100%;
   margin: 0;
 }
+::-ms-clear,::-ms-reveal{
+  display: none;
+}
+.el-picker-panel__footer .el-button--text{
+  display: none
+}
+a {
+  text-decoration:none;
+  color: #409EFF;
+}
 .icon {
   width: 1.5em;
   height: 1.5em;

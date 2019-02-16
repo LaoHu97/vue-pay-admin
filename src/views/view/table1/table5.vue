@@ -37,6 +37,10 @@
   padding: 4px;
   border-radius: 4px;
 }
+.element_icon{
+  font-size: 20px;
+  padding: 10px;
+}
 </style>
 
 <template>
@@ -47,7 +51,7 @@
           <use xlink:href="#icon-xinxi"></use>
         </svg>
         <span>商户信息</span>
-        <el-button style="float: right; padding: 3px 0" type="text" @click="clickMerEdit" v-show="boxCardText.id">修改</el-button>
+        <el-button style="float: right; padding: 3px 0" type="text" @click="clickMerEdit" v-show="boxCardText.id">查看</el-button>
       </div>
       <div class="box-card-text">
         <el-row>
@@ -133,7 +137,7 @@
         </el-row>
       </div>
     </el-card>
-    <!-- <el-card class="box-card">
+    <el-card class="box-card">
       <div slot="header">
         <svg
           class="icon"
@@ -150,12 +154,15 @@
               aria-hidden="true">
               <use xlink:href="#icon-weixin"/>
             </svg>
-            <span>微信支付
-              <b :style="{ color: switchValue ? '#19C862' :'#F56C6C' }">（{{ switchValue ? '开启' : '关闭' }}）</b>
+            <span><router-link :to="{path: '/deal/shop/table11', query: { mid: $route.query.mid } }">微信支付</router-link>
+              <b :style="{ color: wx_open === 'Y' ? '#19C862' :'#F56C6C' }">（{{ wx_open === 'Y' ? '开启' : '关闭' }}）</b>
             </span>
             <el-switch
-              v-model="switchValue"
-              active-color="#19C862"/>
+              v-model="wx_open"
+              active-value="Y"
+              inactive-value="N"
+              active-color="#19C862"
+              @change="switchChange"/>
           </el-col>
           <el-col :span="8">
             <svg
@@ -163,63 +170,52 @@
               aria-hidden="true">
               <use xlink:href="#icon-big-Pay"/>
             </svg>
-            <span>支付宝支付
-              <b :style="{ color: switchValue ? '#19C862' :'#F56C6C' }">（{{ switchValue ? '开启' : '关闭' }}）</b>
+            <span><router-link :to="{path: '/deal/shop/table12', query: { mid: $route.query.mid } }">支付宝支付</router-link>
+              <b :style="{ color: ali_open === 'Y' ? '#19C862' :'#F56C6C' }">（{{ ali_open === 'Y' ? '开启' : '关闭' }}）</b>
             </span>
             <el-switch
-              v-model="switchValue"
-              active-color="#13ce66"/>
+              v-model="ali_open"
+              active-value="Y"
+              inactive-value="N"
+              active-color="#13ce66"
+              @change="switchChange"/>
           </el-col>
           <el-col :span="8">
             <svg
               class="box-card-pay-icon"
               aria-hidden="true">
-              <use xlink:href="#icon-weixin"/>
+              <use xlink:href="#icon-xianeguanli"/>
             </svg>
-            <span>微信支付（打开）</span>
-            <el-switch
-              v-model="switchValue"
-              active-color="#13ce66"/>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="8">
-            <svg
-              class="box-card-pay-icon"
-              aria-hidden="true">
-              <use xlink:href="#icon-weixin"/>
-            </svg>
-            <span>微信支付（打开）</span>
-            <el-switch
-              v-model="switchValue"
-              active-color="#13ce66"/>
-          </el-col>
-          <el-col :span="8">
-            <svg
-              class="box-card-pay-icon"
-              aria-hidden="true">
-              <use xlink:href="#icon-weixin"/>
-            </svg>
-            <span>微信支付（打开）</span>
-            <el-switch
-              v-model="switchValue"
-              active-color="#13ce66"/>
-          </el-col>
-          <el-col :span="8">
-            <svg
-              class="box-card-pay-icon"
-              aria-hidden="true">
-              <use xlink:href="#icon-weixin"/>
-            </svg>
-            <span>微信支付（打开）</span>
-            <el-switch
-              v-model="switchValue"
-              active-color="#13ce66"/>
+            <el-button type="text" @click="limitClick">限额配置</el-button>
           </el-col>
         </el-row>
       </div>
-    </el-card>-->
-
+    </el-card>
+    <el-dialog
+      title="限额配置"
+      :visible.sync="dialogVisibleLimit"
+      width="350PX">
+      <el-alert
+        title="初次提交特殊费率"
+        type="error"
+        :closable="false"
+        v-if="formLimit.isAdd"
+        style="margin-bottom: 15px">
+      </el-alert>
+      <el-form :model="formLimit" label-width="80px" label-position="left">
+        <el-form-item label="单日限额">
+          <el-input-number :controls="false" v-model="formLimit.dayLimit" :precision="2" :min="0" :max="99999999"></el-input-number>
+          <!-- <i class="el-icon-question element_icon"></i> -->
+        </el-form-item>
+        <el-form-item label="单笔限额">
+          <el-input-number :controls="false" v-model="formLimit.transLimit" :precision="2" :min="0" :max="99999999"></el-input-number>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisibleLimit = false">取 消</el-button>
+        <el-button type="primary" @click="editLimit">确 定</el-button>
+      </span>
+    </el-dialog>
     <el-card class="box-card">
       <div slot="header">
         <svg class="icon" aria-hidden="true">
@@ -259,12 +255,12 @@
             </svg>
             <el-button type="text" size="medium" @click="resetPassWord">重置密码</el-button>
           </el-col>
-          <el-col :span="8">
+          <!-- <el-col :span="8">
             <svg class="box-card-pay-icon" aria-hidden="true">
               <use xlink:href="#icon-bangongdianhuayewu"></use>
             </svg>
             <el-button type="text" size="medium" @click="allotSale">分配业务员</el-button>
-          </el-col>
+          </el-col> -->
         </el-row>
         <el-row>
 
@@ -290,7 +286,7 @@
       </div>
     </el-card> -->
     <!--修改分配业务员界面-->
-    <el-dialog title="分配业务员" :visible.sync="editFormVisible" width="30%">
+    <!-- <el-dialog title="分配业务员" :visible.sync="editFormVisible" width="30%">
       <el-form :model="editSaleForm">
         <el-form-item label="业务员：">
           <el-select
@@ -317,7 +313,7 @@
         <el-button @click.native="editFormVisible = false">取消</el-button>
         <el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
       </div>
-    </el-dialog>
+    </el-dialog> -->
     <!-- 资质证照预览 -->
     <el-dialog
       :title="`资质证照（${boxCardText.merchant_name}）`"
@@ -400,6 +396,16 @@
             <img class="box_card_img" :src="boxCardText.thum_img_tax_reg" alt="证件照片">
           </a>
         </el-form-item>
+        <el-form-item label="联系人身份证正面" v-if="boxCardText.img_person_a">
+          <a :href="boxCardText.img_person_a" target="_blank">
+            <img class="box_card_img" :src="boxCardText.thum_img_person_a" alt="证件照片">
+          </a>
+        </el-form-item>
+        <el-form-item label="联系人身份证反面" v-if="boxCardText.img_person_b">
+          <a :href="boxCardText.img_person_b" target="_blank">
+            <img class="box_card_img" :src="boxCardText.thum_img_person_b" alt="证件照片">
+          </a>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogPhoneVisible = false">关 闭</el-button>
@@ -412,7 +418,11 @@ import {
   selectSaleByName,
   updateAgentSalesman,
   queryAgentShopMer,
-  resetMerMpwd
+  resetMerMpwd,
+  queryMerchantPay,
+  updateMerchantPay,
+  findShopLimitByMid,
+  updateShopLimit
 } from "@/api/api";
 import CryptoJS from "crypto-js";
 import * as util from "../../../util/util.js";
@@ -429,13 +439,81 @@ export default {
       editSaleForm: {
         sale: ""
       },
-      dialogPhoneVisible: false
+      dialogPhoneVisible: false,
+
+      wx_open: 'N',
+      ali_open: 'N',
+
+      dialogVisibleLimit: false,
+      formLimit: {
+        dayLimit: '',
+        transLimit: '',
+        isAdd: true
+      }
     };
   },
   mounted() {
     this.getMerDetails();
+    this.getPaySwitch()
   },
   methods: {
+    editLimit() {
+      if (!this.formLimit.dayLimit && !this.formLimit.transLimit) {
+        return this.$message({
+          message: '请输入单日限额和单笔限额',
+          type: 'warning'
+        })
+      }
+      let para = this.formLimit
+      para.mid = this.$route.query.mid
+      updateShopLimit(para).then(res => {
+        this.$message({
+          message: res.subMsg,
+          type: 'success',
+          duration: 10000
+        })
+        this.dialogVisibleLimit = false
+      })
+    },
+    getPaySwitch() {
+      queryMerchantPay({mid: this.$route.query.mid}).then(res => {
+        this.wx_open = res.data.returnMap.wx_open
+        this.ali_open = res.data.returnMap.ali_open
+      })
+    },
+    limitClick() {
+      this.dialogVisibleLimit = true
+      this.$nextTick(() => {
+        let para = {
+          mid: this.$route.query.mid
+        }
+        findShopLimitByMid(para).then(res => {
+          this.formLimit.isAdd = res.data.shopLimit.isAdd
+          if(res.data.isAdd){
+            this.formLimit.dayLimit = ''
+            this.formLimit.transLimit = ''
+          }else{
+            this.formLimit.dayLimit = res.data.shopLimit.dayLimit
+            this.formLimit.transLimit = res.data.shopLimit.transLimit
+          }
+        })
+      })
+    },
+    switchChange() {
+      let para = {
+        wx_open: this.wx_open,
+        ali_open: this.ali_open,
+        mid: this.$route.query.mid
+      }
+      updateMerchantPay(para).then(res => {
+        this.$message({
+          message: res.message,
+          type: "success"
+        });
+      }).catch(() => {
+        this.getPaySwitch()
+      })
+    },
     formatCreate_time(row) {
       return row ? util.formatDate.format(new Date(row), "yyyy/MM/dd hh:MM:ss") : '';
     },
@@ -489,37 +567,37 @@ export default {
         loading.close();
       });
     },
-    //显示修改业务员界面
-    allotSale: function(index, row) {
-      this.editFormVisible = true;
-    },
+    // //显示修改业务员界面
+    // allotSale: function(index, row) {
+    //   this.editFormVisible = true;
+    // },
     //业务员远程搜索
-    clickSale: function() {
-      this.saleLoading = true;
-      selectSaleByName().then(res => {
-        let { status, data } = res;
-        this.saleLoading = false;
-        if (status == 200) {
-          this.saleOptions = data.salesmanList;
-        }
-      });
-    },
-    remoteSale(query) {
-      if (query !== "") {
-        this.saleOptions = true;
-        setTimeout(() => {
-          this.saleOptions = false;
-          selectSaleByName({
-            name: query
-          }).then(res => {
-            let { status, data } = res;
-            this.saleOptions = data.salesmanList;
-          });
-        }, 200);
-      } else {
-        this.saleOptions = [];
-      }
-    },
+    // clickSale: function() {
+    //   this.saleLoading = true;
+    //   selectSaleByName().then(res => {
+    //     let { status, data } = res;
+    //     this.saleLoading = false;
+    //     if (status == 200) {
+    //       this.saleOptions = data.salesmanList;
+    //     }
+    //   });
+    // },
+    // remoteSale(query) {
+    //   if (query !== "") {
+    //     this.saleOptions = true;
+    //     setTimeout(() => {
+    //       this.saleOptions = false;
+    //       selectSaleByName({
+    //         name: query
+    //       }).then(res => {
+    //         let { status, data } = res;
+    //         this.saleOptions = data.salesmanList;
+    //       });
+    //     }, 200);
+    //   } else {
+    //     this.saleOptions = [];
+    //   }
+    // },
     editSubmit: function() {
       if (!this.editSaleForm.sale) {
         return this.$message({ message: "请选择业务员", type: "warning" });

@@ -2,9 +2,7 @@ import instance from './index'
 import Axios from './axios'
 
 const preUrlPath = ''
-const downloadPath = process.env
-console.log(downloadPath);
-
+const downloadPath = 'http://test.weupay.com:8081'
 
 export const getCode = `${preUrlPath}/admin/wp/comm/getCode`
 
@@ -100,7 +98,9 @@ export const queryCityCounty = params => { return instance.post(`${preUrlPath}/a
 
 export const queryCity = params => { return instance.post(`${preUrlPath}/admin/wp/comm/queryCity`, params).then(res => res.data); };
 //开户银行支行
-export const selectbranch = params => { return instance.post(`${preUrlPath}/admin/wp/comm/selectbranch`, params).then(res => res.data); };
+export const selectbranch = params => {
+  return instance.post(`${preUrlPath}/admin/wp/comm/selectbranchByProCit`, params).then(res => res.data);
+};
 
 //新增商户
 export const addAgentMerone = params => { return instance.post(`${preUrlPath}/admin/wp/admin/addAgentMerone`, params).then(res => res.data); };
@@ -134,3 +134,146 @@ export const queryOrderDetail = params => { return instance.post(`${preUrlPath}/
 export const updateExceptionOrder = params => { return instance.post(`${preUrlPath}/admin/wp/admin/updateExceptionOrder`, params).then(res => res.data); };
 //查询订单列表
 export const queryOrderList = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryOrderList`, params).then(res => res.data); };
+
+export const checkDataExcel = params => { return instance.get(`${downloadPath}/download/mer/checkDataExcel`, { params: params }); };
+
+export const queryMerPayConfig = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryMerPayConfig`, params).then(res => res.data); };
+
+export const updateMerPayConfig = params => { return instance.post(`${preUrlPath}/admin/wp/admin/updateMerPayConfig`, params).then(res => res.data); };
+
+export const bsbLegalDocumentType = params => { return Axios.post(`${preUrlPath}/admin/wp/bsbadmin/bsbLegalDocumentType`, params).then(res => res.data); };
+
+export const queryMerchantPay = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryMerchantPay`, params).then(res => res.data); };
+
+export const updateMerchantPay = params => { return instance.post(`${preUrlPath}/admin/wp/admin/updateMerchantPay`, params).then(res => res.data); };
+
+export const queryMerNextRate = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryMerNextRate`, params).then(res => res.data); };
+
+export const queryStatementList = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryStatementList`, params).then(res => res.data); };
+
+export const openWxAli = params => { return instance.post(`${preUrlPath}/admin/wp/admin/openWxAli`, params).then(res => res.data); };
+
+export const queryDownloadData = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/queryDownloadData`, params).then(res => res.data);
+};
+
+export const queryMerDownRecord = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/queryMerDownRecord`, params).then(res => res.data);
+};
+
+export const queryChangeRateList = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/queryChangeRateList`, params).then(res => res.data);
+};
+
+export const examineChangeRate = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/examineChangeRate`, params).then(res => res.data);
+};
+
+export const queryChangeRate = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/queryChangeRate`, params).then(res => res.data);
+};
+
+export const updateChangeCount = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/updateChangeCount`, params).then(res => res.data);
+};
+
+export const queryChangeCount = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/queryChangeCount`, params).then(res => res.data);
+};
+
+export const fourElements = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/fourElements`, params).then(res => res.data);
+};
+
+export const threeElements = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/threeElements`, params).then(res => res.data);
+};
+
+export const uploadZIP = `${preUrlPath}/admin/wp/admin/uploadZIP`;
+
+//新增商户
+export const addBsbMerone = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/addBsbMerone`, params).then(res => res.data);
+};
+
+export const addBsbMerthree = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/addBsbMerthree`, params).then(res => res.data);
+};
+
+export const addBsbMertwo = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/addBsbMertwo`, params).then(res => res.data);
+};
+
+export const agentRebate = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/agentRebate`, params).then(res => res.data);
+};
+
+export const updateRebateStatus = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/updateRebateStatus`, params).then(res => res.data);
+};
+
+export const agentShopBsbPage = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/agentShopBsbPage`, params).then(res => res.data);
+};
+
+export const agentMerBsbEnter = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/agentMerBsbEnter`, params).then(res => res.data);
+};
+
+export const queryAgentList = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/queryAgentList`, params).then(res => res.data);
+};
+
+export const queryAgentRebates = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/queryAgentRebates`, params).then(res => res.data);
+};
+
+export const agentRateConfigView = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/agentRateConfigView`, params).then(res => res.data);
+};
+
+export const updateAgentRateConfig = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/updateAgentRateConfig`, params).then(res => res.data);
+};
+
+export const resetAgentPwd = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/resetAgentPwd`, params).then(res => res.data);
+};
+
+export const queryAgentByName = params => {
+  return instance.post(`${preUrlPath}/admin/wp/comm/queryAgentByName`, params).then(res => res.data);
+};
+
+export const renewalReminderList = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/renewalReminderList`, params).then(res => res.data);
+};
+
+//查询所有行业限额
+export const findAllIndustryLimit = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/limit/findAllIndustryLimit`, params).then(res => res.data);
+};
+
+//修改行业限额
+export const updateIndustryLimit = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/limit/updateIndustryLimit`, params).then(res => res.data);
+};
+
+export const findShopLimitByMid = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/limit/findShopLimitByMid`, params).then(res => res.data);
+};
+
+export const updateShopLimit = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/limit/updateShopLimit`, params).then(res => res.data);
+};
+
+export const querySpecialRate = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/querySpecialRate`, params).then(res => res.data);
+};
+
+export const addSpecialRate = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/addSpecialRate`, params).then(res => res.data);
+};
+
+export const updateSpecialRate = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/updateSpecialRate`, params).then(res => res.data);
+};

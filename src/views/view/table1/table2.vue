@@ -40,6 +40,7 @@
                 icon="el-icon-circle-plus"
                 @click="openStoreDialog"
               >新增门店</el-button>
+              <el-button type="primary" @click="clickStore">门店数量</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -50,16 +51,17 @@
       <el-table :data="users" border highlight-current-row>
         <el-table-column prop="storeName" label="门店名称" min-width="120"></el-table-column>
         <el-table-column prop="address" label="门店地址" min-width="180"></el-table-column>
+        <el-table-column prop="revsere2" label="联系人" min-width="180"></el-table-column>
         <el-table-column prop="telephone" label="联系电话" min-width="120"></el-table-column>
         <el-table-column prop="saccount" label="登录帐号" width="120"></el-table-column>
-        <el-table-column align="center" label="操作" width="460">
+        <el-table-column align="center" label="操作" width="480">
           <template slot-scope="scope">
             <el-button type="warning" size="mini" @click="editStore(scope.$index, scope.row)">修改</el-button>
             <el-button
               type="success"
               size="mini"
               @click="editOneStore(scope.$index, scope.row)"
-            >配置单门店收款</el-button>
+            >单门店收款</el-button>
             <el-button type="danger" size="mini" @click="handleReset(scope.$index, scope.row)">密码重置</el-button>
             <el-button type="primary" size="mini" @click="lookEmp(scope.$index, scope.row)">查看款台</el-button>
             <el-button type="info" size="mini" @click="handleDet(scope.$index, scope.row)">详情</el-button>
@@ -139,12 +141,19 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="门店名称" prop="storeName">
-              <el-input v-model="addStoreForm.storeName" placeholder="请输入分店名"></el-input>
+              <el-input v-model="addStoreForm.storeName" placeholder="请输入门店名"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="客服电话" prop="telephone">
               <el-input v-model="addStoreForm.telephone" placeholder="请输入门店客服电话"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="联系人" prop="linkman">
+              <el-input v-model="addStoreForm.linkman" placeholder="请输入门联系人"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -184,7 +193,9 @@ import {
   resetStorePwd,
   queryMerMname,
   storePayConfig,
-  queryStoreDetail
+  queryStoreDetail,
+  updateChangeCount,
+  queryChangeCount
 } from "@/api/api";
 import * as util from "@/util/util.js";
 import * as async from "@/util/async-validator/addStoreFormRules";
@@ -203,7 +214,8 @@ export default {
         mid: this.$route.query.mid,
         storeName: "",
         telephone: "",
-        address: ""
+        address: "",
+        linkman: ""
       },
       addStoreFormRules: async.addStoreFormRules,
       dialogType: false,
@@ -224,6 +236,38 @@ export default {
         path: "/deal/shop/table4",
         query: { sid: row.id, mid: this.$route.query.mid }
       });
+    },
+    clickStore() {
+      let para = {
+        mid: this.$route.query.mid,
+        level: '1'
+      }
+      queryChangeCount(para).then(res => {
+        this.$prompt('请输入门店数量', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          inputPattern: /^[0-9]+$/,
+          inputErrorMessage: '数量格式不正确',
+          inputValue: res.data.counts
+        }).then(({ value }) => {
+          let para = {
+            mid: this.$route.query.mid,
+            level: '1',
+            counts: value
+          }
+          updateChangeCount(para).then(res => {
+            this.$message({
+              type: 'success',
+              message: res.message
+            });  
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '取消输入'
+          });  
+        });
+      })
     },
     handleDet(index, row) {
       this.detFormVisible = true
@@ -337,6 +381,7 @@ export default {
       this.addStoreDialogVisible = true;
       this.dialogType = false;
       let c = util.deepcopy(row);
+      c.linkman = c.revsere2
       this.$nextTick(() => {
         this.$refs.addStoreForm.resetFields();
         this.addStoreForm = c;

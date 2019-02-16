@@ -122,7 +122,7 @@
         <el-table-column
           label="操作"
           align="center"
-          width="180">
+          width="320">
           <template slot-scope="scope">
             <el-button
               type="info"
@@ -130,17 +130,93 @@
               size="mini"
               @click="handleDetail(scope.$index, scope.row)">查看详情</el-button>
             <el-button
+              type="warning"
+              size="mini"
+              :disabled="scope.row.merchant_status !== '3'"
+              @click="synchronousPay(scope.$index, scope.row)">同步支付信息</el-button>
+            <el-button
               type="success"
               size="mini"
               :disabled="scope.row.merchant_status !== '1'"
               @click="handleRefund(scope.$index, scope.row)">审核</el-button>
+            <!-- <el-dropdown>
+              <el-button size="mini" type="primary" style="margin-left:10px">
+                实名认证<i class="el-icon-arrow-down el-icon--right"></i>
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>
+                  <el-button
+                    type="text"
+                    size="mini"
+                    @click="networkingOpen('formNetworking')">联网核查</el-button>
+                </el-dropdown-item>
+                <el-dropdown-item>
+                  <el-button
+                    type="text"
+                    size="mini"
+                    @click="fourElementsOpen('formFourElements')">四要素</el-button>
+                </el-dropdown-item>
+                <el-dropdown-item>
+                  <el-button
+                    type="text"
+                    size="mini"
+                    @click="phonePowerOpen('formPhonePower')">手机鉴权</el-button>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown> -->
           </template>
         </el-table-column>
       </el-table>
     </div>
+    <el-dialog title="联网核查" :visible.sync="dialogFormVisibleNetworking" width="450px">
+      <el-form :model="formNetworking" :rules="rulesNetworking" ref="formNetworking">
+        <el-form-item label="姓名" prop="realname">
+          <el-input v-model="formNetworking.realname"></el-input>
+        </el-form-item>
+        <el-form-item label="身份证号" prop="idcard">
+          <el-input v-model="formNetworking.idcard"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleNetworking = false">取 消</el-button>
+        <el-button type="primary" @click="networkingClick('formNetworking')">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="四要素" :visible.sync="dialogFormVisibleFourElements" width="450px">
+      <el-form :model="formFourElements" :rules="rulesFourElements" ref="formFourElements">
+        <el-form-item label="姓名" prop="idtfna">
+          <el-input v-model="formFourElements.idtfna"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号" prop="mobile">
+          <el-input v-model="formFourElements.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleFourElements = false">取 消</el-button>
+        <el-button type="primary" @click="fourElements('formFourElements')">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="手机鉴权" :visible.sync="dialogFormVisiblePhonePower" width="450px">
+      <el-form :model="formPhonePower" :rules="rulesPhonePower" ref="formPhonePower">
+        <el-form-item label="姓名" prop="realname">
+          <el-input v-model="formPhonePower.realname"></el-input>
+        </el-form-item>
+        <el-form-item label="身份证号" prop="idcard">
+          <el-input v-model="formPhonePower.idcard"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号" prop="mobile">
+          <el-input v-model="formPhonePower.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisiblePhonePower = false">取 消</el-button>
+        <el-button type="primary" @click="fourElements('formPhonePower')">确 定</el-button>
+      </div>
+    </el-dialog>
     <el-dialog
       title="商户详情"
-      :visible.sync="dialogDetailVisible">
+      :visible.sync="dialogDetailVisible"
+      width="800px">
       <el-form
         :model="formDetail"
         label-width="150px"
@@ -195,6 +271,17 @@
               </el-col>
             </el-row><el-row>
               <el-col :span="12">
+                <el-form-item label="联系人证件号">
+                  <span>{{formDetail.person_id_no}}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="联系人证件有效期">
+                  <span>{{formatDateperson_id_no(formDetail)}}</span>
+                </el-form-item>
+              </el-col>
+            </el-row><el-row>
+              <el-col :span="12">
                 <el-form-item label="联系人邮箱">
                   <span>{{ formDetail.merchant_email }}</span>
                 </el-form-item>
@@ -210,6 +297,11 @@
                   <span>{{ formDetail.merchant_service_phone }}</span>
                 </el-form-item>
               </el-col>
+              <el-col :span="12">
+                <el-form-item label="商户类型">
+                  <span>{{ formDetail.merchant_type === '1' ? '一级商户' : formDetail.merchant_type === '2' ? '二级商户' : '未知' }}</span>
+                </el-form-item>
+              </el-col>
             </el-row>
           </div>
         </el-card>
@@ -221,97 +313,150 @@
           </div>
           <div>
             <el-row>
+          <el-col :span="12">
+            <el-form-item label="商户结算入网类型">
+              <span>{{formDetail.settlement_mer_type === 'QY' ? '企业' : formDetail.settlement_mer_type === 'GT' ? '个体' : formDetail.settlement_mer_type === 'XW' ? '小微' : ''}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="执照证件号码">
+              <span>{{formDetail.licenseno}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row><el-row>
+          <el-col :span="12">
+            <el-form-item label="证件到期日期">
+              <span>{{formatDateLicensen_expire(formDetail)}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="结算账户类型">
+              <span>{{formDetail.account_type === '1' ? '对公' : formDetail.account_type === '2' ? '对私' : ''}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row><el-row>
+          <el-col :span="12">
+            <el-form-item label="入网证件类型">
+              <span>{{formDetail.document_type === 'SZHY' ? '三证合一' : formDetail.document_type === 'YYZZ' ? '营业执照' : ''}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="是否法人入账">
+              <span>{{formDetail.is_liable_account === '1' ? '法人入账' : formDetail.is_liable_account === '2' ? '非法人入账' : ''}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row><el-row>
+          <el-col :span="12">
+            <el-form-item label="法人姓名">
+              <span>{{formDetail.legal_name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="法人证件号">
+              <span>{{formDetail.merchant_id_no}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row><el-row>
+          <el-col :span="12">
+            <el-form-item label="法人证件有效期">
+              <span>{{formatDatemerchant_id_expire(formDetail)}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="法人手机号">
+              <span>{{formDetail.legal_phone}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="结算人身份证号">
+              <span>{{formDetail.settle_id_no}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="结算人身份证有效期">
+              <span>{{formatDatesettle_id_expire(formDetail)}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="结算人账户开户名">
+              <span>{{formDetail.account_name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="结算人账户开户号">
+              <span>{{formDetail.account_no}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="银行卡预留手机号">
+              <span>{{formDetail.account_phone}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="结算账户开户行">
+              <span>{{formDetail.bank_zname}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="结算户开户支行">
+              <span>{{formDetail.bank_name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="业务员">
+              <span>{{formDetail.salesman_name}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="控制人姓名">
+              <span>{{formDetail.contro_name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="控制人证件类型">
+              <span>{{formDetail.contro_id_type}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="控制人证件号">
+              <span>{{formDetail.contro_id_no}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="控制人证件有效期">
+              <span>{{formatDatecontro_id_expire(formDetail)}}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+          </div>
+        </el-card>
+        <el-card class="box-card">
+          <div slot="header">
+            <span>微信</span>
+            <el-tag :type="formDetail.wx_open === 'Y' ? 'success' : 'warning'" style="float: right;">{{formDetail.wx_open === 'Y' ? '开启' : formDetail.wx_open === 'N' ? '关闭' : '未知'}}</el-tag>
+          </div>
+          <div>
+            <el-row>
               <el-col :span="12">
-                <el-form-item label="商户结算入网类型">
-                  <span>{{ formDetail.settlement_mer_type === 'QY' ? '企业' : formDetail.settlement_mer_type === 'GT' ? '个体' : formDetail.settlement_mer_type === 'XW' ? '小微' : '' }}</span>
+                <el-form-item label="微信费率（‰）">
+                  <span>{{ formDetail.wx_rate }}</span>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="执照证件号码">
-                  <span>{{ formDetail.licenseno }}</span>
-                </el-form-item>
-              </el-col>
-            </el-row><el-row>
-              <el-col :span="12">
-                <el-form-item label="证件到期日期">
-                  <span>{{ formatDateLicensen_expire(formDetail) }}</span>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="结算账户类型">
-                  <span>{{ formDetail.account_type === '1' ? '对公' : formDetail.account_type === '2' ? '对私' : '' }}</span>
-                </el-form-item>
-              </el-col>
-            </el-row><el-row>
-              <el-col :span="12">
-                <el-form-item label="入网证件类型">
-                  <span>{{ formDetail.document_type === 'SZHY' ? '三证合一' : formDetail.document_type === 'YYZZ' ? '营业执照' : '' }}</span>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="是否法人入账">
-                  <span>{{ formDetail.is_liable_account === '1' ? '法人入账' : formDetail.is_liable_account === '2' ? '非法人入账' : '' }}</span>
-                </el-form-item>
-              </el-col>
-            </el-row><el-row>
-              <el-col :span="12">
-                <el-form-item label="法人姓名">
-                  <span>{{ formDetail.legal_name }}</span>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="法人身份证号">
-                  <span>{{ formDetail.merchant_id_no }}</span>
-                </el-form-item>
-              </el-col>
-            </el-row><el-row>
-              <el-col :span="12">
-                <el-form-item label="法人身份证有效期">
-                  <span>{{ formatDatemerchant_id_expire(formDetail) }}</span>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="结算人身份证号">
-                  <span>{{ formDetail.settle_id_no }}</span>
-                </el-form-item>
-              </el-col>
-            </el-row><el-row>
-              <el-col :span="12">
-                <el-form-item label="结算人身份证有效期">
-                  <span>{{ formatDatesettle_id_expire(formDetail) }}</span>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="结算人账户开户名">
-                  <span>{{ formDetail.account_name }}</span>
-                </el-form-item>
-              </el-col>
-            </el-row><el-row>
-              <el-col :span="12">
-                <el-form-item label="结算人账户开户号">
-                  <span>{{ formDetail.account_no }}</span>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="银行卡预留手机号">
-                  <span>{{ formDetail.account_phone }}</span>
-                </el-form-item>
-              </el-col>
-            </el-row><el-row>
-              <el-col :span="12">
-                <el-form-item label="结算账户开户行">
-                  <span>{{ formDetail.bank_zname }}</span>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="结算户开户支行">
-                  <span>{{ formDetail.bank_name }}</span>
-                </el-form-item>
-              </el-col>
-            </el-row><el-row>
-              <el-col :span="12">
-                <el-form-item label="业务员">
-                  <span>{{ formDetail.salesman_name }}</span>
+                <el-form-item label="联系人微信账号">
+                  <span>{{ bsbPay.wx_contid }}</span>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -319,21 +464,36 @@
         </el-card>
         <el-card class="box-card">
           <div slot="header">
-            <span>商户费率（‰）</span>
+            <span>支付宝</span>
+            <el-tag :type="formDetail.ali_open === 'Y' ? 'success' : 'warning'" style="float: right;">{{formDetail.ali_open === 'Y' ? '开启' : formDetail.ali_open === 'N' ? '关闭' : '未知'}}</el-tag>
           </div>
           <div>
             <el-row>
               <el-col :span="12">
-                <el-form-item label="微信费率">
-                  <span>{{ formDetail.wx_rate }}</span>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="支付宝费率">
+                <el-form-item label="支付宝费率（‰）">
                   <span>{{ formDetail.ali_rate }}</span>
                 </el-form-item>
               </el-col>
-            </el-row><el-row>
+              <el-col :span="12">
+                <el-form-item label="支付宝的PID">
+                  <span>{{ bsbPay.ali_source }}</span>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="行业类目">
+                  <span>{{ bsbPay.reserve1 }}</span>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </div>
+        </el-card>
+        <el-card class="box-card">
+          <div slot="header">
+            <span>银行卡费率</span>
+          </div>
+          <div><el-row>
               <el-col :span="12">
                 <el-form-item label="翼支付费率">
                   <span>{{ formDetail.best_rate }}</span>
@@ -363,11 +523,7 @@
         <el-card class="box-card">
           <div slot="header">
             <span>证件照片</span>
-            <!-- <router-link to="/bar">Go to Bar</router-link> -->
-            <a
-              :href="downloadAgentImages"
-              style="float: right;">下载图片</a>
-              <!-- <el-button style="float: right; padding: 3px 0" type="text" icon="el-icon-download">下载图片</el-button> -->
+            <a :href="formDetail.img_other" style="float: right; padding: 3px 0" type="text">附件下载</a>
           </div>
           <div>
             <el-row>
@@ -576,6 +732,34 @@
                   </a>
                 </el-form-item>
               </el-col>
+              <el-col :span="12">
+                <el-form-item label="联系人身份证正面">
+                  <a
+                    :href="formDetail.img_person_a"
+                    v-if="formDetail.img_person_a"
+                    target='_blank'>
+                    <img
+                      class="box_card_img"
+                      :src="formDetail.thum_img_person_a"
+                      alt="证件照片">
+                  </a>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="联系人身份证反面">
+                  <a
+                    :href="formDetail.img_person_b"
+                    v-if="formDetail.img_person_b"
+                    target='_blank'>
+                    <img
+                      class="box_card_img"
+                      :src="formDetail.thum_img_person_b"
+                      alt="证件照片">
+                  </a>
+                </el-form-item>
+              </el-col>
             </el-row>
           </div>
         </el-card>
@@ -597,15 +781,14 @@
             label="2">驳回</el-radio>
         </el-form-item>
         <el-form-item
-          label="驳回原因"
+          label="备注信息"
           prop="error_msg"
-          :rules="[{ required: true, message: '请输入驳回原因', trigger: 'blur' }]"
-          v-if="formDialog.radioRefund === '2'">
+          :rules="[{ required: true, message: '请输入备注信息', trigger: 'blur' }]">
           <el-input
             type="textarea"
             v-model="formDialog.error_msg"
             :autosize="{ minRows: 2, maxRows: 4}"
-            placeholder="请输入驳回原因"/>
+            placeholder="请输入备注信息"/>
         </el-form-item>
       </el-form>
       <span
@@ -632,7 +815,7 @@
 </template>
 
 <script>
-import { changeAgentMerEnter, ChangeAgentShop, changeStatus, downloadAgentImages } from '@/api/api'
+import { changeAgentMerEnter, ChangeAgentShop, changeStatus, downloadAgentImages, openWxAli, fourElements, threeElements } from '@/api/api'
 import { optionsFormDetail } from '@/util/mockData.js'
 import getUsersList from '@/mixins/Users'
 import getRemoteSearch from '@/mixins/RemoteSearch'
@@ -641,6 +824,22 @@ import * as util from '../../../util/util.js'
 export default {
   mixins: [getUsersList, getRemoteSearch],
   data () {
+    var merchant_id_no = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入身份证号码'));
+      } else if (!/^(\d{6})(\d{4})(\d{2})(\d{2})(\d{3})([0-9]|X)$/.test(value)) {
+        callback(new Error('请输入正确的身份证号码'));
+      } else {
+        callback();
+      }
+    };
+    var number_phone = (rule, value, callback) => {
+      if (!/^\d{7,15}$/.test(value) && value !== '') {
+        callback(new Error('请输入正确的手机号码'));
+      } else {
+        callback();
+      }
+    }
     return {
       filters: {},
       downloadAgentImages: '',
@@ -667,7 +866,62 @@ export default {
           label: '审核通过'
         }
       ],
-      formDetail: {}
+      formDetail: {},
+      bsbPay: {},
+
+
+      dialogFormVisibleNetworking: false,
+      formNetworking: {
+        realname: '',
+        idcard: ''
+      },
+      rulesNetworking: {
+        realname: [
+          { required: true, message: '请输入姓名', trigger: 'blur' },
+          { min: 2, max: 5, message: '姓名长度在 2 到 5 个字符', trigger: 'blur' }
+        ],
+        idcard: [
+          { required: true, message: '请输入身份证件号码', trigger: 'blur' },
+          { validator: merchant_id_no, trigger: 'blur' }
+        ]
+      },
+
+      dialogFormVisibleFourElements: false,
+      formFourElements: {
+        idtfna: '',
+        mobile: '',
+        idtftp: '01'
+      },
+      rulesFourElements: {
+        idtfna: [
+          { required: true, message: '请输入姓名', trigger: 'blur' },
+          { min: 2, max: 5, message: '姓名长度在 2 到 5 个字符', trigger: 'blur' }
+        ],
+        mobile: [
+          { required: true, message: '请输入手机号码', trigger: 'blur' },
+          { validator: number_phone, trigger: 'blur' }
+        ]
+      },
+
+      dialogFormVisiblePhonePower: false,
+      formPhonePower: {
+        realname: '',
+        mobile: '',
+        idcard: ''
+      },
+      rulesPhonePower: {
+        realname: [
+          { required: true, message: '请输入姓名', trigger: 'blur' },
+          { min: 2, max: 5, message: '姓名长度在 2 到 5 个字符', trigger: 'blur' }
+        ],
+        mobile: [
+          { required: true, message: '请输入手机号码', trigger: 'blur' }
+        ],
+        idcard: [
+          { required: true, message: '请输入身份证件号码', trigger: 'blur' },
+          { validator: merchant_id_no, trigger: 'blur' }
+        ]
+      }
     }
   },
   methods: {
@@ -693,10 +947,146 @@ export default {
     formatDatesettle_id_expire (val) {
       return val.settle_id_expire_long === 'Y' ? '长期有效' : val.settle_id_expire ? util.dateFormat(parseInt(val.settle_id_expire), 'yyyy-MM-dd hh:mm:ss') : ''
     },
+    formatDateperson_id_no(val){
+      return val.person_id_expire_long === 'Y' ? '长期有效' : val.person_id_expire ? util.dateFormat(parseInt(val.person_id_expire), 'yyyy-MM-dd hh:mm:ss') : '' 
+    },
+    formatDatecontro_id_expire(val){
+      return val.contro_id_expire_long === 'Y' ? '长期有效' : val.contro_id_expire ? util.dateFormat(parseInt(val.contro_id_expire), 'yyyy-MM-dd hh:mm:ss') : '' 
+    },
+    networkingOpen(formName){
+      this.dialogFormVisibleNetworking = true
+      this.$nextTick(() => {
+        this.$refs[formName].resetFields()
+      })
+    },
+    phonePowerOpen(formName){
+      this.dialogFormVisiblePhonePower = true
+      this.$nextTick(() => {
+        this.$refs[formName].resetFields()
+      })
+    },
+    fourElementsOpen(formName){
+      this.dialogFormVisibleFourElements = true
+      this.$nextTick(() => {
+        this.$refs[formName].resetFields()
+      })
+    },
+    networkingClick(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.$confirm('联网核查, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            let para = util.deepcopy(this.formNetworking)
+            threeElements(para).then(res => {
+              this.$message({
+                type: 'success',
+                message: res.message
+              });
+              this.dialogFormVisibleNetworking = false
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消'
+            });          
+          });
+        }
+      })
+    },
+    phonePower(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.$confirm('手机鉴权, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            let para = util.deepcopy(this.formPhonePower)
+            threeElements(para).then(res => {
+              this.$message({
+                type: 'success',
+                message: res.message
+              });
+              this.dialogFormVisiblePhonePower = false
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消'
+            });          
+          });
+        }
+      })
+    },
+    fourElements(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.$confirm('联网核查四要素, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            let para = util.deepcopy(this.formFourElements)
+            fourElements(para).then(res => {
+              this.$message({
+                type: 'success',
+                message: res.message
+              });
+              this.dialogFormVisibleFourElements = false
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消'
+            });          
+          });
+        }
+      })
+    },
+    synchronousPay(index, row) {
+        this.$confirm('此操作将同步支付信息, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let para = {
+            id: row.id,
+            shop_id: row.shop_id,
+            wx_open: row.wx_open,
+            ali_open: row.ali_open
+          }
+          openWxAli(para).then(res => {
+            this.$message({
+              type: 'success',
+              message: res.message
+            });      
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          });          
+        });
+    },
     handleRefund (index, row) {
       this.dialogRefundVisible = true
       this.id = row.id
       this.shop_id = row.shop_id
+    },
+    downImages() {
+      let url = this.downloadAgentImages
+      if (!!window.ActiveXObject || "ActiveXObject" in window) {
+        console.log('ie');
+        return this.$message({
+          message: '请使用非IE浏览器下载，如谷歌，360极速模式等',
+          type: 'warning'
+        })
+      }
+      
+      window.open(url)
     },
     submitRefund (formName) {
       this.$refs[formName].validate((valid) => {
@@ -731,7 +1121,8 @@ export default {
     },
     getListDetail (change, val) {
       ChangeAgentShop({ id: change, shop_id: val }).then(res => {
-        this.formDetail = res.data.changeAgentShop
+        this.formDetail = res.data.changeAgentShop 
+        this.bsbPay = res.data.bsbPay
       })
     },
     handleDetail (index, row) {

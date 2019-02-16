@@ -15,4 +15,10 @@ export const addStoreFormRules = {
 		{ required: true, message: "请输入客服电话", trigger: "blur" },
 		{ validator: number_phone, trigger: 'blur' }
 	],
+	linkman: [{
+			required: true,
+			message: "请输入联系人",
+			trigger: "blur"
+		}
+	]
 }

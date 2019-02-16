@@ -19,7 +19,7 @@
   top: 18px;
   right: 65px;
   z-index: 1000;
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: #27A1DD;
   -webkit-border-radius: 3px;
   border-radius: 3px;
   -moz-border-radius: 3px;
@@ -56,56 +56,23 @@
               alt="logo"
               height="25px;">
           </el-col>
-          <el-col
-            :span="6"
-            class="header_text">
-            <el-row
-              type="flex"
-              class="row-bg"
-              justify="space-around">
-              <el-col :span="8">
-                <a target="_blank" href="/admin/web/shop.html">
-                  <el-button
-                    plain
-                    size="mini"
-                    round>商户登陆</el-button>
-                </a>
-              </el-col>
-              <el-col :span="8">
-                <a target="_blank" href="/admin/web/store.html">
-                  <el-button
-                    plain
-                    size="mini"
-                    round>门店登录</el-button>
-                </a>
-              </el-col>
-              <el-col :span="8">
-                <a target="_blank" href="/admin/web/emp.html">
-                  <el-button
-                    plain
-                    size="mini"
-                    round>款台登录</el-button>
-                </a>
-              </el-col>
-            </el-row>
-          </el-col>
         </el-row>
       </el-header>
       <el-main>
-        <el-carousel height="360px">
+        <el-carousel height="380px" style="background: #fff">
           <el-carousel-item
             v-for="item in 4"
             :key="item">
             <img
               src="@/assets/images/57be6c6cb3d28_1024.jpg"
-              alt="轮播图">
+              alt="轮播图" height="100%">
           </el-carousel-item>
         </el-carousel>
         <el-form
           ref="loginForm"
           :model="loginForm"
           class="main_login">
-          <h3 class="title">登录</h3>
+          <h3 class="title">运维登录</h3>
           <el-form-item>
             <el-input
               v-model="loginForm.account"
@@ -170,7 +137,7 @@
           </el-form-item>
         </el-form>
       </el-main>
-      <div class="login_news">
+      <!-- <div class="login_news">
         <el-row>
           <el-col :span="2">
             <el-tag type="warning">最新公告</el-tag>
@@ -188,7 +155,7 @@
             <el-button type="text">查看更多>></el-button>
           </el-col>
         </el-row>
-      </div>
+      </div> -->
       <div class="steps_nav">
         <h2>商户入驻流程</h2>
         <el-steps

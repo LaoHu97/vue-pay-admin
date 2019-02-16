@@ -14,9 +14,6 @@ export const optionsPayment = [{
 }, {
   value: 'UNIONPAY',
   label: '银联二维码'
-}, {
-  value: 'UNKNOW',
-  label: '未知'
 }]
 // 支付方式
 export const optionsPaymentAll = [{
