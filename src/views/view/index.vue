@@ -23,10 +23,11 @@
       class="el-menu-vertical"
       background-color="#414F61"
       text-color="#fff"
-      active-text-color="#409EFF"
+      active-text-color="#fff"
       router
+      :default-openeds="openeds"
     >
-      <template v-for="(route, index) in $router.options.routes[2].children">
+      <template v-for="(route, index) in routerList.children">
         <template v-if="route.children">
           <el-submenu :key="index" :index="route.name">
             <template slot="title">
@@ -38,7 +39,7 @@
               :key="cIndex"
               :index="cRoute.name"
               :route="cRoute"
-              v-if="!cRoute.meat.hidden"
+              v-show="!cRoute.meat.hidden"
             >{{ cRoute.meat.name }}</el-menu-item>
           </el-submenu>
         </template>
@@ -63,18 +64,31 @@
   </el-container>
 </template>
 <script>
+import addRouter from "@/router";
 export default {
   data() {
-    return {};
+    return {
+      routerList: {},
+      openeds: ['渠道商管理', '商户管理', '信息核查', '交易管理', '对账管理']
+    };
   },
   computed: {
     isCollapse() {
       return this.$store.state.viewCollapse.isCollapse;
+    },
+    indexNum() {
+      return this.$store.state.selectTopNum.num;
     }
   },
-  methods: {},
+  watch:{
+    indexNum:function(old,newd){
+      let v = parseInt(this.$store.state.selectTopNum.num)
+      this.routerList = this.$router.options.routes.slice(v+1, v+2)[0];
+    }
+  },
   mounted() {
-    console.log(this);
-  }
+      let v = parseInt(sessionStorage.getItem('menu'));
+      this.routerList = this.$router.options.routes.slice(v+1, v+2)[0];
+  },
 };
 </script>

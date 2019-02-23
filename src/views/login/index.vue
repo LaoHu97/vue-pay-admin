@@ -28,6 +28,8 @@
 }
 .login_btn {
   width: 240px;
+  background-color:#0066cc;
+  border-color:#0066cc
 }
 .steps_nav {
   padding: 10px 50px;
@@ -35,6 +37,9 @@
 .footer_fix {
   text-align: center;
   line-height: 60px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
 .login_news {
   padding: 0 50px;
@@ -130,7 +135,7 @@
           </el-form-item>
           <el-form-item>
             <el-button
-              type="success"
+              type="primary"
               class="login_btn"
               @click.native.prevent="loginSubmit"
               :loading="isBtnLoading">{{ btnText }}</el-button>
@@ -156,16 +161,6 @@
           </el-col>
         </el-row>
       </div> -->
-      <div class="steps_nav">
-        <h2>商户入驻流程</h2>
-        <el-steps
-          :active="1"
-          align-center>
-          <el-step title="提交资料"/>
-          <el-step title="审核认证"/>
-          <el-step title="开始使用"/>
-        </el-steps>
-      </div>
       <el-footer class="footer_fix">版权所有：西安万鼎网络科技有限公司 | ICP备 陕17002918号</el-footer>
     </el-container>
   </div>
@@ -192,7 +187,7 @@ export default {
   computed: {
     btnText () {
       if (this.isBtnLoading) return '登录中...'
-      return '立即登录'
+      return '登录'
     }
   },
   methods: {
@@ -208,7 +203,8 @@ export default {
       para.password = this.md5(para.password + para.account)
       loginVerify(para).then(res => {
         this.isBtnLoading = false
-        this.$router.replace({ path: 'deal' })
+        this.$router.replace({ path: 'router03' })
+        sessionStorage.setItem("menu", '3');
       }).catch(err => {
         this.isBtnLoading = false
         this.$refs.loginForm.resetFields()
@@ -218,6 +214,7 @@ export default {
   },
   mounted () {
     this.getAuthCode()
+    sessionStorage.clear();
   }
 }
 </script>

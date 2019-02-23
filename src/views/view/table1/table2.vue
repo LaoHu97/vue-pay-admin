@@ -19,6 +19,7 @@
 
 <template>
   <section>
+    <el-button size="small" round @click="historyGo" style="margin-top:15px;">返回</el-button>
     <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="98px">
       <div class="search_top">
         <el-row>
@@ -53,16 +54,16 @@
         <el-table-column prop="address" label="门店地址" min-width="180"></el-table-column>
         <el-table-column prop="revsere2" label="联系人" min-width="180"></el-table-column>
         <el-table-column prop="telephone" label="联系电话" min-width="120"></el-table-column>
-        <el-table-column prop="saccount" label="登录帐号" width="120"></el-table-column>
-        <el-table-column align="center" label="操作" width="480">
+        <el-table-column prop="saccount" label="门店编号" width="120"></el-table-column>
+        <el-table-column align="center" label="操作" width="380">
           <template slot-scope="scope">
             <el-button type="warning" size="mini" @click="editStore(scope.$index, scope.row)">修改</el-button>
-            <el-button
+            <!-- <el-button
               type="success"
               size="mini"
               @click="editOneStore(scope.$index, scope.row)"
-            >单门店收款</el-button>
-            <el-button type="danger" size="mini" @click="handleReset(scope.$index, scope.row)">密码重置</el-button>
+            >单门店收款</el-button> -->
+            <!-- <el-button type="danger" size="mini" @click="handleReset(scope.$index, scope.row)">密码重置</el-button> -->
             <el-button type="primary" size="mini" @click="lookEmp(scope.$index, scope.row)">查看款台</el-button>
             <el-button type="info" size="mini" @click="handleDet(scope.$index, scope.row)">详情</el-button>
           </template>
@@ -84,12 +85,6 @@
         </el-form-item>
         <el-form-item label="门店编号：">
           <span>{{detForm.saccount}}</span>
-        </el-form-item>
-        <el-form-item label="是否单门店收款：">
-          <span>{{detForm.isAloneStore ? '是' : '否'}}</span>
-        </el-form-item>
-        <el-form-item label="单门店配置商户：">
-          <span>{{detForm.alonePayMname}}</span>
         </el-form-item>
         <el-form-item label="详细地址：">
           <span>{{detForm.address}}</span>
@@ -231,9 +226,12 @@ export default {
     };
   },
   methods: {
+    historyGo() {
+      this.$router.go(-1)
+    },
     lookEmp(index, row) {
       this.$router.push({
-        path: "/deal/shop/table4",
+        path: "/router02/shop/table4",
         query: { sid: row.id, mid: this.$route.query.mid }
       });
     },

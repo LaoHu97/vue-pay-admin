@@ -23,8 +23,8 @@
       <div class="search_top">
         <el-row>
           <el-col :span="6">
-            <el-form-item label="行业名称">
-              <el-input v-model="filters.industryName" placeholder="请输入行业名称关键字"></el-input>
+            <el-form-item label="行业类目">
+              <el-input v-model="filters.industryName" placeholder="请输入行业类目关键字"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="2">
@@ -38,19 +38,19 @@
     <!--列表-->
     <div v-loading="listLoading">
       <el-table :data="users" border stripe highlight-current-row>
-          <el-table-column prop="industryName" label="行业名称"></el-table-column>
-          <el-table-column label="日累计限额" width="300">
-            <template slot-scope="{row,$index}">
-              <el-input-number class="edit-cell" v-if="showEdit[$index]" :controls="false" v-model="row.dayLimit" :step="1000" :min="1" :max="100000"></el-input-number>
-              <!-- <el-input class="edit-cell" v-if="showEdit[$index]" v-model="row.name"></el-input> -->
-              <span v-if="!showEdit[$index]">{{row.dayLimit}}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="单笔交易限额" width="300">
+          <el-table-column prop="industryName" label="行业类目"></el-table-column>
+          <el-table-column label="单笔交易限额(元)" width="300">
             <template slot-scope="{row,$index}">
               <el-input-number class="edit-cell" v-if="showEdit[$index]" :controls="false" v-model="row.transLimit" :step="1000" :min="1" :max="100000"></el-input-number>
               <!-- <el-input class="edit-cell" v-if="showEdit[$index]" v-model="row.name"></el-input> -->
               <span v-if="!showEdit[$index]">{{row.transLimit}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="日累计限额(元)" width="300">
+            <template slot-scope="{row,$index}">
+              <el-input-number class="edit-cell" v-if="showEdit[$index]" :controls="false" v-model="row.dayLimit" :step="1000" :min="1" :max="100000"></el-input-number>
+              <!-- <el-input class="edit-cell" v-if="showEdit[$index]" v-model="row.name"></el-input> -->
+              <span v-if="!showEdit[$index]">{{row.dayLimit}}</span>
             </template>
           </el-table-column>
           <el-table-column

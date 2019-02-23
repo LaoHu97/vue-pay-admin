@@ -55,6 +55,12 @@
       </div>
       <div class="box-card-text">
         <el-row>
+          <el-col :span="8" style="font-size:20px;color:#F56C6C">
+            <span>商户号：</span>
+            {{ boxCardText.merchant_no }}
+          </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="8">
             <span>商户名称：</span>
             {{ boxCardText.merchant_name }}
@@ -112,7 +118,7 @@
         </el-row>
         <el-row>
           <el-col :span="8">
-            <span>创建时间：</span>
+            <span>准入日期：</span>
             {{ formatCreate_time(boxCardText.gmt_create) }}
           </el-col>
           <el-col :span="8">
@@ -154,7 +160,7 @@
               aria-hidden="true">
               <use xlink:href="#icon-weixin"/>
             </svg>
-            <span><router-link :to="{path: '/deal/shop/table11', query: { mid: $route.query.mid } }">微信支付</router-link>
+            <span><router-link :to="{path: '/router02/shop/table11', query: { mid: $route.query.mid } }">微信支付</router-link>
               <b :style="{ color: wx_open === 'Y' ? '#19C862' :'#F56C6C' }">（{{ wx_open === 'Y' ? '开启' : '关闭' }}）</b>
             </span>
             <el-switch
@@ -170,7 +176,7 @@
               aria-hidden="true">
               <use xlink:href="#icon-big-Pay"/>
             </svg>
-            <span><router-link :to="{path: '/deal/shop/table12', query: { mid: $route.query.mid } }">支付宝支付</router-link>
+            <span><router-link :to="{path: '/router02/shop/table12', query: { mid: $route.query.mid } }">支付宝支付</router-link>
               <b :style="{ color: ali_open === 'Y' ? '#19C862' :'#F56C6C' }">（{{ ali_open === 'Y' ? '开启' : '关闭' }}）</b>
             </span>
             <el-switch
@@ -196,7 +202,7 @@
       :visible.sync="dialogVisibleLimit"
       width="350PX">
       <el-alert
-        title="初次提交特殊费率"
+        title="该商户未设置特殊限额"
         type="error"
         :closable="false"
         v-if="formLimit.isAdd"
@@ -229,7 +235,7 @@
             <svg class="box-card-pay-icon" aria-hidden="true">
               <use xlink:href="#icon-mendian"></use>
             </svg>
-            <router-link :to="{path: '/deal/shop/table2', query: { mid: $route.query.mid }}">
+            <router-link :to="{path: '/router02/shop/table2', query: { mid: $route.query.mid }}">
               <el-button type="text" size="medium">查看门店</el-button>
             </router-link>
           </el-col>
@@ -237,18 +243,18 @@
             <svg class="box-card-pay-icon" aria-hidden="true">
               <use xlink:href="#icon-qian"></use>
             </svg>
-            <router-link :to="{path: '/deal/shop/table4', query: { mid: $route.query.mid }}">
+            <router-link :to="{path: '/router02/shop/table4', query: { mid: $route.query.mid }}">
               <el-button type="text" size="medium">查看款台</el-button>
             </router-link>
           </el-col>
-          <el-col :span="8">
+          <!-- <el-col :span="8">
             <svg class="box-card-pay-icon" aria-hidden="true">
               <use xlink:href="#icon-bangongdianhuayewu"></use>
             </svg>
-            <router-link :to="{path: '/deal/shop/table3', query: { mid: $route.query.mid }}">
+            <router-link :to="{path: '/router02/shop/table3', query: { mid: $route.query.mid }}">
               <el-button type="text" size="medium">查看终端</el-button>
             </router-link>
-          </el-col>
+          </el-col> -->
           <el-col :span="8">
             <svg class="box-card-pay-icon" aria-hidden="true">
               <use xlink:href="#icon-zhongzhi"></use>
@@ -551,7 +557,7 @@ export default {
     },
     clickMerEdit() {
       this.$router.push({
-        path: "/deal/shop/table8",
+        path: "/router02/shop/table8",
         query: {id: this.boxCardText.id, agent_id: this.boxCardText.agent_id}
       });
     },

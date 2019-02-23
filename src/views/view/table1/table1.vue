@@ -28,8 +28,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="商户账号" prop="maccount">
-              <el-input v-model="filters.maccount" placeholder="请输入商户账号"/>
+            <el-form-item label="商户号" prop="maccount">
+              <el-input v-model="filters.maccount" placeholder="请输入商户号"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -44,10 +44,10 @@
     <!--列表-->
     <div v-loading="listLoading">
       <el-table :data="users" border="" stripe highlight-current-row>
-        <el-table-column prop="agentName" align="center" label="所属代理"/>
-        <el-table-column prop="mname" align="center" label="商户名称"/>
-        <el-table-column prop="maccount" align="center" label="商户账号"/>
-        <el-table-column align="center" label="登陆状态">
+        <el-table-column prop="agentName" label="所属渠道商"/>
+        <el-table-column prop="mname" label="商户名称"/>
+        <el-table-column prop="maccount" label="商户号"/>
+        <el-table-column label="支付权限">
           <template slot-scope="scope">
             <el-switch
               :active-value="1"
@@ -59,11 +59,10 @@
         </el-table-column>
         <el-table-column
           prop="create_time"
-          align="center"
           :formatter="formatCreate_time"
           label="创建时间"
         />
-        <el-table-column prop="saleName" align="center" label="业务员"/>
+        <el-table-column prop="saleName" label="业务员"/>
         <el-table-column label="操作" align="center" width="100">
           <template slot-scope="scope">
               <el-button type="primary" size="mini" @click="clickLook(scope.$index, scope.row)">查看</el-button>
@@ -110,10 +109,10 @@ export default {
       ));
     },
     clickLook (index, row) {
-      this.$router.push({ path: '/deal/shop/table5', query: { mid: row.mid.toString(), maccount: row.maccount } })
+      this.$router.push({ path: '/router02/shop/table5', query: { mid: row.mid.toString(), maccount: row.maccount } })
     },
     editStatus(index, row) {
-      this.$confirm("此操作将修改商户状态, 确定修改?", "提示", {
+      this.$confirm("此操作将修改支付权限, 确定修改?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         closeOnClickModal: false,

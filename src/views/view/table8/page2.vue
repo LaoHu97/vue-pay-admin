@@ -47,8 +47,13 @@
         <el-table-column prop="userName" label="负责人"/>
         <el-table-column prop="userId" label="渠道商账号"/>
         <el-table-column :formatter="formatter_create_time" label="创建时间"/>
-        <el-table-column label="操作" align="center" width="240">
+        <el-table-column label="操作" align="center" width="300">
           <template slot-scope="scope">
+            <el-button
+              type="warning"
+              size="mini"
+              @click="handleModify(scope.$index, scope.row)"
+            >修改</el-button>
             <el-button type="success" size="mini" @click="cilckRate(scope.$index, scope.row)">费率配置</el-button>
             <el-button type="danger" size="mini" @click="handleReset(scope.$index, scope.row)">密码重置</el-button>
           </template>
@@ -58,26 +63,103 @@
     <el-dialog
       title="费率配置（‰）"
       :visible.sync="dialogVisible"
-      width="380px">
-      <el-form ref="rebateForm" :model="rebateForm" label-width="190px" label-position="left">
-        <el-form-item label="微信费率（最大值：50）" prop="Rate">
-          <el-input-number v-model="rebateForm.wxRate" :precision="1" :step="0.1" :min="0" :max="50"></el-input-number>
-        </el-form-item>
-        <el-form-item label="支付宝费率（最大值：50）" prop="aliRate">
-          <el-input-number v-model="rebateForm.aliRate" :precision="1" :step="0.1" :min="0" :max="50"></el-input-number>
-        </el-form-item>
-        <el-form-item label="翼支付费率（最大值：50）" prop="bestRate">
-          <el-input-number v-model="rebateForm.bestRate" :precision="1" :step="0.1" :min="0" :max="50"></el-input-number>
-        </el-form-item>
-        <el-form-item label="贷记卡费率（最大值：500）" prop="creditRate">
-          <el-input-number v-model="rebateForm.creditRate" :precision="1" :step="0.1" :min="0" :max="500"></el-input-number>
-        </el-form-item>
-        <el-form-item label="银联费率（最大值：6）" prop="unionpayRate">
-          <el-input-number v-model="rebateForm.unionpayRate" :precision="1" :step="0.1" :min="0" :max="6"></el-input-number>
-        </el-form-item>
-        <el-form-item label="借记卡费率（最大值：500）" prop="debitRate">
-          <el-input-number v-model="rebateForm.debitRate" :precision="1" :step="0.1" :min="0" :max="500"></el-input-number>
-        </el-form-item>
+      width="400px">
+      <el-form ref="rebateForm" :model="rebateForm" label-width="190px" label-position="top">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="微信费率（最大值：50）" prop="wxRate">
+              <el-input-number v-model="rebateForm.wxRate" :precision="1" :step="0.1" :min="0" :max="50"></el-input-number>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="提成比例" prop="wxScale">
+              <el-select v-model="rebateForm.wxScale" placeholder="请选择">
+                <el-option
+                  v-for="item in optionsCommission"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="支付宝费率（最大值：50）" prop="aliRate">
+              <el-input-number v-model="rebateForm.aliRate" :precision="1" :step="0.1" :min="0" :max="50"></el-input-number>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="提成比例" prop="aliScale">
+              <el-select v-model="rebateForm.aliScale" placeholder="请选择">
+                <el-option
+                  v-for="item in optionsCommission"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <!-- <el-row>
+          <el-col :span="12">
+            <el-form-item label="贷记卡费率（最大值：500）" prop="creditRate">
+              <el-input-number v-model="rebateForm.creditRate" :precision="1" :step="0.1" :min="0" :max="500"></el-input-number>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="提成比例" prop="creditScale">
+              <el-select v-model="rebateForm.creditScale" placeholder="请选择">
+                <el-option
+                  v-for="item in optionsCommission"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="银联费率（最大值：6）" prop="unionpayRate">
+              <el-input-number v-model="rebateForm.unionpayRate" :precision="1" :step="0.1" :min="0" :max="6"></el-input-number>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="提成比例" prop="unionpayScale">
+              <el-select v-model="rebateForm.unionpayScale" placeholder="请选择">
+                <el-option
+                  v-for="item in optionsCommission"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="借记卡费率（最大值：500）" prop="debitRate">
+              <el-input-number v-model="rebateForm.debitRate" :precision="1" :step="0.1" :min="0" :max="500"></el-input-number>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="提成比例" prop="debitScale">
+              <el-select v-model="rebateForm.debitScale" placeholder="请选择">
+                <el-option
+                  v-for="item in optionsCommission"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row> -->
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
@@ -122,13 +204,41 @@ export default {
       rebateForm: {
         agentId: '',
         aliRate: '',
-        bestRate: '',
         creditRate: '',
         debitRate: '',
         unionpayRate: '',
-        wxRate: ''
+        wxRate: '',
+
+        wxScale: '',
+        aliScale: '',
+        debitScale: '',
+        creditScale: '',
+        unionpayScale: ''
       },
-      dialogVisible: false
+      dialogVisible: false,
+      optionsCommission:[
+        { value: '0', label: '0%'},
+        { value: '0.05', label: '5%'},
+        { value: '0.1', label: '10%'},
+        { value: '0.15', label: '15%'},
+        { value: '0.2', label: '20%'},
+        { value: '0.25', label: '25%'},
+        { value: '0.3', label: '30%'},
+        { value: '0.35', label: '35%'},
+        { value: '0.4', label: '40%'},
+        { value: '0.45', label: '45%'},
+        { value: '0.5', label: '50%'},
+        { value: '0.55', label: '55%'},
+        { value: '0.6', label: '60%'},
+        { value: '0.65', label: '65%'},
+        { value: '0.7', label: '70%'},
+        { value: '0.75', label: '75%'},
+        { value: '0.8', label: '80%'},
+        { value: '0.85', label: '85%'},
+        { value: '0.9', label: '90%'},
+        { value: '0.95', label: '95%'},
+        { value: '1', label: '100%'}
+      ]
     };
   },
   methods: {
@@ -137,6 +247,9 @@ export default {
         new Date(row.createTime),
         "yyyy/MM/dd hh:mm:ss"
       );
+    },
+    handleModify(index, row) {
+      this.$router.push({ path: "/router01/shop/page3", query: { id: row.id } });
     },
     // //重置密码
     handleReset: function(index, row) {
@@ -174,11 +287,19 @@ export default {
           this.rebateForm.agentId = res.data.agentId
           let list = res.data.agentRateConfigList
           this.rebateForm.aliRate = list.find(item => item.pay_way === 'ALI') ? list.find(item => item.pay_way === 'ALI').rate : ''
-          this.rebateForm.bestRate = list.find(item => item.pay_way === 'BEST') ? list.find(item => item.pay_way === 'BEST').rate : ''
-          this.rebateForm.creditRate = list.find(item => item.pay_way === 'CREDIT') ? list.find(item => item.pay_way === 'CREDIT').rate : ''
-          this.rebateForm.debitRate = list.find(item => item.pay_way === 'DEBIT') ? list.find(item => item.pay_way === 'DEBIT').rate : ''
-          this.rebateForm.unionpayRate = list.find(item => item.pay_way === 'UNIONPAY') ?list.find(item => item.pay_way === 'UNIONPAY').rate : ''
+          // this.rebateForm.creditRate = list.find(item => item.pay_way === 'CREDIT') ? list.find(item => item.pay_way === 'CREDIT').rate : ''
+          // this.rebateForm.debitRate = list.find(item => item.pay_way === 'DEBIT') ? list.find(item => item.pay_way === 'DEBIT').rate : ''
+          // this.rebateForm.unionpayRate = list.find(item => item.pay_way === 'UNIONPAY') ?list.find(item => item.pay_way === 'UNIONPAY').rate : ''
           this.rebateForm.wxRate = list.find(item => item.pay_way === 'WX') ? list.find(item => item.pay_way === 'WX').rate : ''
+
+          this.rebateForm.wxScale = list.find(item => item.pay_way === 'ALI') ? list.find(item => item.pay_way === 'ALI').reserve1 : ''
+          // this.rebateForm.aliScale = list.find(item => item.pay_way === 'CREDIT') ? list.find(item => item.pay_way === 'CREDIT').reserve1 : ''
+          // this.rebateForm.debitScale = list.find(item => item.pay_way === 'DEBIT') ? list.find(item => item.pay_way === 'DEBIT').reserve1 : ''
+          // this.rebateForm.creditScale = list.find(item => item.pay_way === 'UNIONPAY') ?list.find(item => item.pay_way === 'UNIONPAY').reserve1 : ''
+          this.rebateForm.aliScale = list.find(item => item.pay_way === 'WX') ? list.find(item => item.pay_way === 'WX').reserve1 : ''
+
+          console.log(this.rebateForm);
+          
         })
       });
     },
@@ -186,7 +307,6 @@ export default {
       let para = util.deepcopy(this.rebateForm)
       para.pageNum = this.page.toString();
       para.aliRate = para.aliRate ? para.aliRate.toString()  : ''
-      para.bestRate = para.bestRate ? para.bestRate.toString() : ''
       para.creditRate = para.creditRate ? para.creditRate.toString() : ''
       para.debitRate = para.debitRate ? para.debitRate.toString() : ''
       para.unionpayRate = para.unionpayRate ? para.unionpayRate.toString() : ''

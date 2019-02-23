@@ -5,15 +5,6 @@ export const optionsPayment = [{
 }, {
   value: 'ALI',
   label: '支付宝'
-}, {
-  value: 'BANK',
-  label: '银行卡'
-}, {
-  value: 'BEST',
-  label: '翼支付'
-}, {
-  value: 'UNIONPAY',
-  label: '银联二维码'
 }]
 // 支付方式
 export const optionsPaymentAll = [{

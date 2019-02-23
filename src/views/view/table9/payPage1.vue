@@ -19,7 +19,7 @@
 
 <template>
   <section>
-    <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="80px">
+    <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="100px">
       <div class="search_top">
         <el-row>
           <el-col :span="5">
@@ -48,11 +48,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="5">
-            <el-form-item label="选择代理" prop="agentId">
+            <el-form-item label="选择渠道商" prop="agentId">
               <el-select
                 v-model="filters.agentId"
                 class="fixed_search_input"
-                placeholder="请输入代理关键字查询"
+                placeholder="请输入渠道商关键字查询"
                 :multiple="false"
                 filterable
                 remote
@@ -94,7 +94,7 @@
     <!--列表-->
     <div v-loading="listLoading">
       <el-table :data="users" border stripe highlight-current-row>
-        <el-table-column prop="user_name" label="代理名称"/>
+        <el-table-column prop="user_name" label="渠道商名称"/>
         <el-table-column prop="settled_date" label="统计时间"/>
         <el-table-column :formatter="formatter_status" label="结算状态"/>
         <el-table-column prop="sum_amt" label="总金额"/>
@@ -132,11 +132,11 @@
       :visible.sync="dialogVisible"
       width="350px">
       <el-form ref="rebateForm" :model="rebateForm" label-width="80px">
-            <el-form-item label="选择代理" prop="agentId">
+            <el-form-item label="选择渠道商" prop="agentId">
               <el-select
                 v-model="rebateForm.agentId"
                 class="fixed_search_input"
-                placeholder="请输入代理关键字查询"
+                placeholder="请输入渠道商关键字查询"
                 :multiple="false"
                 filterable
                 remote

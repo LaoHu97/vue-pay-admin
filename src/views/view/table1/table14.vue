@@ -25,7 +25,7 @@
     <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="80px">
       <div class="search_top">
         <el-row>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="所属商户">
               <el-select
                 v-model="filters.mid"
@@ -48,11 +48,23 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="费率类型">
-              <el-select v-model="filters.type" placeholder="请选择费率类型">
+              <el-select v-model="filters.type" clearable placeholder="请选择费率类型">
                 <el-option
                   v-for="item in optionsType"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="审核状态">
+              <el-select v-model="filters.status1" clearable placeholder="请选择审核状态">
+                <el-option
+                  v-for="item in optionsStatus"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value">
@@ -79,10 +91,10 @@
         <el-table-column prop="rate" label="变更费率（‰）"/>
         <el-table-column :formatter="formatGmt_modified" label="修改时间"/>
         <el-table-column :formatter="formatCreate_statue" label="状态"/>
-        <el-table-column label="操作" align="center" width="180">
+        <el-table-column label="操作" align="center" width="80">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" :disabled="scope.row.status1 !== '1'"  @click="auditRate(scope.$index, scope.row)">审核</el-button>
-            <el-button type="info" size="mini" @click="clickDetailsRate(scope.$index, scope.row)">审核详情</el-button>
+            <!-- <el-button type="primary" size="mini" :disabled="scope.row.status1 !== '1'"  @click="auditRate(scope.$index, scope.row)">审核</el-button> -->
+            <el-button type="success" size="mini" @click="clickDetailsRate(scope.$index, scope.row)">审核</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -126,13 +138,23 @@
         <el-form-item label="附件图片" v-show="detailsForm.img_protocol">
           <img :src="detailsForm.img_protocol" alt="附件图片" class="img_protocol">
         </el-form-item>
-        <el-form-item label="附件" v-show="detailsForm.reserve2">
-          <a :href="detailsForm.reserve2">下载</a>
+        <el-form-item label="附件" v-show="detailsForm.reserve3">
+          <a :href="detailsForm.reserve3">下载</a>
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
+      <el-form ref="formRate" :model="formRate" label-width="100px" label-position="left" v-show="detailsForm.status1 === '1'">
+        <el-form-item label="审核意见" prop="operator1_msg" :rules="[{ required: true, message: '请输入审核意见', trigger: 'blur' }]">
+          <el-input type="textarea" :rows="2" placeholder="请输入审核意见" v-model="formRate.operator1_msg">
+          </el-input>
+        </el-form-item>
+        <el-form-item label-width="0" style="text-align: center;">
+          <el-button type="success" size="p" @click="submiltRate('formRate', '3')">通过</el-button>
+          <el-button type="danger" size="p" @click="submiltRate('formRate', '2')">驳回</el-button>
+        </el-form-item>
+      </el-form>
+      <!-- <span slot="footer" class="dialog-footer">
         <el-button @click="detailsDialogVisible = false">关 闭</el-button>
-      </span>
+      </span> -->
     </el-dialog>
     <!--工具条-->
     <el-row>
@@ -167,7 +189,8 @@ export default {
     return {
       filters: {
         mid: '',
-        type: ''
+        type: '',
+        status1: '1'
       },
       optionsMer: [],
       optionsType: [{
@@ -180,13 +203,23 @@ export default {
       merLoading: false,
       dialogVisibleRate: false,
       formRate: {
-        id: '',
-        mid: '',
-        status1: '2',
+        // id: '',
+        // mid: '',
+        // status1: '2',
         operator1_msg: ''
       },
       detailsDialogVisible: false,
-      detailsForm: {}
+      detailsForm: {},
+      optionsStatus: [{
+          value: '3',
+          label: '通过'
+      }, {
+          value: '2',
+          label: '驳回'
+      }, {
+          value: '1',
+          label: '审核中'
+      }]
     };
   },
   methods: {
@@ -208,21 +241,32 @@ export default {
     clickDetailsRate(index, row) {
       this.detailsDialogVisible = true
       this.$nextTick(() => {
+        this.$refs.formRate.resetFields()
         queryChangeRate({id: row.id}).then(res => {
           this.detailsForm = res.data.returnMap
         })
       })
     },
-    submiltRate() {
-      let para = util.deepcopy(this.formRate)
-      examineChangeRate(para).then(res => {
-        this.dialogVisibleRate = false
-        this.getUsers()
-        this.$message({
-          message: res.message,
-          type: 'success'
-        })
-      })
+    submiltRate(formName, data) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let para = util.deepcopy(this.formRate)
+            para.status1 = data
+            para.mid = this.detailsForm.mid
+            para.id = this.detailsForm.id
+            examineChangeRate(para).then(res => {
+              this.detailsDialogVisible = false
+              this.getUsers()
+              this.$message({
+                message: res.message,
+                type: 'success'
+              })
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
     },
     auditRate(index, row) {
       this.dialogVisibleRate = true

@@ -7,11 +7,17 @@
   font-size: 24px;
   text-align: center;
 }
+.result_main{
+  background: rgb(235, 235, 235);
+  padding: 15px;
+  border: 1px solid #999;
+  border-radius: 5px;
+}
 </style>
 
 <template>
   <section class="form_main">
-    <p class="form_main_title">联网核查</p>
+    <p class="form_main_title">身份证核查</p>
     <el-form :model="formNetworking" :rules="rulesNetworking" ref="formNetworking" label-width="80px" label-position="left">
       <el-form-item label="姓名" prop="idtfna">
         <el-input v-model="formNetworking.idtfna"></el-input>
@@ -22,6 +28,17 @@
       <el-form-item>
         <el-button type="primary" @click="networkingClick('formNetworking')">确 定</el-button>
         <el-button @click="resetForm('formNetworking')">重置</el-button>
+      </el-form-item>
+    </el-form>
+    <el-form class="result_main" :model="detForm" v-if="detFormHeidder" label-width="130px" ref="detForm" label-position="left">
+      <el-form-item label="姓名：">
+        <span>{{detForm.idtfna}}</span>
+      </el-form-item>
+      <el-form-item label="身份证号：">
+        <span>{{detForm.idcard}}</span>
+      </el-form-item>
+      <el-form-item label="验证结果：">
+        <el-tag :type="resultTag">{{detForm.message}}</el-tag>
       </el-form-item>
     </el-form>
   </section>
@@ -50,6 +67,9 @@ export default {
         idtfna: '',
         idcard: ''
       },
+      detForm: {},
+      detFormHeidder: false,
+      resultTag: 'success',
       rulesNetworking: {
         idtfna: [
           { required: true, message: '请输入姓名', trigger: 'blur' },
@@ -73,10 +93,14 @@ export default {
           }).then(() => {
             let para = util.deepcopy(this.formNetworking)
             threeElements(para).then(res => {
-              this.$message({
-                type: 'success',
+              let r = {
+                idtfna: res.data.idtfna,
+                idcard: res.data.idcard,
                 message: res.message
-              });
+              }
+              this.detFormHeidder = true
+              this.detForm = r
+              this.resultTag = res.data.status === 'Y' ? 'success' : 'warning'
             })
           }).catch(() => {
             this.$message({

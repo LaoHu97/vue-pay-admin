@@ -391,7 +391,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="5">
-            <el-form-item label="附件" prop="img_other" >
+            <el-form-item label="补充资料" prop="img_other" >
               <el-upload
                 class="avatar-uploader"
                 :data="{id:imageUrl.id}"
@@ -403,6 +403,7 @@
                 <!-- <img v-if="imageUrl.img_other" :src="imageUrl.img_other" class="avatar"> -->
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
+              <a :href="imageUrl.img_other">下载</a>
             </el-form-item>
           </el-col>
         </el-row>
@@ -589,7 +590,7 @@ export default {
         ],
         thum_img_open_permits: [
           {
-            required: true,
+            required: false,
             message: "请上传开户许可证照片"
           }
         ],
@@ -1003,17 +1004,15 @@ export default {
       return isJPG && isLt3M;
     },
     beforeAvatarUploadOther(file) {
-      console.log(file.type);
-      // const isJPG = file.type === 'application/x-zip-compressed';
+      const isZIP = file.name.substring(file.name.lastIndexOf('.') + 1)	 === 'zip'
       const isLt3M = file.size / 1024 / 1024 < 20;
-      // if (!isJPG) {
-      //   this.$message.error('上传附件只能是 ZIP 格式!');
-      // }
+      if (!isZIP) {
+        this.$message.error('上传附件只能是 ZIP 格式!');
+      }
       if (!isLt3M) {
         this.$message.error('上传附件大小不能超过 20MB!');
       }
-      // return isJPG && isLt3M;
-      return isLt3M;
+      return isZIP && isLt3M;
     },
     handleAvatarScucess1(res, file) {
       this.imageUrl.img_business_license = res.data.locationPath;
@@ -1104,7 +1103,7 @@ export default {
               type: "success"
             });
             this.$router.push({
-              path: "/deal/shop/page1"
+              path: "/router01/shop/page1"
             });
           });
         } else {

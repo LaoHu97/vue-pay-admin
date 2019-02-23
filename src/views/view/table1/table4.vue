@@ -19,6 +19,7 @@
 
 <template>
   <section>
+    <el-button size="small" round @click="historyGo" style="margin-top:15px;">返回</el-button>
     <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="98px">
       <div class="search_top">
         <el-row>
@@ -88,7 +89,7 @@
         style="width: 100%;"
       >
         <el-table-column prop="username" label="款台名称" min-width="120"></el-table-column>
-        <el-table-column prop="account" label="登录帐号" min-width="120"></el-table-column>
+        <el-table-column prop="account" label="款台编号" min-width="120"></el-table-column>
         <el-table-column prop="linkman" label="联系人" min-width="120"></el-table-column>
         <el-table-column prop="phone" label="手机号" min-width="120"></el-table-column>
         <el-table-column align="center" label="二维码" width="100">
@@ -107,7 +108,7 @@
         </el-table-column> -->
         <el-table-column align="center" label="操作" width="260">
           <template slot-scope="scope">
-            <el-button type="danger" size="mini" @click="handleReset(scope.$index, scope.row)">密码重置</el-button>
+            <!-- <el-button type="danger" size="mini" @click="handleReset(scope.$index, scope.row)">密码重置</el-button> -->
             <el-button type="warning" size="mini" @click="handleModify(scope.$index, scope.row)">修改</el-button>
             <el-button type="info" size="mini" @click="handleDetails(scope.$index, scope.row)">详情</el-button>
           </template>
@@ -138,7 +139,7 @@
         <el-form-item label="款台名称：">
           <span>{{detailsForm.username}}</span>
         </el-form-item>
-        <el-form-item label="款台帐号：">
+        <el-form-item label="款台编号：">
           <span>{{detailsForm.account}}</span>
         </el-form-item>
         <el-form-item label="联系人：">
@@ -153,13 +154,13 @@
         <el-form-item label="所属门店：">
           <span>{{detailsForm.store_name}}</span>
         </el-form-item>
-        <el-form-item label="万鼎终端：">
+        <el-form-item label="对接终端号：">
           <span>{{detailsForm.reverse1}}</span>
         </el-form-item>
-        <el-form-item label="万鼎Token：">
+        <el-form-item label="对接token：">
           <span>{{detailsForm.etoken}}</span>
         </el-form-item>
-        <el-form-item label="扫呗终端ID：">
+        <!-- <el-form-item label="扫呗终端ID：">
           <span>{{detailsForm.terminal_id}}</span>
         </el-form-item>
         <el-form-item label="微收银设备号：">
@@ -170,7 +171,7 @@
         </el-form-item>
         <el-form-item label="富友设备号：">
           <span>{{detailsForm.fuiou_num}}</span>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
     </el-dialog>
     <el-dialog
@@ -234,13 +235,13 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <!-- <el-col :span="12">
             <el-form-item label="扫呗终端ID" prop="terminal_id">
               <el-input v-model="addEmpForm.terminal_id" placeholder="请输入扫呗终端ID"></el-input>
             </el-form-item>
-          </el-col>
+          </el-col> -->
         </el-row>
-        <el-row :gutter="20">
+        <!-- <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="支付宝操作员编号" prop="ali_operation_id">
               <el-input v-model="addEmpForm.ali_operation_id" placeholder="请输入支付宝操作员编号"></el-input>
@@ -263,7 +264,7 @@
               <el-input v-model="addEmpForm.fuiou_id" placeholder="请输入富友设备号"></el-input>
             </el-form-item>
           </el-col>
-        </el-row>
+        </el-row> -->
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addEmpDialogVisible = false">取 消</el-button>
@@ -344,6 +345,13 @@ export default {
     };
   },
   methods: {
+    historyGo() {
+      if (this.$route.query.sid) {
+        this.$router.go(-2) 
+      }else{
+        this.$router.go(-1) 
+      }
+    },
     clickEmp() {
       let para = {
         store_id: this.$route.query.sid,

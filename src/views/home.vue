@@ -29,15 +29,15 @@
   <el-container>
     <el-header>
       <el-row type="flex" justify="space-between" class="header_top">
-        <el-col :span="22" class="header_top_xian">
+        <el-col :span="8" class="header_top_xian">
           <img src="@/assets/images/webwxgetmsgimg.png" alt="logo" height="25px;">
           <el-button type="text" size="mini" class="header_top_collaspe" @click="uploadCollapse">
             <i class="iconfont icon-ego-menu-copy" v-if="isCollapse"/>
             <i class="iconfont icon-ego-menu" v-else/>
           </el-button>
         </el-col>
-        <!-- <el-col :span="10">
-          <el-menu :default-active="activeIndex" mode="horizontal" router>
+        <el-col :span="13">
+          <el-menu :default-active="activeIndex" mode="horizontal" router @select="selectTopNav">
             <template v-for="(route, index) in $router.options.routes">
               <el-menu-item
                 :key="index"
@@ -49,14 +49,9 @@
               </el-menu-item>
             </template>
           </el-menu>
-        </el-col> -->
-        <el-col :span="2" class="header_text header_top_xian">
+        </el-col>
+        <el-col :span="3" class="header_text header_top_xian">
           <div class="header_top_btn">
-            <!-- <el-button
-              type="warning"
-              size="mini"
-              round
-            @click="clickEditPassword">修改密码<i class="iconfont icon-xiugai"/></el-button>-->
             <el-button type="danger" size="mini" round @click="loginOut">
               退出登录
               <i class="iconfont icon-tuichu"/>
@@ -72,10 +67,11 @@
 </template>
 <script>
 import { loginOut } from "@/api/api";
+import index from '../router';
 export default {
   data() {
     return {
-      activeIndex: "/deal"
+      activeIndex: '/router03'
     };
   },
   computed: {
@@ -83,8 +79,16 @@ export default {
       return this.$store.state.viewCollapse.isCollapse;
     }
   },
-  mounted() {},
+  mounted() {
+    this.activeIndex = sessionStorage.getItem('index') || '/router03'
+  },
   methods: {
+    selectTopNav(index, path){
+      let i = index.substr(index.length-1, 1)
+      sessionStorage.setItem("menu", i);
+      sessionStorage.setItem("index", index);
+      this.$store.dispatch("upload_topNum", i);
+    },
     clickEditPassword() {
       this.$router.push({ path: "/account/password" });
     },

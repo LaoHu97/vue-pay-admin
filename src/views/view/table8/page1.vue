@@ -115,10 +115,10 @@ export default {
     // },
     //新增渠道商
     getShop: function() {
-      this.$router.push("/deal/shop/page3");
+      this.$router.push("/router01/shop/page3");
     },
     handleModify(index, row) {
-      this.$router.push({ path: "/deal/shop/page3", query: { id: row.id } });
+      this.$router.push({ path: "/router01/shop/page3", query: { id: row.id } });
     },
     //状态转换
     formatMerchantStatus: function(row, column) {

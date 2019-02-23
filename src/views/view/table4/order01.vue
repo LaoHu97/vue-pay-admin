@@ -9,11 +9,17 @@
 }
 </style>
 <style>
-.fixed_search_input {
-  max-width: 160px;
+.fixed_search_input{
+    max-width: 125px;
 }
-.fixed_search_date {
-  max-width: 220px;
+.fixed_search_input_datetime{
+    max-width: 195px;
+}
+.fixed_search_seach{
+  max-width: 125px;
+}
+.fixed_search_input_date{
+    max-width: 145px;
 }
 </style>
 
@@ -22,22 +28,18 @@
     <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="80px">
       <div class="search_top">
         <el-row>
-          <el-col :span="10">
-            <el-form-item label="查询日期" prop="dateTime">
-              <el-date-picker
-                v-model="filters.dateTime"
-                type="datetimerange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                value-format="timestamp"
-                :picker-options="pickerOptions"
-                :default-time="['00:00:00', '23:59:59']"
-                :clearable="false"
-              ></el-date-picker>
+          <el-col :span="13">
+            <el-form-item prop="startTime" label="交易时间">
+              <el-date-picker v-model="filters.startTime" value-format="timestamp" class="fixed_search_input_datetime" type="datetime" placeholder="选择开始日期" :picker-options="pickerOptions1" :clearable="false" :editable='false'>
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item>至</el-form-item>
+            <el-form-item prop="endTime">
+              <el-date-picker v-model="filters.endTime" value-format="timestamp" class="fixed_search_input_datetime" type="datetime" placeholder="选择结束日期" :picker-options="pickerOptions2" :clearable="false" :editable='false'>
+              </el-date-picker>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="7">
             <el-form-item label="订单状态" prop="status">
               <el-select v-model="filters.status" placeholder="请选择">
                 <el-option
@@ -49,7 +51,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="4">
             <el-form-item>
               <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
               <el-button @click="resetForm('filters')" round>重置</el-button>
@@ -181,12 +183,8 @@ export default {
   data() {
     return {
       filters: {
-        startTime: "",
-        endTime: "",
-        dateTime: [
-          new Date(new Date().getFullYear(), new Date().getMonth(),new Date().getDate()-1).getTime(),
-          new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()-1,23,59,59).getTime()
-        ],
+        startTime: new Date(new Date().getFullYear(), new Date().getMonth(),new Date().getDate()-1).getTime(),
+        endTime: new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()-1,23,59,59).getTime(),
         status: "0"
       },
       statusOptions: [
@@ -202,25 +200,26 @@ export default {
       orderDialogVisible: false,
       editOrderForm: {
         id: "",
-        status: "0",
-        // rate: "",
-        // payWay: "WX"
+        status: "0"
       },
       optionsPayment: optionsPaymentAll,
       detailsDialogVisible: false,
       detailsForm: {},
-      pickerOptions: {
-        disabledDate(time) {
-          return (
-            time.getTime() >
-            new Date(
-              new Date(new Date().toLocaleDateString()).getTime() +
-                24 * 60 * 60 * 1000 -
-                1
-            )
-          );
+        pickerOptions1: {
+          disabledDate: (time) => {
+            if (time.getTime() > Date.now()) {
+              return true;
+            }
+          }
+        },
+        pickerOptions2: {
+          disabledDate: (time) => {
+            let startTimeOne = this.filters.startTime
+            if (time.getTime() < startTimeOne) {
+              return true;
+            }
+          }
         }
-      }
     };
   },
   methods: {
@@ -324,8 +323,6 @@ export default {
     getList() {
       let para = this.filters;
       para.pageNum = this.page.toString();
-      para.startTime = para.dateTime ? para.dateTime[0].toString() : "";
-      para.endTime = para.dateTime ? para.dateTime[1].toString() : "";
       queryReplacementOrder(para).then(res => {
         this.users = res.data.orderList;
         this.total = res.data.totalCount;

@@ -105,7 +105,7 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="6">
+          <!-- <el-col :span="6">
             <el-form-item label="银行卡类型">
               <el-select
                 v-model="filters.cardType"
@@ -122,14 +122,14 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-          </el-col>
+          </el-col> -->
           <el-col :span="6">
-            <el-form-item label="订单状态">
+            <el-form-item label="支付状态">
               <el-select
                 v-model="filters.status"
                 clearable
                 class="fixed_search_input"
-                placeholder="请选择订单状态"
+                placeholder="请选择支付状态"
               >
                 <el-option
                   v-for="item in optionsPayState"
@@ -141,11 +141,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="消费金额">
+            <el-form-item label="交易金额">
               <el-input
                 v-model="filters.goodsprice"
                 class="fixed_search_input"
-                placeholder="请输入消费金额"
+                placeholder="请输入交易金额"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -154,29 +154,26 @@
               <el-input v-model="filters.orderId" class="fixed_search_input" placeholder="请输入订单号"></el-input>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="6">
-            <el-form-item label="渠道号">
+            <el-form-item label="第三方订单号">
               <el-input
                 v-model="filters.transactionId"
                 class="fixed_search_input"
-                placeholder="请输入渠道号"
+                placeholder="请输入第三方订单号"
               ></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="日期时间">
-              <el-date-picker
-                v-model="filters.queryDateTime"
-                type="datetimerange"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                value-format="timestamp"
-                :picker-options="pickerOptions"
-                :clearable="false"
-                :default-time="['00:00:00', '23:59:59']"
-              ></el-date-picker>
+        </el-row>
+        <el-row>
+          <el-col :span="18">
+            <el-form-item prop="startTime" label="交易时间">
+              <el-date-picker v-model="filters.startTime" value-format="timestamp" class="fixed_search_input_datetime" type="datetime" @change="changTime" placeholder="选择开始日期" :picker-options="pickerOptions1" :clearable="false" :editable='false'>
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item>至</el-form-item>
+            <el-form-item prop="endTime">
+              <el-date-picker v-model="filters.endTime" value-format="timestamp" class="fixed_search_input_datetime" type="datetime" placeholder="选择结束日期" :picker-options="pickerOptions2" :clearable="false" :editable='false'>
+              </el-date-picker>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -191,19 +188,18 @@
     <div v-loading="listLoading">
       <el-table :data="users" border style="width: 100%;">
         <el-table-column prop="orderId" label="订单号" min-width="120"></el-table-column>
-        <el-table-column prop="transactionId" label="渠道号" min-width="120"></el-table-column>
-        <el-table-column prop="username" label="商户名称" min-width="120"></el-table-column>
         <el-table-column
-          label="付款时间"
+          label="交易时间"
           min-width="120"
           :formatter="formatterGmtCreate"
         ></el-table-column>
-        <el-table-column prop="goodsPrice" label="付款金额" min-width="120"></el-table-column>
-        <el-table-column prop="status" label="支付状态" min-width="120" :formatter="formatterStatus"></el-table-column>
+        <el-table-column prop="goodsPrice" label="交易金额" min-width="120"></el-table-column>
         <el-table-column prop="payWay" label="支付方式" min-width="120" :formatter="formatterPayWay"></el-table-column>
+        <el-table-column prop="status" label="支付状态" min-width="120" :formatter="formatterStatus"></el-table-column>
+        <el-table-column prop="username" label="商户名称" min-width="120"></el-table-column>
         <el-table-column label="操作" align="center" width="120">
           <template slot-scope="scope">
-            <el-button type="success" size="mini" @click="handleDet(scope.$index, scope.row)">详 情</el-button>
+            <el-button type="success" size="mini" @click="handleDetail(scope.$index, scope.row)">交易详情</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -220,41 +216,6 @@
         style="text-align:center;background:#fff;padding:15px;"
       ></el-pagination>
     </el-row>
-    <!--详情界面-->
-    <el-dialog title="订单详情" :visible.sync="detFormVisible" width="30%">
-      <el-form :model="detForm" label-width="120px" label-position="left">
-        <el-form-item label="订单号">
-          <span>{{detForm.orderId}}</span>
-        </el-form-item>
-        <el-form-item label="渠道号：">
-          <span>{{detForm.transactionId}}</span>
-        </el-form-item>
-        <el-form-item label="付款金额：">
-          <span>{{detForm.goodsPrice}}</span>
-        </el-form-item>
-        <el-form-item label="付款时间：">
-          <span>{{formatterGmtCreate(detForm)}}</span>
-        </el-form-item>
-        <el-form-item label="支付状态：">
-          <span>{{formatterStatus(detForm)}}</span>
-        </el-form-item>
-        <el-form-item label="所属门店：">
-          <span>{{detForm.storeName}}</span>
-        </el-form-item>
-        <el-form-item label="所属款台：">
-          <span>{{detForm.username}}</span>
-        </el-form-item>
-        <el-form-item label="支付方式：">
-          <span>{{formatterPayWay(detForm)}}</span>
-        </el-form-item>
-        <el-form-item label="备注：">
-          <span>{{detForm.goodsDesc}}</span>
-        </el-form-item>
-      </el-form>
-      <div slot="footer">
-        <el-button type="primary" @click.native="detFormVisible = false">关 闭</el-button>
-      </div>
-    </el-dialog>
   </section>
 </template>
 
@@ -269,7 +230,6 @@ import {
 import getUsersList from "@/mixins/Users";
 import {
   queryOrderList,
-  queryOrderDetail,
   updateTerminal,
   selectStoreList,
   selectEmpsBySid,
@@ -278,57 +238,60 @@ import {
 export default {
   mixins: [getUsersList],
   data() {
+    var myDate = new Date();
     return {
       filters: {
-        queryDateTime: [          
-          new Date(new Date().getFullYear(), new Date().getMonth(),new Date().getDate()).getTime(),
-          new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate(),23,59,59).getTime()
-        ],
+        startTime: new Date(myDate.getFullYear(), myDate.getMonth(), myDate.getDate()).getTime(),
+        endTime: new Date(myDate.getFullYear(), myDate.getMonth(), myDate.getDate(), 23, 59, 59).getTime(),
         mid: "",
         sid: "",
         eid: "",
         payWay: "",
         cardType: "",
-        status: "",
+        status: "SUCCESS",
         goodsprice: "",
         orderId: "",
         transactionId: ""
       },
-      optionsCardType: [
-        {
-          value: "CREDIT",
-          label: "贷记卡"
-        },
-        {
-          value: "DEBIT",
-          label: "借记卡"
-        }
-      ],
-      detFormVisible: false,
       optionsPayment: optionsPayment,
       optionsPayState: optionsPayState,
-      detForm: {},
       empLoading: false,
       storeLoading: false,
       merLoading: false,
       optionsEmp: [],
       optionsStore: [],
       optionsMer: [],
-      pickerOptions: {
-        disabledDate(time) {
-          return (
-            time.getTime() >
-            new Date(
-              new Date(new Date().toLocaleDateString()).getTime() +
-                24 * 60 * 60 * 1000 -
-                1
-            )
-          );
+        pickerOptions1: {
+          disabledDate: (time) => {
+            if (time.getTime() > Date.now()) {
+              return true;
+            }
+          }
+        },
+        pickerOptions2: {
+          disabledDate: (time) => {
+            let startTimeOne = this.filters.startTime
+            if (time.getTime() > startTimeOne + 3600 * 1000 * 24 * 30 || time.getTime() < startTimeOne) {
+              return true;
+            }
+          }
         }
-      }
     };
   },
   methods: {
+    changTime(date) {
+      let end_time = this.filters.endTime
+      let date_time = date
+      if (date_time < end_time - 3600 * 1000 * 24 * 30) {
+        this.filters.endTime = date_time + 3600 * 1000 * 24 * 1 - 1000
+      }
+    },
+    handleDetail(index, row) {
+      this.$router.push({
+        path: "/router03/shop/order5",
+        query: { id: row.id }
+      });
+    },
     formatterGmtCreate(row, column) {
       return (row.payTime = util.formatDate.format(
         new Date(row.payTime),
@@ -429,10 +392,10 @@ export default {
     //获取用户列表
     getList() {
       this.listLoading = true;
-      let para = util.deepcopy(this.filters)
+      let para = this.filters
       para.pageNum = this.page
-      para.startTime = para.queryDateTime ? para.queryDateTime[0].toString() : "";
-      para.endTime = para.queryDateTime ? para.queryDateTime[1].toString() : ""
+      para.startTime = para.startTime.toString()
+      para.endTime = para.endTime.toString()
       para.mid = para.mid.toString()
       para.sid = para.sid.toString()
       para.eid = para.eid.toString()
@@ -440,13 +403,6 @@ export default {
         this.listLoading = false;
         this.total = res.data.totalCount;
         this.users = res.data.orderList;
-      });
-    },
-    //显示详情界面
-    handleDet: function(index, row) {
-      this.detFormVisible = true;
-      queryOrderDetail({ orderId: row.orderId }).then(res => {
-        this.detForm = res.data.order;
       });
     }
   }

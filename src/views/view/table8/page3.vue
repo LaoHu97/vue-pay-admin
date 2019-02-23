@@ -50,7 +50,7 @@
         <el-row>
           <el-col>
             <el-form-item label="渠道商名称：" prop="merchant_name">
-              <el-input v-model.trim="form.merchant_name" :disabled="$route.query.id ? true : false" placeholder="全局唯一不可重复"></el-input>
+              <el-input v-model.trim="form.merchant_name" placeholder="全局唯一不可重复"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -106,6 +106,7 @@
             <el-form-item label="联系人证件有效期" prop="person_id_expire">
                 <el-date-picker
                   v-model="form.person_id_expire"
+                  :disabled="form.person_id_expire_long === 'Y' ? true : false"
                   :picker-options="pickerOptions"
                   type="date"
                   value-format="timestamp"
@@ -411,6 +412,7 @@ export default {
     },
     person_id_expire_long_change(change){
       if (change === 'Y') {
+        this.form.person_id_expire = ''
         this.rules.person_id_expire[0].required = false
       }else{
         this.rules.person_id_expire[0].required = true
@@ -481,7 +483,7 @@ export default {
           para.agent_id = this.$route.query.agent_id;
           addBsbMerone(para).then(res => {
             this.$router.push({
-              path: "/deal/shop/page4",
+              path: "/router01/shop/page4",
               query: {
                 id: res.data.id,
                 shop_id: res.data.shop_id,

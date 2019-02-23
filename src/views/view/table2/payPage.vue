@@ -55,7 +55,7 @@
                 :loading="shopSearchLoading"
                 clearable
                 @focus="clickShop" 
-@change="selectShopChange">
+                @change="selectShopChange">
                 <el-option
                   v-for="item in optionsShop"
                   :key="item.id"

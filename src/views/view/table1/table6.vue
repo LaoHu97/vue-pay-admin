@@ -14,6 +14,11 @@
   width: 100px;
   height: 100px;
 }
+.form_item{
+  color: #f00;
+  font-size: 8px;
+  margin: 0;
+}
 </style>
 <style>
 .fixed_search_input {
@@ -125,20 +130,19 @@
           width="320">
           <template slot-scope="scope">
             <el-button
-              type="info"
-              plain
+              type="success"
               size="mini"
-              @click="handleDetail(scope.$index, scope.row)">查看详情</el-button>
+              @click="handleDetail(scope.$index, scope.row)">审核</el-button>
             <el-button
               type="warning"
               size="mini"
               :disabled="scope.row.merchant_status !== '3'"
               @click="synchronousPay(scope.$index, scope.row)">同步支付信息</el-button>
-            <el-button
+            <!-- <el-button
               type="success"
               size="mini"
               :disabled="scope.row.merchant_status !== '1'"
-              @click="handleRefund(scope.$index, scope.row)">审核</el-button>
+              @click="handleRefund(scope.$index, scope.row)">审核</el-button> -->
             <!-- <el-dropdown>
               <el-button size="mini" type="primary" style="margin-left:10px">
                 实名认证<i class="el-icon-arrow-down el-icon--right"></i>
@@ -256,6 +260,7 @@
               <el-col :span="12">
                 <el-form-item label="商户详细地址">
                   <span>{{ formDetail.merchant_address }}</span>
+                  <p class="form_item" v-show="formDetail.merchant_address">系统中已有{{addressCount}}条重复数据</p>
                 </el-form-item>
               </el-col>
             </el-row><el-row>
@@ -273,6 +278,7 @@
               <el-col :span="12">
                 <el-form-item label="联系人证件号">
                   <span>{{formDetail.person_id_no}}</span>
+                  <p class="form_item" v-show="formDetail.person_id_no">系统中已有{{personCount}}条重复数据</p>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -352,95 +358,104 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="法人证件号">
-              <span>{{formDetail.merchant_id_no}}</span>
+            <el-form-item label="法人证件类型">
+              <span>{{formDetail.merchant_id_type_name}}</span>
             </el-form-item>
           </el-col>
         </el-row><el-row>
+          <el-col :span="12">
+            <el-form-item label="法人证件号">
+              <span>{{formDetail.merchant_id_no}}</span>
+              <p class="form_item" v-show="formDetail.merchant_id_no">系统中已有{{cardCount}}条重复数据</p>
+            </el-form-item>
+          </el-col>
           <el-col :span="12">
             <el-form-item label="法人证件有效期">
               <span>{{formatDatemerchant_id_expire(formDetail)}}</span>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="法人手机号">
               <span>{{formDetail.legal_phone}}</span>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="结算人身份证号">
               <span>{{formDetail.settle_id_no}}</span>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="结算人身份证有效期">
               <span>{{formatDatesettle_id_expire(formDetail)}}</span>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="结算人账户开户名">
               <span>{{formDetail.account_name}}</span>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="结算人账户开户号">
               <span>{{formDetail.account_no}}</span>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="银行卡预留手机号">
               <span>{{formDetail.account_phone}}</span>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="结算账户开户行">
               <span>{{formDetail.bank_zname}}</span>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="结算户开户支行">
               <span>{{formDetail.bank_name}}</span>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="业务员">
               <span>{{formDetail.salesman_name}}</span>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="控制人姓名">
               <span>{{formDetail.contro_name}}</span>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="控制人证件类型">
-              <span>{{formDetail.contro_id_type}}</span>
+              <span>{{formDetail.contro_id_type_name}}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="控制人证件号">
+              <span>{{formDetail.contro_id_no}}</span>
+              <p class="form_item" v-show="formDetail.contro_id_no">系统中已有{{controCount}}条重复数据</p>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="12">
-            <el-form-item label="控制人证件号">
-              <span>{{formDetail.contro_id_no}}</span>
-            </el-form-item>
-          </el-col>
           <el-col :span="12">
             <el-form-item label="控制人证件有效期">
               <span>{{formatDatecontro_id_expire(formDetail)}}</span>
             </el-form-item>
           </el-col>
         </el-row>
-          </div>
+      </div>
         </el-card>
         <el-card class="box-card">
           <div slot="header">
@@ -523,7 +538,7 @@
         <el-card class="box-card">
           <div slot="header">
             <span>证件照片</span>
-            <a :href="formDetail.img_other" style="float: right; padding: 3px 0" type="text">附件下载</a>
+            <a :href="formDetail.img_other" v-if="formDetail.img_other" style="float: right; padding: 3px 0" type="text">补充资料</a>
           </div>
           <div>
             <el-row>
@@ -763,6 +778,19 @@
             </el-row>
           </div>
         </el-card>
+        <el-form v-if="formDetail.merchant_status === '1'" :model="formDialog" label-position="left" label-width="100px" ref="formDialog" style="margin-top:25px;">
+          <el-form-item label="备注信息" prop="error_msg" :rules="[{ required: true, message: '请输入备注信息', trigger: 'blur' }]">
+            <el-input
+              type="textarea"
+              v-model="formDialog.error_msg"
+              :autosize="{ minRows: 2, maxRows: 4}"
+              placeholder="请输入备注信息"/>
+          </el-form-item>
+          <el-form-item label-width="0" prop="radioRefund" style="text-align: center;">
+              <el-button type="success" size="d" @click="submitRefund('formDialog', '3')">通 过</el-button>
+              <el-button type="danger" size="d" @click="submitRefund('formDialog', '2')">驳 回</el-button>
+          </el-form-item>
+        </el-form>
       </el-form>
     </el-dialog>
     <el-dialog
@@ -791,13 +819,9 @@
             placeholder="请输入备注信息"/>
         </el-form-item>
       </el-form>
-      <span
-        slot="footer"
-        class="dialog-footer">
+      <span slot="footer" class="dialog-footer">
         <el-button @click="dialogRefundVisible = false">取 消</el-button>
-        <el-button
-          type="primary"
-          @click="submitRefund('formDialog')">确 定</el-button>
+        <el-button type="primary" @click="submitRefund('formDialog')">确 定</el-button>
       </span>
     </el-dialog>
     <!--工具条-->
@@ -815,7 +839,7 @@
 </template>
 
 <script>
-import { changeAgentMerEnter, ChangeAgentShop, changeStatus, downloadAgentImages, openWxAli, fourElements, threeElements } from '@/api/api'
+import { changeAgentMerEnter, ChangeAgentShop, changeStatus, downloadAgentImages, openWxAli, fourElements, threeElements, repeatRemind } from '@/api/api'
 import { optionsFormDetail } from '@/util/mockData.js'
 import getUsersList from '@/mixins/Users'
 import getRemoteSearch from '@/mixins/RemoteSearch'
@@ -842,6 +866,12 @@ export default {
     }
     return {
       filters: {},
+
+      addressCount: 1,
+      cardCount: 1,
+      controCount: 1,
+      personCount: 1,
+
       downloadAgentImages: '',
       dialogDetailVisible: false,
       dialogRefundVisible: false,
@@ -1088,17 +1118,17 @@ export default {
       
       window.open(url)
     },
-    submitRefund (formName) {
+    submitRefund (formName, data) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let para = {
             id: this.id,
             shop_id: this.shop_id,
-            merchant_status: this.formDialog.radioRefund,
+            merchant_status: data,
             error_msg: this.formDialog.error_msg
           }
           changeStatus(para).then(res => {
-            this.dialogRefundVisible = false
+            this.dialogDetailVisible = false
             this.getUsers()
             this.$refs[formName].resetFields()
             this.$message({
@@ -1119,14 +1149,33 @@ export default {
         this.total = res.data.totalCount
       })
     },
+    getRepeatRemind () {
+      let para = {
+        contro_id_no: this.formDetail.contro_id_no,
+        person_id_no: this.formDetail.person_id_no,
+        merchant_id_no: this.formDetail.merchant_id_no,
+        merchant_address: this.formDetail.merchant_address
+      }
+      repeatRemind(para).then(res => {
+        this.controCount = res.data.controCount
+        this.personCount = res.data.personCount
+        this.cardCount = res.data.cardCount
+        this.addressCount = res.data.addressCount
+      })
+    },
     getListDetail (change, val) {
       ChangeAgentShop({ id: change, shop_id: val }).then(res => {
         this.formDetail = res.data.changeAgentShop 
         this.bsbPay = res.data.bsbPay
+        this.$nextTick(() => {
+          this.getRepeatRemind()
+        })
       })
     },
     handleDetail (index, row) {
       this.dialogDetailVisible = true
+      this.id = row.id
+      this.shop_id = row.shop_id
       this.getListDetail(row.id, row.shop_id)
       this.downloadAgentImages = `${downloadAgentImages}?id=${row.id}&shop_id=${row.shop_id}&filename=${row.merchant_name}&agent_id=${row.agent_id}`
     }

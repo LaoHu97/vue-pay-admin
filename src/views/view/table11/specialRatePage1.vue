@@ -23,21 +23,8 @@
       <div class="search_top">
         <el-row>
           <el-col :span="6">
-            <el-form-item label="证件类型" prop="cardType">
-              <el-select v-model="filters.cardType" placeholder="请选择证件类型">
-                <el-option
-                  v-for="item in optionsCardType"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
             <el-form-item>
-              <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
-              <el-button @click="specialRateClick" round>新增特殊费率</el-button>
+              <el-button type="primary" @click="specialRateClick" round>新增特殊费率</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -46,9 +33,9 @@
     <!--列表-->
     <div v-loading="listLoading">
       <el-table :data="users" border="" stripe highlight-current-row>
-        <el-table-column prop="speName" align="center" label="特殊费率名称"/>
-        <el-table-column prop="payWay" align="center" label="支付方式" :formatter="payWayFormatter"/>
-        <el-table-column prop="speRate" align="center" label="费率（‰）"/>
+        <el-table-column prop="speName" label="特殊费率名称"/>
+        <el-table-column prop="payWay" label="支付方式" :formatter="payWayFormatter"/>
+        <el-table-column prop="speRate" label="费率（‰）"/>
         <el-table-column align="effectDate" label="生效日期" :formatter="effectDateFormatter"/>
         <el-table-column align="expiryDate" label="失效日期" :formatter="expiryDateFormatter"/>
         <el-table-column label="操作" align="center" width="120">
@@ -61,10 +48,10 @@
     <el-dialog :title="ifsubmiltText" :visible.sync="dialogFormVisibleSpecialRate" width="450px">
       <el-form :model="formSpecialRate" label-position="left" label-width="120px" :rules="rulesFormSpecialRate" ref="formSpecialRate">
         <el-form-item label="特殊费率名称" prop="specialRateName">
-          <el-input v-model="formSpecialRate.specialRateName"></el-input>
+          <el-input v-model="formSpecialRate.specialRateName" :disabled="!ifsubmilt"></el-input>
         </el-form-item>
         <el-form-item label="支付方式" prop="payWay">
-          <el-select v-model="formSpecialRate.payWay" placeholder="请选择支付方式">
+          <el-select v-model="formSpecialRate.payWay" :disabled="!ifsubmilt" placeholder="请选择支付方式">
             <el-option
               v-for="item in optionsPayWay"
               :key="item.value"
@@ -83,6 +70,7 @@
           <el-date-picker
             v-model="formSpecialRate.effectDate"
             type="date"
+             :disabled="!ifsubmilt"
             placeholder="选择日期"
             value-format="timestamp">
           </el-date-picker>
@@ -128,7 +116,7 @@ export default {
   data() {
     return {
       filters: {
-        cardType: ""
+
       },
       optionsCardType: [],
       dialogFormVisibleSpecialRate: false,
@@ -147,15 +135,6 @@ export default {
       }, {
         value: 'ALI',
         label: '支付宝'
-      }, {
-        value: 'DEBIT',
-        label: '借记卡'
-      }, {
-        value: 'CREDIT',
-        label: '贷记卡'
-      }, {
-        value: 'UNIONPAY',
-        label: '银联二维码'
       }],
       rulesFormSpecialRate: {
         specialRateName: [
@@ -228,14 +207,20 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let para = this.formSpecialRate
+          if (para.effectDate>para.expiryDate) {
+            return  this.$message({
+              message: '生效日期不能大于失效日期',
+              type: 'warning'
+            })
+          }
           updateSpecialRate(para).then(res => {
             this.$message({
               message: res.message,
               type: 'success'
             })
+            this.getUsers()
+            this.dialogFormVisibleSpecialRate = false
           })
-          this.getUsers()
-          this.dialogFormVisibleSpecialRate = false
         } else {
           return false;
         }
@@ -245,14 +230,20 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let para = this.formSpecialRate
+          if (para.effectDate>para.expiryDate) {
+            return  this.$message({
+              message: '生效日期不能大于失效日期',
+              type: 'warning'
+            })
+          }
           addSpecialRate(para).then(res => {
             this.$message({
               message: res.message,
               type: 'success'
             })
+            this.getUsers()
+            this.dialogFormVisibleSpecialRate = false
           })
-          this.getUsers()
-          this.dialogFormVisibleSpecialRate = false
         } else {
           return false;
         }

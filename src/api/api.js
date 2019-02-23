@@ -129,7 +129,9 @@ export const queryExceptionOrderList = params => { return instance.post(`${preUr
 //异常订单同步
 export const synExceptionOrderStatus = params => { return instance.post(`${preUrlPath}/admin/wp/admin/synExceptionOrderStatus`, params).then(res => res.data); };
 //查询订单详情
-export const queryOrderDetail = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryOrderDetail`, params).then(res => res.data); };
+export const queryOrderDetailNew = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/queryOrderDetailNew`, params).then(res => res.data);
+};
 //更新订单状态
 export const updateExceptionOrder = params => { return instance.post(`${preUrlPath}/admin/wp/admin/updateExceptionOrder`, params).then(res => res.data); };
 //查询订单列表
@@ -276,4 +278,8 @@ export const addSpecialRate = params => {
 
 export const updateSpecialRate = params => {
   return instance.post(`${preUrlPath}/admin/wp/admin/updateSpecialRate`, params).then(res => res.data);
+};
+
+export const repeatRemind = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/admin/repeatRemind`, params).then(res => res.data);
 };

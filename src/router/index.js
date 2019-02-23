@@ -3,7 +3,11 @@ import Router from 'vue-router'
 import login from '@/views/login/index.vue'
 import home from '@/views/home.vue'
 
-import adminCenterRouter from './adminCenterRouter'
+import router01 from './router01'
+import router02 from './router02'
+import router03 from './router03'
+import router04 from './router04'
+import router05 from './router05'
 
 Vue.use(Router)
 
@@ -34,31 +38,50 @@ export default new Router({
         component: () => import('@/views/home/index.vue')
       }]
     }, {
-      path: '/deal',
-      redirect: '/deal/shop/page1',
-      name: '管理中心',
+      path: '/router01',
+      redirect: '/router01/shop/page1',
+      name: '渠道中心',
       meat: {
-        name: '管理中心'
+        name: '渠道中心'
       },
       component: home,
-      children: adminCenterRouter
+      children: router01
     }, {
-      path: '/account',
-      name: '账户中心',
+      path: '/router02',
+      name: '商户中心',
+      redirect: '/router02/shop/table1',
       meat: {
-        name: '账户中心'
+        name: '商户中心'
       },
       component: home,
-      redirect: '/account/password',
-      children: [{
-        path: 'password',
-        name: '密码管理',
-        meat: {
-          name: '密码管理',
-          icon: ''
-        },
-        component: () => import('@/views/account/password.vue')
-      }]
+      children: router02
+    }, {
+      path: '/router03',
+      name: '交易中心',
+      redirect: '/router03/shop/order3',
+      meat: {
+        name: '交易中心'
+      },
+      component: home,
+      children: router03
+    }, {
+      path: '/router04',
+      name: '对账中心',
+      redirect: '/router04/shop/order1',
+      meat: {
+        name: '对账中心'
+      },
+      component: home,
+      children: router04
+    }, {
+      path: '/router05',
+      name: '运营中心',
+      redirect: '/router05/shop/inspectPage1',
+      meat: {
+        name: '运营中心'
+      },
+      component: home,
+      children: router05
     }
   ]
 })

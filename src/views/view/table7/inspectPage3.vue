@@ -7,6 +7,12 @@
   font-size: 24px;
   text-align: center;
 }
+.result_main{
+  background: rgb(235, 235, 235);
+  padding: 15px;
+  border: 1px solid #999;
+  border-radius: 5px;
+}
 </style>
 
 <template>
@@ -25,6 +31,20 @@
       <el-form-item>
         <el-button type="primary" @click="phonePower('formPhonePower')">确 定</el-button>
         <el-button @click="resetForm('formPhonePower')">重置</el-button>
+      </el-form-item>
+    </el-form>
+    <el-form class="result_main" :model="detForm" v-if="detFormHeidder" label-width="130px" ref="detForm" label-position="left">
+      <el-form-item label="姓名：">
+        <span>{{detForm.idtfna}}</span>
+      </el-form-item>
+      <el-form-item label="身份证号：">
+        <span>{{detForm.idcard}}</span>
+      </el-form-item>
+      <el-form-item label="手机号：">
+        <span>{{detForm.mobile}}</span>
+      </el-form-item>
+      <el-form-item label="验证结果：">
+        <el-tag :type="resultTag">{{detForm.message}}</el-tag>
       </el-form-item>
     </el-form>
   </section>
@@ -54,6 +74,9 @@ export default {
         mobile: '',
         idcard: ''
       },
+      detForm: {},
+      detFormHeidder: false,
+      resultTag: 'success',
       rulesPhonePower: {
         idtfna: [
           { required: true, message: '请输入姓名', trigger: 'blur' },
@@ -80,10 +103,15 @@ export default {
           }).then(() => {
             let para = util.deepcopy(this.formPhonePower)
             threeElements(para).then(res => {
-              this.$message({
-                type: 'success',
+              let r = {
+                idtfna: res.data.idtfna,
+                idcard: res.data.idcard,
+                mobile: res.data.mobile,
                 message: res.message
-              });
+              }
+              this.detFormHeidder = true
+              this.detForm = r
+              this.resultTag = res.data.status === 'Y' ? 'success' : 'warning'
             })
           }).catch(() => {
             this.$message({

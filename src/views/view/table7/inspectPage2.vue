@@ -7,11 +7,17 @@
   font-size: 24px;
   text-align: center;
 }
+.result_main{
+  background: rgb(235, 235, 235);
+  padding: 15px;
+  border: 1px solid #999;
+  border-radius: 5px;
+}
 </style>
 
 <template>
   <section class="form_main">
-    <p class="form_main_title">四要素</p>
+    <p class="form_main_title">银行卡核查</p>
     <el-form :model="formFourElements" :rules="rulesFourElements" ref="formFourElements" label-width="140px" label-position="left">
         <el-form-item label="证件姓名" prop="idtfna">
           <el-input v-model="formFourElements.idtfna"></el-input>
@@ -48,6 +54,26 @@
       <el-form-item>
         <el-button type="primary" @click="fourElements('formFourElements')">确 定</el-button>
         <el-button @click="resetForm('formFourElements')">重置</el-button>
+      </el-form-item>
+    </el-form>
+    <el-form class="result_main" :model="detForm" v-if="detFormHeidder" label-width="130px" ref="detForm" label-position="left">
+      <el-form-item label="证件姓名：">
+        <span>{{detForm.idtfna}}</span>
+      </el-form-item>
+      <el-form-item label="证件类型：">
+        <span>{{detForm.idtftp}}</span>
+      </el-form-item>
+      <el-form-item label="证件号码：">
+        <span>{{detForm.idtfno}}</span>
+      </el-form-item>
+      <el-form-item label="银行卡号：">
+        <span>{{detForm.cardno}}</span>
+      </el-form-item>
+      <el-form-item label="银行预留手机号：">
+        <span>{{detForm.mobile}}</span>
+      </el-form-item>
+      <el-form-item label="验证结果：">
+        <el-tag :type="resultTag">{{detForm.message}}</el-tag>
       </el-form-item>
     </el-form>
   </section>
@@ -88,6 +114,9 @@ export default {
         idtfno: '',
         cardno: ''
       },
+      detForm: {},
+      detFormHeidder: false,
+      resultTag: 'success',
       rulesFourElements: {
         idtfna: [
           { required: true, message: '请输入姓名', trigger: 'blur' },
@@ -122,10 +151,17 @@ export default {
           }).then(() => {
             let para = util.deepcopy(this.formFourElements)
             fourElements(para).then(res => {
-              this.$message({
-                type: 'success',
+              let r = {
+                idtfna: res.data.idtfna,
+                mobile: res.data.mobile,
+                idtftp: res.data.idtftp,
+                idtfno: res.data.idtfno,
+                cardno: res.data.cardno,
                 message: res.message
-              });
+              }
+              this.detFormHeidder = true
+              this.detForm = r
+              this.resultTag = res.data.status === 'Y' ? 'success' : 'warning'
             })
           }).catch(() => {
             this.$message({

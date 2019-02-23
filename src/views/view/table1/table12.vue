@@ -22,6 +22,7 @@
 
 <template>
   <section>
+    <el-button size="small" round @click="historyGo" style="margin-top:15px;">返回</el-button>
     <el-card class="box_card">
       <div slot="header">
         <span>通道配置</span>
@@ -49,8 +50,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="费率（‰）" prop="rate">
-          <el-input-number v-model="formArgument.rate" :controls="false" :precision="1" :step="0.1" :min="3" :max="50"></el-input-number>
-          <span style="font-size:12px;color:#f00;margin-left: 5px;">最大值：50，最小值：3</span>
+          <el-input v-model="formArgument.rate"></el-input>
         </el-form-item>
         <!-- <el-form-item label="封顶值（￥）">
           <el-input-number v-model="formArgument.rate_cap" :controls="false" :precision="0" :step="1" :min="18" :max="500"></el-input-number>
@@ -80,6 +80,13 @@ import { optionsPaymentAll } from "@/util/mockData.js";
 
 export default {
   data() {
+      var validaterate = (rule, value, callback) => {
+        if (!/^(\-)?\d+(\.\d{1})?$/.test(value)) {
+          callback(new Error('请输入正确的商户费率'));
+        } else {
+          callback();
+        }
+      };
     return {
       dialogFormVisibleArgument: false,
       optionsMtype: [{
@@ -91,7 +98,8 @@ export default {
           { required: true, message: '请选择商户类型', trigger: 'change' }
         ],
         rate: [
-          { required: true, message: '请输入商户费率', trigger: 'blur' }
+          { required: true, message: '请输入商户费率', trigger: 'blur' },
+          { validator: validaterate, trigger: 'blur' }
         ]
       },
       formArgument: {
@@ -104,13 +112,16 @@ export default {
     };
   },
   methods: {
+    historyGo() {
+      this.$router.go(-1)
+    },
     clickArgument() {
       this.dialogFormVisibleArgument = true
       this.$nextTick(() => {
         this.$refs.formArgument.resetFields()
         queryMerPayConfig({mid: parseInt(this.$route.query.mid), payType: '020'}).then(res => {
-          if (res.data.queryMerPayConfig) {
-            this.formArgument.rate = res.data.queryMerPayConfig.rate
+          if (res.data) {
+            this.formArgument.rate = res.data.rate
             // this.formArgument.rate_cap = res.data.queryMerPayConfig.rate_cap
             // this.formArgument.thirdMid = res.data.queryMerPayConfig.thirdMid
             // this.formArgument.thirdMkey = res.data.queryMerPayConfig.thirdMkey

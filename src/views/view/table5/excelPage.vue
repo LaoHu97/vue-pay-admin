@@ -55,14 +55,14 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="12">
-          <el-form-item label="选择时间" prop="resource">
+        <el-col :span="11">
+          <el-form-item label="交易时间" prop="resource">
             <el-date-picker v-model="excelForm.startTime" :editable="false" :clearable="false" :type="dateType" @change="changTime" :picker-options="pickerOptions1"
               placeholder="选择日期">
             </el-date-picker>
           </el-form-item>
         </el-col>
-        <el-col :span="1">
+        <el-col :span="1" style="margin-right:10px">
           <el-form-item label-width="0">
             至
           </el-form-item>
@@ -198,15 +198,6 @@
         }, {
           value: 'ALI',
           label: '支付宝'
-        }, {
-          value: 'BANK',
-          label: '银行卡'
-        }, {
-          value: 'BEST',
-          label: '翼支付'
-        }, {
-          value: 'UNIONPAY',
-          label: '银联二维码'
         }],
         dialogTableVisible: false,
         gridData: []
@@ -258,6 +249,12 @@
       },
       //款台远程搜索
       clickEmp: function () {
+        if (!this.excelForm.storeName) {
+          return  this.$message({
+            message: '请先选择门店',
+            type: 'warning'
+          });
+        }
         this.empLoading = true;
         let para = {
           mid: this.excelForm.mid.toString(),

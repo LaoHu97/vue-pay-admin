@@ -62,85 +62,36 @@
     <el-row  class="box-alert">
       <el-col :span="20">
         <div>
-          <el-alert :closable="false" title="审核驳回原因：" v-if="imageUrl.merchant_status === '2'" :description="imageUrl.error_msg || '暂无驳回原因，请联系运营人员'" type="error" show-icon>
+          <el-alert :closable="false" title="审核驳回原因：" :disabled="imageUrl.merchant_status === '1'" v-if="imageUrl.merchant_status === '2'" :description="imageUrl.error_msg || '暂无驳回原因，请联系运营人员'" type="error" show-icon>
           </el-alert>
         </div>
       </el-col>
       <el-col :span="imageUrl.merchant_status === '2' ? 4 : 24">
-        <el-button type="primary" class="editBtn" v-if="formDisabled" round @click="formDisabled = !formDisabled">修改</el-button>
+        <el-button type="primary" class="editBtn" v-if="formDisabled" :disabled="imageUrl.merchant_status === '1'" round @click="formDisabled = !formDisabled">修改</el-button>
       </el-col>
     </el-row>
     <div class="form_main">
       <el-form ref="imageUrl" :inline="true" :disabled="formDisabled" :model="imageUrl" :rules="rules" label-width="150px" label-position="top" class="form_contron">
-
         <el-row>
           <el-col :span="6">
             <el-checkbox v-model="imageUrl.wx_open" true-label="Y" false-label="N" style="margin:40px 0;"><h3>微信</h3></el-checkbox>
           </el-col>
-        </el-row>
-        <el-row v-if="imageUrl.wx_open === 'Y'" >
-          <el-col :span="6">
-            <el-form-item label="微信费率（‰）" label-width="100px">
-              <el-input-number v-model="imageUrl.wx_rate" :disabled="editDisabled" :precision="1" :step="0.1" :min="3" :max="50"></el-input-number>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="联系人微信账号" prop="wx_contid" label-width="100px">
-              <el-input v-model="imageUrl.wx_contid" placeholder="请输入内容"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="6">
             <el-checkbox v-model="imageUrl.ali_open" true-label="Y" false-label="N" style="margin:40px 0;"><h3>支付宝</h3></el-checkbox>
           </el-col>
         </el-row>
-        <el-row v-if="imageUrl.ali_open === 'Y'">
+        <el-row>
           <el-col :span="6">
-            <el-form-item label="支付宝费率（‰）" label-width="100px">
+            <el-form-item label="微信费率（‰）" label-width="100px" v-if="imageUrl.wx_open === 'Y'">
+              <el-input-number v-model="imageUrl.wx_rate" :disabled="editDisabled" :precision="1" :step="0.1" :min="3" :max="50"></el-input-number>
+            </el-form-item>
+            <el-form-item v-else></el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="支付宝费率（‰）" label-width="100px" v-if="imageUrl.ali_open === 'Y'">
               <el-input-number v-model="imageUrl.ali_rate" :disabled="editDisabled" :precision="1" :step="0.1" :min="3" :max="50"></el-input-number>
             </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="合作伙伴在支付宝的PID" prop="ali_source" label-width="100px">
-              <el-input v-model="imageUrl.ali_source" placeholder="请输入内容"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="经营类目" prop="ali_ctgyid" label-width="100px">
-              <el-cascader
-                v-model="imageUrl.ali_ctgyid"
-                :options="optionsAliBusiness"
-                @active-item-change="businessItemAliChange"
-                :props="businessAliProps"
-              ></el-cascader>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <h3>费率设置</h3>
-        <el-row>
-          <el-col :span="5">
-            <el-form-item label="翼支付费率（‰）" label-width="100px">
-              <el-input-number v-model="imageUrl.best_rate" :precision="1" :step="0.1" :min="3"  :max="50"></el-input-number>
-            </el-form-item>
-          </el-col>
-          <el-col :span="5">
-            <el-form-item label="贷记卡费率（‰）" label-width="100px">
-              <el-input-number v-model="imageUrl.crebit_rate" :precision="1" :step="0.1" :min="5.4" :max="500"></el-input-number>
-            </el-form-item>
-          </el-col>
-          <el-col :span="5">
-            <el-form-item label="银联费率（‰）" label-width="100px">
-              <el-input-number v-model="imageUrl.unionpay_rate" :precision="1" :step="0.1" :min="3.8" :max="6"></el-input-number>
-            </el-form-item>
-          </el-col>
-          <el-col :span="9">
-            <el-form-item label="借记卡费率（‰）" label-width="100px">
-              <el-input-number v-model="imageUrl.debit_rate" :precision="1" :step="0.1" :min="4.2" :max="500"></el-input-number>
-            </el-form-item>
-            <el-form-item label="借记卡封顶值（元）" label-width="100px">
-              <el-input-number v-model="imageUrl.reserve1" :precision="0" size="mini" :step="1" :min="18" :max="25"></el-input-number>
-            </el-form-item>
+            <el-form-item v-else></el-form-item>
           </el-col>
         </el-row>
         <h3>上传照片</h3>
@@ -392,7 +343,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="5">
-            <el-form-item label="附件" prop="img_other" >
+            <el-form-item label="补充资料" prop="img_other" >
               <el-upload
                 class="avatar-uploader"
                 :data="{id:imageUrl.id}"
@@ -404,6 +355,7 @@
                 <!-- <img v-if="imageUrl.img_other" :src="imageUrl.img_other" class="avatar"> -->
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
+              <a :href="imageUrl.img_other">下载</a>
             </el-form-item>
           </el-col>
         </el-row>
@@ -574,7 +526,7 @@ export default {
           message: '请上传内部前台照片'
         }],
         thum_img_open_permits: [{
-          required: true,
+          required: false,
           message: '请上传开户许可证照片'
         }],
         thum_img_relation: [{
@@ -875,6 +827,7 @@ export default {
           this.imageUrl.thum_img_tax_reg = imageUrl.thum_img_tax_reg || ''
           this.imageUrl.thum_img_person_a = imageUrl.thum_img_person_a || ''
           this.imageUrl.thum_img_person_b = imageUrl.thum_img_person_b || ''
+          this.imageUrl.merchant_status = imageUrl.merchant_status
           
           if (this.imageUrl.ali_ctgyid) {
             this.imageUrl.ali_ctgyid = JSON.parse(imageUrl.ali_ctgyid);
@@ -997,7 +950,7 @@ export default {
                 type: 'success'
               });
               this.$router.push({
-                path: '/deal/shop/table1'
+                path: '/router02/shop/table1'
               });
             }
           })
