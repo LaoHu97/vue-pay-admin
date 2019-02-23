@@ -105,24 +105,6 @@
           </el-col>
         </el-row>
         <el-row>
-          <!-- <el-col :span="6">
-            <el-form-item label="银行卡类型">
-              <el-select
-                v-model="filters.cardType"
-                clearable
-                class="fixed_search_input"
-                placeholder="请选择银行卡类型"
-                :disabled="filters.payWay!=='BANK'"
-              >
-                <el-option
-                  v-for="item in optionsCardType"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col> -->
           <el-col :span="6">
             <el-form-item label="支付状态">
               <el-select
