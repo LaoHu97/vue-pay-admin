@@ -72,7 +72,7 @@
         <el-table-column :formatter="formatCreate_statue" label="交易状态"/>
         <el-table-column label="操作" align="center" width="280">
           <template slot-scope="scope">
-            <el-button type="success" size="mini" @click="fillOrder(scope.$index, scope.row)">异常订单同步</el-button>
+            <el-button type="success" size="mini" :disabled="listDisabled[scope.$index]" @click="fillOrder(scope.$index, scope.row)">异常订单同步</el-button>
             <el-button type="warning" size="mini" @click="editOrder(scope.$index, scope.row)">更新订单</el-button>
           </template>
         </el-table-column>
@@ -168,6 +168,7 @@ export default {
         createTime: '',
         status: ''
       },
+      listDisabled: [],
       optionsPayment:  [
         {
           value: "2",
@@ -227,20 +228,23 @@ export default {
         this.editOrderForm.status = '1'
       });
     },
-    fillOrder(index, row) {
+    fillOrder(index, row, name) {
       this.$confirm("是否同步此订单？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
+          this.$set(this.listDisabled, index, true)
           synExceptionOrderStatus({ orderId: row.orderId.toString() }).then(res => {
             this.$message({
               type: "success",
-              message: res.subMsg
+              message: res.message,
+              showClose: true
             });
+            this.$set(this.listDisabled,index,false)
             this.getUsers();
-          });
+          })
         })
         .catch(() => {
           this.$message({

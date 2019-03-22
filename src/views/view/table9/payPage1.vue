@@ -19,11 +19,11 @@
 
 <template>
   <section>
-    <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="100px">
+    <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="90px">
       <div class="search_top">
         <el-row>
-          <el-col :span="5">
-            <el-form-item label="开始月份" prop="startTime">
+          <el-col :span="11">
+            <el-form-item label="选择月份" prop="startTime">
               <el-date-picker
                 v-model="filters.startTime"
                 class="fixed_search_input"
@@ -31,11 +31,13 @@
                 placeholder="开始月份"
                 value-format="yyyy-MM"
                 :clearable="false"
+                :editable="false"
               ></el-date-picker>
             </el-form-item>
-          </el-col>
-          <el-col :span="5">
-            <el-form-item label="结束月份" prop="endTime">
+            <el-form-item>
+                      至
+            </el-form-item>
+            <el-form-item prop="endTime">
               <el-date-picker
                 v-model="filters.endTime"
                 class="fixed_search_input"
@@ -44,6 +46,7 @@
                 :picker-options="pickerOptions"
                 value-format="yyyy-MM"
                 :clearable="false"
+                :editable="false"
               ></el-date-picker>
             </el-form-item>
           </el-col>
@@ -65,7 +68,7 @@
                   v-for="item in optionsAgent"
                   :key="item.id"
                   :value="item.id"
-                  :label="item.userName"
+                  :label="item.company"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -82,10 +85,9 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="1">
             <el-form-item>
               <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
-              <el-button type="success" @click="dialogVisible = true" round icon="el-icon-search">返佣跑批</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -94,11 +96,12 @@
     <!--列表-->
     <div v-loading="listLoading">
       <el-table :data="users" border stripe highlight-current-row>
-        <el-table-column prop="user_name" label="渠道商名称"/>
+        <el-table-column prop="company" label="渠道商名称"/>
+        <el-table-column prop="sum_total" label="有效笔数"/>
+        <el-table-column prop="sum_amt" label="有效金额（￥）"/>
+        <el-table-column prop="rebate_amt" label="分润金额（￥）"/>
         <el-table-column prop="settled_date" label="统计时间"/>
         <el-table-column :formatter="formatter_status" label="结算状态"/>
-        <el-table-column prop="sum_amt" label="总金额"/>
-        <el-table-column prop="sum_total" label="总条数"/>
         <el-table-column label="操作" align="center" width="120">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" :disabled="scope.row.status === '3'" @click="cilckStatus(scope.$index, scope.row)">结算状态</el-button>
@@ -125,48 +128,6 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisibleStatus = false">取 消</el-button>
         <el-button type="primary" @click="statusSubmit">确 定</el-button>
-      </span>
-    </el-dialog>
-    <el-dialog
-      title="返佣跑批"
-      :visible.sync="dialogVisible"
-      width="350px">
-      <el-form ref="rebateForm" :model="rebateForm" label-width="80px">
-            <el-form-item label="选择渠道商" prop="agentId">
-              <el-select
-                v-model="rebateForm.agentId"
-                class="fixed_search_input"
-                placeholder="请输入渠道商关键字查询"
-                :multiple="false"
-                filterable
-                remote
-                :remote-method="remoteAgentDialog"
-                :loading="agentLoadingDialog"
-                @focus="changeAgentDialog"
-                clearable
-              >
-                <el-option
-                  v-for="item in optionsAgentDialog"
-                  :key="item.id"
-                  :value="item.id"
-                  :label="item.userName"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-        <el-form-item label="选择月份">
-          <el-date-picker
-            v-model="rebateForm.settledDate"
-            type="month"
-            value-format="yyyy-MM"
-            :clearable="false"
-            placeholder="选择月份"
-            >
-          </el-date-picker>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="rebateSubmit">确 定</el-button>
       </span>
     </el-dialog>
     <!--工具条-->
@@ -206,15 +167,10 @@ export default {
         agentId: '',
         status: '1'
       },
-      rebateForm: {
-        agentId: '',
-        settledDate: ''
-      },
       statusForm: {
         rebateId: '',
         status: ''
       },
-      dialogVisible: false,
       pickerOptions: {
         disabledDate: (time) => {
           let startTimeOne = Date.parse(new Date(util.formatDate.format(new Date(this.filters.startTime),
@@ -263,7 +219,8 @@ export default {
       updateRebateStatus(para).then(res => {
         this.$message({
           type: "success",
-          message: res.subMsg
+          message: res.subMsg,
+          showClose: true
         });
         this.dialogVisibleStatus = false
         this.getUsers()
@@ -273,25 +230,6 @@ export default {
       this.dialogVisibleStatus = true
       this.$nextTick(() => {
         this.statusForm.rebateId = row.id
-      })
-    },
-    rebateSubmit() {
-      if (!this.rebateForm.settledDate) {
-        return this.$message({
-          message: '请选择跑批月份',
-          type: 'warning'
-        });
-      }
-      let para = util.deepcopy(this.rebateForm)
-      para.agentId = para.agentId.toString()
-      para.settledDate = para.settledDate ? para.settledDate + '-1' : ''
-      agentRebate(para).then(res => {
-        this.$message({
-          type: "success",
-          message: res.subMsg
-        });
-        this.dialogVisible = false
-        this.getUsers()
       })
     },
     changeAgentDialog() {

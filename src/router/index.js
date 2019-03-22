@@ -11,7 +11,8 @@ import router05 from './router05'
 
 Vue.use(Router)
 
-export default new Router({
+
+let router = new Router({
   routes: [
     {
       path: '/',
@@ -85,3 +86,11 @@ export default new Router({
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  let routeName = to.meta.title || to.name;
+  window.document.title = (routeName ? routeName + ' - ' : '') + '有氧金融运维端';
+  next();
+});
+
+export default router

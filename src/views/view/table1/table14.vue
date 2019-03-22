@@ -122,16 +122,13 @@
         </el-form-item>
         <el-form-item label="原始费率（‰）">
           <span>{{detailsForm.origin_rate}}</span>
-        </el-form-item>
+        </el-form-item>    
         <el-form-item label="修改费率（‰）">
           <span>{{detailsForm.rate}}</span>
         </el-form-item>
         <el-form-item label="审核状态">
           <span>{{detailsForm.status1 === '1' ? '审核中' : detailsForm.status1 === '2' ? '驳回' : detailsForm.status1 === '3' ? '通过' : '未知'}}</span>
         </el-form-item>
-        <!-- <el-form-item label="创建时间">
-          <span>{{formatCreate_time(detailsForm)}}</span>
-        </el-form-item> -->
         <el-form-item label="修改时间">
           <span>{{formatGmt_modified(detailsForm)}}</span>
         </el-form-item>
@@ -152,9 +149,6 @@
           <el-button type="danger" size="p" @click="submiltRate('formRate', '2')">驳回</el-button>
         </el-form-item>
       </el-form>
-      <!-- <span slot="footer" class="dialog-footer">
-        <el-button @click="detailsDialogVisible = false">关 闭</el-button>
-      </span> -->
     </el-dialog>
     <!--工具条-->
     <el-row>
@@ -250,20 +244,31 @@ export default {
     submiltRate(formName, data) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            let para = util.deepcopy(this.formRate)
-            para.status1 = data
-            para.mid = this.detailsForm.mid
-            para.id = this.detailsForm.id
-            examineChangeRate(para).then(res => {
-              this.detailsDialogVisible = false
-              this.getUsers()
-              this.$message({
-                message: res.message,
-                type: 'success'
+            this.$confirm(`确认${data === '3' ? '通过' : '驳回'}费率审核?`, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              let para = util.deepcopy(this.formRate)
+              para.status1 = data
+              para.mid = this.detailsForm.mid
+              para.id = this.detailsForm.id
+              examineChangeRate(para).then(res => {
+                this.detailsDialogVisible = false
+                this.getUsers()
+                this.$message({
+                  message: res.message,
+                  type: 'success'
+                })
               })
-            })
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消审核',
+                showClose: true
+              });          
+            });
           } else {
-            console.log('error submit!!');
             return false;
           }
         });

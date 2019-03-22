@@ -19,26 +19,24 @@
 
 <template>
   <section>
-    <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="80px">
+    <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="100px">
       <div class="search_top">
-        <el-row>
-          <el-col :span="6">
-            <el-form-item label="商户名称" prop="mname">
-              <el-input v-model="filters.mname" placeholder="请输入关键字查询"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="商户号" prop="maccount">
-              <el-input v-model="filters.maccount" placeholder="请输入商户号"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
-              <el-button @click="resetForm('filters')" round>重置</el-button>
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form-item label="商户名称" prop="mname">
+          <el-input v-model="filters.mname" class="fixed_search_input" placeholder="请输入关键字查询"/>
+        </el-form-item>
+        <el-form-item label="商户号" prop="maccount">
+          <el-input v-model="filters.maccount" class="fixed_search_input" placeholder="请输入商户号"/>
+        </el-form-item>
+        <!-- <el-form-item label="联系人证件号">
+          <el-input v-model="filters.person_id_no" class="fixed_search_input" placeholder="联系人证件号"></el-input>
+        </el-form-item>
+        <el-form-item label="法人证件号">
+          <el-input v-model="filters.merchant_id_no" class="fixed_search_input" placeholder="法人证件号"></el-input>
+        </el-form-item> -->
+        <el-form-item>
+          <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
+          <el-button @click="resetForm('filters')" round>重置</el-button>
+        </el-form-item>
       </div>
     </el-form>
     <!--列表-->
@@ -60,7 +58,7 @@
         <el-table-column
           prop="create_time"
           :formatter="formatCreate_time"
-          label="创建时间"
+          label="准入日期"
         />
         <el-table-column prop="saleName" label="业务员"/>
         <el-table-column label="操作" align="center" width="100">
@@ -97,7 +95,9 @@ export default {
     return {
       filters: {
         mname: "",
-        maccount: ""
+        maccount: "",
+        person_id_no: '',
+        merchant_id_no: ''
       }
     };
   },
@@ -105,7 +105,7 @@ export default {
     formatCreate_time(row, column) {
       return (row.create_time = util.formatDate.format(
         new Date(row.create_time),
-        "yyyy/MM/dd hh:MM:ss"
+        "yyyy/MM/dd"
       ));
     },
     clickLook (index, row) {
@@ -128,7 +128,8 @@ export default {
             if (status == 200) {
               this.$message({
                 type: "success",
-                message: message
+                message: message,
+                showClose: true
               });
             } else {
               this.getUsers();

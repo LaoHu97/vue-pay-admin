@@ -111,6 +111,7 @@ export default {
     handleCancel(index, row) {
       this.$set(this.showEdit,index,false)
       this.$set(this.showBtn,index,false)
+      this.getUsers()
     },
     //点击更新
     handleUpdate(index, row) {

@@ -68,6 +68,13 @@ export default {
         callback();
       }
     };
+    var number_phone = (rule, value, callback) => {
+      if (!/^1(3|4|5|7|8)\d{9}$/.test(value) && value !== '') {
+        callback(new Error('请输入正确的手机号码'));
+      } else {
+        callback();
+      }
+    }
     return {
       formPhonePower: {
         idtfna: '',
@@ -83,7 +90,8 @@ export default {
           { min: 2, max: 5, message: '姓名长度在 2 到 5 个字符', trigger: 'blur' }
         ],
         mobile: [
-          { required: true, message: '请输入手机号码', trigger: 'blur' }
+          { required: true, message: '请输入手机号码', trigger: 'blur' },
+          { validator: number_phone, trigger: 'blur' }
         ],
         idcard: [
           { required: true, message: '请输入身份证件号码', trigger: 'blur' },

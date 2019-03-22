@@ -1,8 +1,8 @@
 <template>
   <div class="tags-view-container">
     <scroll-pane class='tags-view-wrapper' ref='scrollPane'>
-      <router-link ref='tag' class="tags-view-item" :class="isActive(tag)?'active':''" v-for="tag in Array.from(visitedViews)"
-        :to="{ path: tag.path, query: tag.query }" :key="tag.path" @contextmenu.prevent.native="openMenu(tag,$event)">
+      <router-link ref='tag' class="tags-view-item" :class="isActive(tag)?'active':''" v-for="tag in visitedViews"
+        :to="{ path: tag.path, query: tag.query }" :key="tag.path">
         {{tag.title}}
         <span class='el-icon-close' @click.prevent.stop='closeSelectedTag(tag)'></span>
       </router-link>
@@ -29,13 +29,15 @@ export default {
   },
   computed: {
     visitedViews() {
-      return this.$store.state.tagsView.visitedViews
+      return Array.from(this.$store.state.tagsView.visitedViews)
     }
   },
   watch: {
     $route() {
       this.addViewTags()
       this.moveToCurrentTag()
+      let i = this.$route.path.substr(8, 1)
+      this.$store.dispatch("upload_topNum", i);
     },
     visible(value) {
       if (value) {
@@ -67,8 +69,6 @@ export default {
     },
     moveToCurrentTag() {
       const tags = this.$refs.tag
-      console.log(tags);
-      
       this.$nextTick(() => {
         for (const tag of tags) {
           if (tag.to === this.$route.path) {
@@ -84,9 +84,8 @@ export default {
           const latestView = views.slice(-1)[0]
           if (latestView) {
             this.$router.push({path: latestView.path, query: latestView.query})
-          } else {
-            this.$router.push('/home')
-            this.$store.dispatch('top_nav', '1')
+            let i = latestView.path.substr(8, 1)
+            this.$store.dispatch("upload_topNum", i);
           }
         }
       })

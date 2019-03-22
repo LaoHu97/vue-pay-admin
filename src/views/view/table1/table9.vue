@@ -635,6 +635,11 @@ export default {
           required: true,
           message: '请选择开户银行'
         }],
+        bank_no: [{
+          required: true,
+          message: '请选择开户支行',
+          trigger: 'change'
+        }],
         merchant_province3: [{
           required: true,
           message: '请选择商户所在省'
@@ -916,7 +921,7 @@ export default {
       })
     },
     retstSubmit() {
-      this.$router.push({ path: "/router02/shop/table8", query: { id: this.$route.query.id } });
+      this.$router.push({ path: "/router02/shop/table8", query: { id: this.$route.query.id, agent_id: this.$route.query.agent_id } });
     },
     addSubmit: function() {
       this.$refs.form.validate((valid) => {

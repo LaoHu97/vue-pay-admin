@@ -352,10 +352,9 @@
                 :on-success="handleAvatarScucess18"
                 :before-upload="beforeAvatarUploadOther">
                 <i v-if="imageUrl.img_other" class="el-icon-document avatar" style="font-size:28px;line-height:78px;"></i>
-                <!-- <img v-if="imageUrl.img_other" :src="imageUrl.img_other" class="avatar"> -->
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
-              <a :href="imageUrl.img_other">下载</a>
+              <a :href="imageUrl.img_other" v-if="imageUrl.img_other">下载</a>
             </el-form-item>
           </el-col>
         </el-row>
@@ -411,7 +410,6 @@ export default {
 
         ali_open: "Y",
         ali_source: "",
-        ali_ctgyid: [],
 
         img_business_license: '',
         img_idcard_a: '',
@@ -487,14 +485,6 @@ export default {
             required: true,
             message: "请输入收单机构在支付宝的PID",
             trigger: "blur"
-          }
-        ],
-        ali_ctgyid: [
-         {
-            type: "array",
-            required: true,
-            message: "请选择经营类目",
-            trigger: "change"
           }
         ],
         thum_img_business_license: [{
@@ -828,11 +818,8 @@ export default {
           this.imageUrl.thum_img_person_a = imageUrl.thum_img_person_a || ''
           this.imageUrl.thum_img_person_b = imageUrl.thum_img_person_b || ''
           this.imageUrl.merchant_status = imageUrl.merchant_status
+          this.imageUrl.img_other = imageUrl.img_other
           
-          if (this.imageUrl.ali_ctgyid) {
-            this.imageUrl.ali_ctgyid = JSON.parse(imageUrl.ali_ctgyid);
-            this.businessItemAliChange(this.imageUrl.ali_ctgyid); 
-          }
           if (res.data.timely_sign && res.data.timely_sign === '1') {
             this.formDisabled = true
             this.editDisabled = true

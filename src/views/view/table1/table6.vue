@@ -36,16 +36,16 @@
       :model="filters"
       label-position="left"
       ref="filters"
-      label-width="80px">
+      label-width="90px">
       <div class="search_top">
         <el-row>
           <el-col :span="6">
             <el-form-item
-              label="代理名称"
+              label="渠道商名称"
               prop="agent_id">
               <el-input
                 v-model.trim="filters.agent_id"
-                placeholder="请输入代理名称关键字"/>
+                placeholder="请输入渠道商名称关键字"/>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -95,7 +95,7 @@
         <el-table-column
           prop="userName"
           align="center"
-          label="代理名称"
+          label="所属渠道商"
           min-width="120"/>
         <el-table-column
           prop="merchant_name"
@@ -138,85 +138,10 @@
               size="mini"
               :disabled="scope.row.merchant_status !== '3'"
               @click="synchronousPay(scope.$index, scope.row)">同步支付信息</el-button>
-            <!-- <el-button
-              type="success"
-              size="mini"
-              :disabled="scope.row.merchant_status !== '1'"
-              @click="handleRefund(scope.$index, scope.row)">审核</el-button> -->
-            <!-- <el-dropdown>
-              <el-button size="mini" type="primary" style="margin-left:10px">
-                实名认证<i class="el-icon-arrow-down el-icon--right"></i>
-              </el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>
-                  <el-button
-                    type="text"
-                    size="mini"
-                    @click="networkingOpen('formNetworking')">联网核查</el-button>
-                </el-dropdown-item>
-                <el-dropdown-item>
-                  <el-button
-                    type="text"
-                    size="mini"
-                    @click="fourElementsOpen('formFourElements')">四要素</el-button>
-                </el-dropdown-item>
-                <el-dropdown-item>
-                  <el-button
-                    type="text"
-                    size="mini"
-                    @click="phonePowerOpen('formPhonePower')">手机鉴权</el-button>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown> -->
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <el-dialog title="联网核查" :visible.sync="dialogFormVisibleNetworking" width="450px">
-      <el-form :model="formNetworking" :rules="rulesNetworking" ref="formNetworking">
-        <el-form-item label="姓名" prop="realname">
-          <el-input v-model="formNetworking.realname"></el-input>
-        </el-form-item>
-        <el-form-item label="身份证号" prop="idcard">
-          <el-input v-model="formNetworking.idcard"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisibleNetworking = false">取 消</el-button>
-        <el-button type="primary" @click="networkingClick('formNetworking')">确 定</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog title="四要素" :visible.sync="dialogFormVisibleFourElements" width="450px">
-      <el-form :model="formFourElements" :rules="rulesFourElements" ref="formFourElements">
-        <el-form-item label="姓名" prop="idtfna">
-          <el-input v-model="formFourElements.idtfna"></el-input>
-        </el-form-item>
-        <el-form-item label="手机号" prop="mobile">
-          <el-input v-model="formFourElements.mobile"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisibleFourElements = false">取 消</el-button>
-        <el-button type="primary" @click="fourElements('formFourElements')">确 定</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog title="手机鉴权" :visible.sync="dialogFormVisiblePhonePower" width="450px">
-      <el-form :model="formPhonePower" :rules="rulesPhonePower" ref="formPhonePower">
-        <el-form-item label="姓名" prop="realname">
-          <el-input v-model="formPhonePower.realname"></el-input>
-        </el-form-item>
-        <el-form-item label="身份证号" prop="idcard">
-          <el-input v-model="formPhonePower.idcard"></el-input>
-        </el-form-item>
-        <el-form-item label="手机号" prop="mobile">
-          <el-input v-model="formPhonePower.mobile"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisiblePhonePower = false">取 消</el-button>
-        <el-button type="primary" @click="fourElements('formPhonePower')">确 定</el-button>
-      </div>
-    </el-dialog>
     <el-dialog
       title="商户详情"
       :visible.sync="dialogDetailVisible"
@@ -305,7 +230,7 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item label="商户类型">
-                  <span>{{ formDetail.merchant_type === '1' ? '一级商户' : formDetail.merchant_type === '2' ? '二级商户' : '未知' }}</span>
+                  <span>{{ formDetail.merchant_type === '1' ? '一级商户' : formDetail.merchant_type === '2' ? '二级商户' : '' }}</span>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -469,11 +394,6 @@
                   <span>{{ formDetail.wx_rate }}</span>
                 </el-form-item>
               </el-col>
-              <el-col :span="12">
-                <el-form-item label="联系人微信账号">
-                  <span>{{ bsbPay.wx_contid }}</span>
-                </el-form-item>
-              </el-col>
             </el-row>
           </div>
         </el-card>
@@ -489,22 +409,10 @@
                   <span>{{ formDetail.ali_rate }}</span>
                 </el-form-item>
               </el-col>
-              <el-col :span="12">
-                <el-form-item label="支付宝的PID">
-                  <span>{{ bsbPay.ali_source }}</span>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="12">
-                <el-form-item label="行业类目">
-                  <span>{{ bsbPay.reserve1 }}</span>
-                </el-form-item>
-              </el-col>
             </el-row>
           </div>
         </el-card>
-        <el-card class="box-card">
+        <!-- <el-card class="box-card">
           <div slot="header">
             <span>银行卡费率</span>
           </div>
@@ -532,7 +440,7 @@
               </el-col>
             </el-row>
           </div>
-        </el-card>
+        </el-card> -->
 
         <!-- 商户照片 -->
         <el-card class="box-card">
@@ -793,37 +701,6 @@
         </el-form>
       </el-form>
     </el-dialog>
-    <el-dialog
-      title="商户审核"
-      :visible.sync="dialogRefundVisible"
-      width="420px">
-      <el-form
-        :model="formDialog"
-        ref="formDialog">
-        <el-form-item prop="radioRefund">
-          <el-radio
-            v-model="formDialog.radioRefund"
-            label="3">通过</el-radio>
-          <el-radio
-            v-model="formDialog.radioRefund"
-            label="2">驳回</el-radio>
-        </el-form-item>
-        <el-form-item
-          label="备注信息"
-          prop="error_msg"
-          :rules="[{ required: true, message: '请输入备注信息', trigger: 'blur' }]">
-          <el-input
-            type="textarea"
-            v-model="formDialog.error_msg"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            placeholder="请输入备注信息"/>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogRefundVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitRefund('formDialog')">确 定</el-button>
-      </span>
-    </el-dialog>
     <!--工具条-->
     <el-row>
       <el-pagination
@@ -839,7 +716,7 @@
 </template>
 
 <script>
-import { changeAgentMerEnter, ChangeAgentShop, changeStatus, downloadAgentImages, openWxAli, fourElements, threeElements, repeatRemind } from '@/api/api'
+import { changeAgentMerEnter, ChangeAgentShop, changeStatus, openWxAli, fourElements, threeElements, repeatRemind } from '@/api/api'
 import { optionsFormDetail } from '@/util/mockData.js'
 import getUsersList from '@/mixins/Users'
 import getRemoteSearch from '@/mixins/RemoteSearch'
@@ -897,61 +774,7 @@ export default {
         }
       ],
       formDetail: {},
-      bsbPay: {},
-
-
-      dialogFormVisibleNetworking: false,
-      formNetworking: {
-        realname: '',
-        idcard: ''
-      },
-      rulesNetworking: {
-        realname: [
-          { required: true, message: '请输入姓名', trigger: 'blur' },
-          { min: 2, max: 5, message: '姓名长度在 2 到 5 个字符', trigger: 'blur' }
-        ],
-        idcard: [
-          { required: true, message: '请输入身份证件号码', trigger: 'blur' },
-          { validator: merchant_id_no, trigger: 'blur' }
-        ]
-      },
-
-      dialogFormVisibleFourElements: false,
-      formFourElements: {
-        idtfna: '',
-        mobile: '',
-        idtftp: '01'
-      },
-      rulesFourElements: {
-        idtfna: [
-          { required: true, message: '请输入姓名', trigger: 'blur' },
-          { min: 2, max: 5, message: '姓名长度在 2 到 5 个字符', trigger: 'blur' }
-        ],
-        mobile: [
-          { required: true, message: '请输入手机号码', trigger: 'blur' },
-          { validator: number_phone, trigger: 'blur' }
-        ]
-      },
-
-      dialogFormVisiblePhonePower: false,
-      formPhonePower: {
-        realname: '',
-        mobile: '',
-        idcard: ''
-      },
-      rulesPhonePower: {
-        realname: [
-          { required: true, message: '请输入姓名', trigger: 'blur' },
-          { min: 2, max: 5, message: '姓名长度在 2 到 5 个字符', trigger: 'blur' }
-        ],
-        mobile: [
-          { required: true, message: '请输入手机号码', trigger: 'blur' }
-        ],
-        idcard: [
-          { required: true, message: '请输入身份证件号码', trigger: 'blur' },
-          { validator: merchant_id_no, trigger: 'blur' }
-        ]
-      }
+      bsbPay: {}
     }
   },
   methods: {
@@ -983,99 +806,6 @@ export default {
     formatDatecontro_id_expire(val){
       return val.contro_id_expire_long === 'Y' ? '长期有效' : val.contro_id_expire ? util.dateFormat(parseInt(val.contro_id_expire), 'yyyy-MM-dd hh:mm:ss') : '' 
     },
-    networkingOpen(formName){
-      this.dialogFormVisibleNetworking = true
-      this.$nextTick(() => {
-        this.$refs[formName].resetFields()
-      })
-    },
-    phonePowerOpen(formName){
-      this.dialogFormVisiblePhonePower = true
-      this.$nextTick(() => {
-        this.$refs[formName].resetFields()
-      })
-    },
-    fourElementsOpen(formName){
-      this.dialogFormVisibleFourElements = true
-      this.$nextTick(() => {
-        this.$refs[formName].resetFields()
-      })
-    },
-    networkingClick(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.$confirm('联网核查, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            let para = util.deepcopy(this.formNetworking)
-            threeElements(para).then(res => {
-              this.$message({
-                type: 'success',
-                message: res.message
-              });
-              this.dialogFormVisibleNetworking = false
-            })
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消'
-            });          
-          });
-        }
-      })
-    },
-    phonePower(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.$confirm('手机鉴权, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            let para = util.deepcopy(this.formPhonePower)
-            threeElements(para).then(res => {
-              this.$message({
-                type: 'success',
-                message: res.message
-              });
-              this.dialogFormVisiblePhonePower = false
-            })
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消'
-            });          
-          });
-        }
-      })
-    },
-    fourElements(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.$confirm('联网核查四要素, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            let para = util.deepcopy(this.formFourElements)
-            fourElements(para).then(res => {
-              this.$message({
-                type: 'success',
-                message: res.message
-              });
-              this.dialogFormVisibleFourElements = false
-            })
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消'
-            });          
-          });
-        }
-      })
-    },
     synchronousPay(index, row) {
         this.$confirm('此操作将同步支付信息, 是否继续?', '提示', {
           confirmButtonText: '确定',
@@ -1106,36 +836,35 @@ export default {
       this.id = row.id
       this.shop_id = row.shop_id
     },
-    downImages() {
-      let url = this.downloadAgentImages
-      if (!!window.ActiveXObject || "ActiveXObject" in window) {
-        console.log('ie');
-        return this.$message({
-          message: '请使用非IE浏览器下载，如谷歌，360极速模式等',
-          type: 'warning'
-        })
-      }
-      
-      window.open(url)
-    },
     submitRefund (formName, data) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          let para = {
-            id: this.id,
-            shop_id: this.shop_id,
-            merchant_status: data,
-            error_msg: this.formDialog.error_msg
-          }
-          changeStatus(para).then(res => {
-            this.dialogDetailVisible = false
-            this.getUsers()
-            this.$refs[formName].resetFields()
-            this.$message({
-              message: '审核完成',
-              type: 'success'
+          this.$confirm(`确认${data === '3' ? '通过' : '驳回'}商户审核?`, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            let para = {
+              id: this.id,
+              shop_id: this.shop_id,
+              merchant_status: data,
+              error_msg: this.formDialog.error_msg
+            }
+            changeStatus(para).then(res => {
+              this.dialogDetailVisible = false
+              this.getUsers()
+              this.$refs[formName].resetFields()
+              this.$message({
+                message: '审核完成',
+                type: 'success'
+              })
             })
-          })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消'
+            });          
+          });
         }
       })
     },
@@ -1177,7 +906,6 @@ export default {
       this.id = row.id
       this.shop_id = row.shop_id
       this.getListDetail(row.id, row.shop_id)
-      this.downloadAgentImages = `${downloadAgentImages}?id=${row.id}&shop_id=${row.shop_id}&filename=${row.merchant_name}&agent_id=${row.agent_id}`
     }
   }
 }

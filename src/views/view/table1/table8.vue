@@ -348,6 +348,7 @@ export default {
           trigger: 'change'
         }],
         merchant_service_phone: [{
+          required: true,
           message: '请输入客服电话',
           trigger: 'blur'
         }, {

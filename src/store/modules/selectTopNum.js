@@ -1,6 +1,6 @@
 const selectTopNum = {
   state: {
-    num: '1'
+    num: ''
   },
   mutations: {
     UPLOAD_TOPNUM: (state, view) => {

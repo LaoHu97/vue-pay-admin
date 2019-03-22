@@ -90,7 +90,7 @@ import { optionsPaymentAll } from "@/util/mockData.js";
 export default {
   data() {
       var validaterate = (rule, value, callback) => {
-        if (!/^(\-)?\d+(\.\d{1})?$/.test(value)) {
+        if (!/^(\-)?\d+(\.\d{2})?$/.test(value)) {
           callback(new Error('请输入正确的商户费率'));
         } else {
           callback();
@@ -137,7 +137,8 @@ export default {
             // this.formArgument.rate_cap = res.data.queryMerPayConfig.rate_cap
             // this.formArgument.thirdMid = res.data.queryMerPayConfig.thirdMid
             // this.formArgument.thirdMkey = res.data.queryMerPayConfig.thirdMkey
-            this.formArgument.sysAppid = res.data.sysAppid 
+            this.formArgument.sysAppid = res.data.sysAppid
+            this.formArgument.appSecret = res.data.appSecret
           }
         })
       })

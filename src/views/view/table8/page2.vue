@@ -287,19 +287,10 @@ export default {
           this.rebateForm.agentId = res.data.agentId
           let list = res.data.agentRateConfigList
           this.rebateForm.aliRate = list.find(item => item.pay_way === 'ALI') ? list.find(item => item.pay_way === 'ALI').rate : ''
-          // this.rebateForm.creditRate = list.find(item => item.pay_way === 'CREDIT') ? list.find(item => item.pay_way === 'CREDIT').rate : ''
-          // this.rebateForm.debitRate = list.find(item => item.pay_way === 'DEBIT') ? list.find(item => item.pay_way === 'DEBIT').rate : ''
-          // this.rebateForm.unionpayRate = list.find(item => item.pay_way === 'UNIONPAY') ?list.find(item => item.pay_way === 'UNIONPAY').rate : ''
           this.rebateForm.wxRate = list.find(item => item.pay_way === 'WX') ? list.find(item => item.pay_way === 'WX').rate : ''
 
-          this.rebateForm.wxScale = list.find(item => item.pay_way === 'ALI') ? list.find(item => item.pay_way === 'ALI').reserve1 : ''
-          // this.rebateForm.aliScale = list.find(item => item.pay_way === 'CREDIT') ? list.find(item => item.pay_way === 'CREDIT').reserve1 : ''
-          // this.rebateForm.debitScale = list.find(item => item.pay_way === 'DEBIT') ? list.find(item => item.pay_way === 'DEBIT').reserve1 : ''
-          // this.rebateForm.creditScale = list.find(item => item.pay_way === 'UNIONPAY') ?list.find(item => item.pay_way === 'UNIONPAY').reserve1 : ''
-          this.rebateForm.aliScale = list.find(item => item.pay_way === 'WX') ? list.find(item => item.pay_way === 'WX').reserve1 : ''
-
-          console.log(this.rebateForm);
-          
+          this.rebateForm.wxScale = list.find(item => item.pay_way === 'WX') ? list.find(item => item.pay_way === 'WX').reserve1 : ''
+          this.rebateForm.aliScale = list.find(item => item.pay_way === 'ALI') ? list.find(item => item.pay_way === 'ALI').reserve1 : ''
         })
       });
     },
@@ -315,7 +306,8 @@ export default {
         this.dialogVisible = false
         this.$message({
           type: "success",
-          message: res.subMsg
+          message: res.subMsg,
+          showClose: true
         });
         this.getUsers()
       })

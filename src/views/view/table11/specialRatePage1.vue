@@ -60,7 +60,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="特殊费率" prop="rate">
+        <el-form-item label="特殊费率(‰)" prop="rate">
           <el-input v-model="formSpecialRate.rate"></el-input>
         </el-form-item>
         <el-form-item label="特殊费率规则" prop="commissionRules">
@@ -80,6 +80,7 @@
             v-model="formSpecialRate.expiryDate"
             type="date"
             placeholder="选择日期"
+            :picker-options="pickerOptions"
             value-format="timestamp">
           </el-date-picker>
         </el-form-item>
@@ -158,7 +159,12 @@ export default {
         ]
       },
       ifsubmilt: true,
-      ifsubmiltText: ''
+      ifsubmiltText: '',
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 1000 * 60 * 60 * 24;
+        }
+      }
     };
   },
   methods: {

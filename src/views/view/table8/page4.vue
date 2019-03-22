@@ -677,6 +677,12 @@ export default {
             message: "请选择开户银行"
           }
         ],
+        bank_no: [
+          {
+            required: true,
+            message: "请选择开户支行"
+          }
+        ],
         merchant_province3: [
           {
             required: true,

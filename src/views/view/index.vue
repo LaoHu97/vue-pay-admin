@@ -13,6 +13,9 @@
 .el-container {
   height: 100%;
 }
+.right_main{
+  width: 100%;
+}
 </style>
 
 <template>
@@ -31,41 +34,48 @@
         <template v-if="route.children">
           <el-submenu :key="index" :index="route.name">
             <template slot="title">
-              <i class="iconfont" :class="[route.meat.icon]"/>
-              <span slot="title">{{ route.meat.name }}</span>
+              <i class="iconfont" :class="[route.meta.icon]"/>
+              <span slot="title">{{ route.meta.title }}</span>
             </template>
             <el-menu-item
               v-for="(cRoute, cIndex) in route.children"
               :key="cIndex"
               :index="cRoute.name"
               :route="cRoute"
-              v-show="!cRoute.meat.hidden"
-            >{{ cRoute.meat.name }}</el-menu-item>
+              v-show="!cRoute.meta.hidden"
+            >{{ cRoute.meta.title }}</el-menu-item>
           </el-submenu>
         </template>
         <template v-else>
           <el-menu-item :key="index" :route="route">
-            <i class="iconfont" :class="[route.meat.icon]"/>
-            <span slot="title">{{ route.meat.name }}</span>
+            <i class="iconfont" :class="[route.meta.icon]"/>
+            <span slot="title">{{ route.meta.title }}</span>
           </el-menu-item>
         </template>
       </template>
     </el-menu>
     <el-container>
-      <el-main>
-        <el-breadcrumb separator="/">
-          <template v-for="(item, index) in $route.matched">
-            <el-breadcrumb-item :key="index">{{ item.name }}</el-breadcrumb-item>
-          </template>
-        </el-breadcrumb>
-        <router-view></router-view>
-      </el-main>
+      <div class="right_main">
+        <TagsView></TagsView>
+        <el-main>
+          <keep-alive>
+            <router-view v-if="!$route.meta.noCache"></router-view>
+          </keep-alive>
+          <router-view v-if="$route.meta.noCache"></router-view>
+        </el-main>
+      </div>
     </el-container>
   </el-container>
 </template>
 <script>
 import addRouter from "@/router";
+import {
+  TagsView
+} from '@/components'
 export default {
+  components: {
+    TagsView
+  },
   data() {
     return {
       routerList: {},
@@ -73,6 +83,9 @@ export default {
     };
   },
   computed: {
+    activeMenu() {
+      return this.$route.name
+    },
     isCollapse() {
       return this.$store.state.viewCollapse.isCollapse;
     },
@@ -82,13 +95,14 @@ export default {
   },
   watch:{
     indexNum:function(old,newd){
-      let v = parseInt(this.$store.state.selectTopNum.num)
+      let n = this.$store.state.selectTopNum.num
+      let v = parseInt(n.substr(n.length-1, 1))
       this.routerList = this.$router.options.routes.slice(v+1, v+2)[0];
     }
   },
-  mounted() {
-      let v = parseInt(sessionStorage.getItem('menu'));
-      this.routerList = this.$router.options.routes.slice(v+1, v+2)[0];
-  },
+  mounted() {    
+    let v = parseInt(this.$route.path.substr(8, 1));
+    this.routerList = this.$router.options.routes.slice(v+1, v+2)[0];
+  }
 };
 </script>

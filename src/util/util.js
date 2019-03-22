@@ -208,7 +208,8 @@ export const catchError = function (error) {
       case 301:
         Vue.prototype.$message({
           message: error.data.message || '登录超时！请重新登录',
-          type: 'warning'
+          type: 'warning',
+          showClose: true,
         })
         router.replace({
           path: '/'
@@ -217,7 +218,8 @@ export const catchError = function (error) {
       default:
         Vue.prototype.$message({
           message: error.data.message || '服务器错误，请稍候再试',
-          type: 'error'
+          type: 'error',
+          showClose: true,
         })
     }
   } else {
@@ -338,11 +340,10 @@ export const formatPayStatus = function (data, val) {
         payStatus = '支付失败'
         break
       case '3':
-        payStatus = '支付成功'
+        payStatus = '支付成功（有退款）'
         break
-      case '5':
+      default:
         payStatus = '未知'
-        break
     }
   } else if (val === '1') {
     switch (data) {

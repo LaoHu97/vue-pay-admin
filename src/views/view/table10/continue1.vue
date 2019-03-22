@@ -24,35 +24,13 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="证件所属人" prop="cardType">
-              <el-select v-model="filters.cardType" placeholder="请选择证件所属人">
+              <el-select v-model="filters.cardType" clearable placeholder="请选择证件所属人">
                 <el-option
                   v-for="item in optionsCardType"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value">
                 </el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="证件类型：" prop="type">
-              <el-select
-                v-model="filters.type"
-                placeholder="请输入证件类型关键字查询"
-                :multiple="false"
-                filterable
-                remote
-                :remote-method="remoteMerchantType"
-                :loading="MerchantTypeLoading"
-                clearable
-                @focus="clickMerchantType"
-              >
-                <el-option
-                  v-for="item in optionsMerchantType"
-                  :key="item.id"
-                  :value="item.code"
-                  :label="item.type"
-                ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -78,15 +56,6 @@
             <el-tag
               :type="scope.row.surplusDate === 0 ? 'danger' : 'success'"
               disable-transitions>{{surplusDateFormatter(scope.row)}}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="操作" width="180">
-          <template slot-scope="scope">
-            <el-button
-              type="success"
-              size="mini"
-              @click="handleMer(scope.$index, scope.row)"
-            >查看商户</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -117,8 +86,7 @@ export default {
   data() {
     return {
       filters: {
-        cardType: "person_id_expire",
-        type: ''
+        cardType: ""
       },
       MerchantTypeLoading: false,
       optionsMerchantType: [],
@@ -140,12 +108,24 @@ export default {
       }]
     };
   },
+  // computed: {
+  //   cardType() {
+  //     return this.filters.cardType
+  //   }
+  // },
+  // watch:{
+  //   cardType:function(newVal, oldVal){
+  //     if (newVal === 'licensen_expire') {
+  //       this.filters.type = ''
+  //     }
+  //   }
+  // },
   methods: {
     expireTimeCardType(row, column) {
-      return row.cardType === 'person_id_expire' ? '联系人' : row.cardType === 'merchant_id_expire' ? '法人' : row.cardType === 'contro_id_expire' ? '控制人' : row.cardType === 'settle_id_expire' ? '结算人' : row.cardType === 'licensen_expire' ? '营业执照' : 未知
+      return row.cardType === 'person_id_expire' ? '联系人' : row.cardType === 'merchant_id_expire' ? '法人' : row.cardType === 'contro_id_expire' ? '控制人' : row.cardType === 'settle_id_expire' ? '结算人' : row.cardType === 'licensen_expire' ? '营业执照' : '未知'
     },
     expireTimeFormatter(row, column) {
-      return util.formatDate.format(new Date(row.expireTime), "yyyy/MM/dd hh:MM:ss");
+      return util.formatDate.format(new Date(row.expireTime), "yyyy/MM/dd");
     },
     surplusDateFormatter(row, column) {
       return row.surplusDate === 0 ? '已到期' : row.surplusDate
@@ -180,6 +160,8 @@ export default {
       para.pageNum = this.page.toString();
       this.listLoading = true;
       renewalReminderList(para).then(res => {
+        console.log(res);
+        
         this.users = res.data.renewalReminderList;
         this.total = res.data.totalCount;
         this.listLoading = false;

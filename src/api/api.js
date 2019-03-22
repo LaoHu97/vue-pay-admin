@@ -283,3 +283,21 @@ export const updateSpecialRate = params => {
 export const repeatRemind = params => {
   return Axios.post(`${preUrlPath}/admin/wp/admin/repeatRemind`, params).then(res => res.data);
 };
+
+export const queryNotice = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/sysmg/queryNotice`, params).then(res => res.data);
+};
+
+export const addNotice = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/sysmg/addNotice`, params).then(res => res.data);
+};
+
+export const queryNoticeDetail = params => {
+  return Axios.post(`${preUrlPath}/admin/wp/sysmg/queryNoticeDetail`, params).then(res => res.data);
+};
+
+export const updateAdminPwd = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/updateAdminPwd`, params).then(res => res.data);
+};
+
+export const upNoticeImage = `${preUrlPath}/admin/wp/sysmg/upNoticeImage`;

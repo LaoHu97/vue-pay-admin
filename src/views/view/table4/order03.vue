@@ -164,6 +164,10 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row>
+          <el-alert title="查询区间最多为31天" type="warning" center close-text="知道了" show-icon>
+          </el-alert>
+        </el-row>
       </div>
     </el-form>
     <!--列表-->
@@ -265,7 +269,7 @@ export default {
       let end_time = this.filters.endTime
       let date_time = date
       if (date_time < end_time - 3600 * 1000 * 24 * 30) {
-        this.filters.endTime = date_time + 3600 * 1000 * 24 * 1 - 1000
+        this.filters.endTime = date_time + 3600 * 1000 * 24 * 30 - 1000
       }
     },
     handleDetail(index, row) {
@@ -275,10 +279,7 @@ export default {
       });
     },
     formatterGmtCreate(row, column) {
-      return (row.payTime = util.formatDate.format(
-        new Date(row.payTime),
-        "yyyy/MM/dd hh:mm:ss"
-      ));
+      return row.payTime ? util.formatDate.format(new Date(row.payTime), "yyyy/MM/dd hh:mm:ss" ) : ''
     },
     formatterPayWay(row, column) {
       return util.formatPayment(row.payWay)
@@ -374,7 +375,7 @@ export default {
     //获取用户列表
     getList() {
       this.listLoading = true;
-      let para = this.filters
+      let para = util.deepcopy(this.filters)
       para.pageNum = this.page
       para.startTime = para.startTime.toString()
       para.endTime = para.endTime.toString()

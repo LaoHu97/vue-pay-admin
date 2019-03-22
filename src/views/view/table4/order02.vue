@@ -156,7 +156,8 @@ export default {
           updateStatementData(para).then(res => {
             this.$message({
               type: "success",
-              message: res.subMsg
+              message: res.subMsg,
+              showClose: true
             });
             this.getUsers()
           });
@@ -185,7 +186,8 @@ export default {
             if (status == 200) {
               this.$message({
                 type: "success",
-                message: message
+                message: message,
+                showClose: true
               });
             } else {
               this.getUsers();

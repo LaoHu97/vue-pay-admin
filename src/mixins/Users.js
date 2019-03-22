@@ -2,7 +2,7 @@ export default {
   data () {
     return {
       total: 0,
-      page: 1,
+      page: 0,
       users: [],
       listLoading: false
     }

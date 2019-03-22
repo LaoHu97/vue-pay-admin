@@ -80,7 +80,7 @@
           <h3 class="title">运维登录</h3>
           <el-form-item>
             <el-input
-              v-model="loginForm.account"
+              v-model.trim="loginForm.account"
               type="text"
               size="medium"
               placeholder="请输入用户名">
@@ -95,7 +95,7 @@
           </el-form-item>
           <el-form-item prop="password">
             <el-input
-              v-model="loginForm.password"
+              v-model.trim="loginForm.password"
               type="password"
               size="medium"
               placeholder="请输入密码">
@@ -161,7 +161,7 @@
           </el-col>
         </el-row>
       </div> -->
-      <el-footer class="footer_fix">版权所有：西安万鼎网络科技有限公司 | ICP备 陕17002918号</el-footer>
+      <el-footer class="footer_fix">版权所有：包商银行股份有限公司 | ICP备 XXXXXXXX号 </el-footer>
     </el-container>
   </div>
 </template>
@@ -204,7 +204,9 @@ export default {
       loginVerify(para).then(res => {
         this.isBtnLoading = false
         this.$router.replace({ path: 'router03' })
-        sessionStorage.setItem("menu", '3');
+        this.$store.dispatch("upload_topNum", '/router03')
+        this.$store.dispatch("delAllViews")
+        sessionStorage.setItem('account', JSON.stringify(this.loginForm.account));
       }).catch(err => {
         this.isBtnLoading = false
         this.$refs.loginForm.resetFields()

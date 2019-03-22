@@ -70,7 +70,7 @@
         <el-col :span="8">
           <el-form-item label="" prop="endTime" label-width="0px">
             <el-date-picker v-model="excelForm.endTime" :editable="false" :clearable="false" :type="dateType" :picker-options="pickerOptions2"
-              placeholder="选择日期">
+              placeholder="选择日期" default-time="23:59:59">
             </el-date-picker>
           </el-form-item>
         </el-col>
@@ -154,7 +154,7 @@
         excelForm: {
           parag: '',
           excel_type: 'od',
-          accountType: '0',
+          accountType: 'ALL',
           recsonId: '',
           storeName: '',
           empName: '',
@@ -182,6 +182,9 @@
         }],
         //账单类型
         optionsPayType: [{
+          value: 'ALL',
+          label: '所有'
+        },{
           value: '0',
           label: '支付成功'
         }, {
@@ -223,13 +226,12 @@
     },
     methods: {
       formatter_gmt_create(row, cloumn){
-        return util.formatDate.format(new Date(row.gmt_create), 'yyyy-MM-dd hh:mm:ss')
+        return util.formatDate.format(new Date(row.gmt_create), 'yyyy/MM/dd hh:mm:ss')
       },
       formatter_status(row, cloumn){
         return row.status === '0' ? '处理中' : row.status === '1' ? '成功' : '未知'
       },
       excleClick(index, row){
-        console.log(row.file_url);
         window.open(row.file_url)
       },
       downClick() {
@@ -242,14 +244,17 @@
       },
       changTime(date) {
         let end_time = Date.parse(new Date(util.formatDate.format(new Date(this.excelForm.endTime), 'yyyy-MM-dd')))
+        let sat_time = Date.parse(new Date(util.formatDate.format(new Date(this.excelForm.startTime), 'yyyy-MM-dd')))
         let date_time = Date.parse(new Date(util.formatDate.format(new Date(date), 'yyyy-MM-dd')))
-        if (date_time < end_time - 3600 * 1000 * 24 * 90) {
-          this.excelForm.endTime = ''
+        if (date_time < end_time - 3600 * 1000 * 24 * 90 || sat_time > end_time) {
+          this.excelForm.endTime = new Date(this.excelForm.startTime.getFullYear(), this.excelForm.startTime.getMonth(),
+            this.excelForm.startTime.getDate(), 23, 59, 59)
         }
       },
       //款台远程搜索
       clickEmp: function () {
         if (!this.excelForm.storeName) {
+          this.optionsEmp = []
           return  this.$message({
             message: '请先选择门店',
             type: 'warning'
@@ -377,9 +382,9 @@
               excel_type: this.excelForm.excel_type
             }
             para.startTime = (!para.startTime || para.startTime == '') ? '' : String(Date.parse(util.formatDate.format(
-              new Date(para.startTime), 'yyyy-MM-dd hh:mm:ss')));
+              new Date(para.startTime), 'yyyy/MM/dd hh:mm:ss')));
             para.endTime = (!para.endTime || para.endTime == '') ? '' : String(Date.parse(util.formatDate.format(
-              new Date(para.endTime), 'yyyy-MM-dd hh:mm:ss')));
+              new Date(para.endTime), 'yyyy/MM/dd hh:mm:ss')));
             queryDownloadData(para).then(res => {
               if (res.status === 200) {
                 this.$message({

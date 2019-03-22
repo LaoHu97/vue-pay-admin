@@ -22,29 +22,23 @@
     <el-button size="small" round @click="historyGo" style="margin-top:15px;">返回</el-button>
     <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="98px">
       <div class="search_top">
-        <el-row>
-          <el-col :span="18">
-            <el-form-item label="门店名称" prop="storeName">
-              <el-input
-                v-model="filters.storeName"
-                class="fixed_search_input"
-                placeholder="请输入门店名称关键字"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
-              <el-button
-                type="success"
-                round
-                icon="el-icon-circle-plus"
-                @click="openStoreDialog"
-              >新增门店</el-button>
-              <el-button type="primary" @click="clickStore">门店数量</el-button>
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form-item label="门店名称" prop="storeName">
+          <el-input
+            v-model="filters.storeName"
+            class="fixed_search_input"
+            placeholder="请输入门店名称关键字"
+          ></el-input>
+        </el-form-item>
+        <el-form-item style="float:right">
+          <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
+          <el-button
+            type="success"
+            round
+            icon="el-icon-circle-plus"
+            @click="openStoreDialog"
+          >新增门店</el-button>
+          <el-button type="primary" @click="clickStore">门店数量</el-button>
+        </el-form-item>
       </div>
     </el-form>
     <!--列表-->
@@ -246,7 +240,7 @@ export default {
           cancelButtonText: '取消',
           inputPattern: /^[0-9]+$/,
           inputErrorMessage: '数量格式不正确',
-          inputValue: res.data.counts
+          inputValue: res.data.counts.toString()
         }).then(({ value }) => {
           let para = {
             mid: this.$route.query.mid,
@@ -262,7 +256,8 @@ export default {
         }).catch(() => {
           this.$message({
             type: 'info',
-            message: '取消输入'
+            message: '取消输入',
+            showClose: true
           });  
         });
       })
@@ -345,7 +340,8 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "取消输入"
+            message: "取消输入",
+            showClose: true,
           });
         });
     },

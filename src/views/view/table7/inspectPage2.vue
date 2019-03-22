@@ -100,7 +100,7 @@ export default {
       }
     };
     var number_phone = (rule, value, callback) => {
-      if (!/^\d{7,15}$/.test(value) && value !== '') {
+      if (!/^1(3|4|5|7|8)\d{9}$/.test(value) && value !== '') {
         callback(new Error('请输入正确的手机号码'));
       } else {
         callback();

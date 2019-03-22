@@ -476,7 +476,8 @@ export default {
         this.$message({
           message: res.subMsg,
           type: 'success',
-          duration: 10000
+          duration: 10000,
+          showClose: true
         })
         this.dialogVisibleLimit = false
       })
@@ -514,14 +515,15 @@ export default {
       updateMerchantPay(para).then(res => {
         this.$message({
           message: res.message,
-          type: "success"
+          type: "success",
+          showClose: true
         });
       }).catch(() => {
         this.getPaySwitch()
       })
     },
     formatCreate_time(row) {
-      return row ? util.formatDate.format(new Date(row), "yyyy/MM/dd hh:MM:ss") : '';
+      return row ? util.formatDate.format(new Date(row), "yyyy/MM/dd") : '';
     },
     //云打印
     clickPrint() {
@@ -549,7 +551,8 @@ export default {
           if (res.status === 200) {
             this.$message({
               message: res.message,
-              type: "success"
+              type: "success",
+              showClose: true
             });
           }
         });

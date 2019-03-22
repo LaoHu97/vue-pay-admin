@@ -22,61 +22,38 @@
     <el-button size="small" round @click="historyGo" style="margin-top:15px;">返回</el-button>
     <el-form :inline="true" :model="filters" label-position="left" ref="filters" label-width="98px">
       <div class="search_top">
-        <el-row>
-          <el-col :span="6" v-if="!$route.query.sid">
-            <el-form-item label="所属门店">
-              <el-select
-                v-model="filters.sid"
-                class="fixed_search_input"
-                placeholder="请输入门店关键字查询"
-                :multiple="false"
-                filterable
-                remote
-                :remote-method="remoteStore"
-                :loading="storeLoading"
-                clearable
-                @focus="clickStore"
-              >
-                <el-option
-                  v-for="item in optionsStore"
-                  :key="item.id"
-                  :value="item.id"
-                  :label="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="款台名称" prop="username">
-              <el-input
-                v-model="filters.username"
-                class="fixed_search_input"
-                placeholder="请输入款台名称关键字"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="款台账号" prop="account">
-              <el-input
-                v-model="filters.account"
-                class="fixed_search_input"
-                placeholder="请输入款台账号查询"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item>
-              <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
-              <el-button
-                type="success"
-                round
-                icon="el-icon-circle-plus"
-                @click="openStoreDialog"
-              >新增款台</el-button>
-              <el-button type="primary" @click="clickEmp" v-show="$route.query.sid">款台数量</el-button>
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form-item label="所属门店" v-if="!$route.query.sid">
+          <el-select
+            v-model="filters.sid"
+            class="fixed_search_input"
+            placeholder="请输入门店关键字查询"
+            :multiple="false"
+            filterable
+            remote
+            :remote-method="remoteStore"
+            :loading="storeLoading"
+            clearable
+            @focus="clickStore"
+          >
+            <el-option
+              v-for="item in optionsStore"
+              :key="item.id"
+              :value="item.id"
+              :label="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="款台名称" prop="username">
+          <el-input v-model="filters.username" class="fixed_search_input" placeholder="请输入款台名称关键字"></el-input>
+        </el-form-item>
+        <el-form-item label="款台账号" prop="account">
+          <el-input v-model="filters.account" class="fixed_search_input" placeholder="请输入款台账号查询"></el-input>
+        </el-form-item>
+        <el-form-item style="float:right">
+          <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
+          <el-button type="success" round icon="el-icon-circle-plus" @click="openStoreDialog">新增款台</el-button>
+          <el-button type="primary" @click="clickEmp" v-show="$route.query.sid">款台数量</el-button>
+        </el-form-item>
       </div>
     </el-form>
     <!--列表-->
@@ -92,23 +69,13 @@
         <el-table-column prop="account" label="款台编号" min-width="120"></el-table-column>
         <el-table-column prop="linkman" label="联系人" min-width="120"></el-table-column>
         <el-table-column prop="phone" label="手机号" min-width="120"></el-table-column>
-        <el-table-column align="center" label="二维码" width="100">
+        <el-table-column align="center" label="聚合支付码" width="100">
           <template slot-scope="scope">
-            <el-button type="success" size="mini" @click="handleCode(scope.$index, scope.row)">二维码</el-button>
+            <el-button type="success" size="mini" @click="handleCode(scope.$index, scope.row)">聚合支付码</el-button>
           </template>
         </el-table-column>
-        <!-- <el-table-column align="center" label="会员支付二维码" width="140">
-          <template slot-scope="scope">
-            <el-button
-              type="success"
-              size="mini"
-              @click="handleVipCode(scope.$index, scope.row)"
-            >会员二维码</el-button>
-          </template>
-        </el-table-column> -->
         <el-table-column align="center" label="操作" width="260">
           <template slot-scope="scope">
-            <!-- <el-button type="danger" size="mini" @click="handleReset(scope.$index, scope.row)">密码重置</el-button> -->
             <el-button type="warning" size="mini" @click="handleModify(scope.$index, scope.row)">修改</el-button>
             <el-button type="info" size="mini" @click="handleDetails(scope.$index, scope.row)">详情</el-button>
           </template>
@@ -116,23 +83,14 @@
       </el-table>
     </div>
     <!-- 二维码 -->
-    <el-dialog title="二维码" :visible.sync="codeDialog" center width="350px">
+    <el-dialog title="聚合支付码" :visible.sync="codeDialog" center width="350px">
       <el-form :model="codeForm">
-        <img :src="codeForm.code" alt="二维码" width="100%">
+        <img :src="codeForm.code" alt="聚合支付码" width="100%">
       </el-form>
       <span slot="footer">
         <el-button type="primary" @click="codeClick">点击下载</el-button>
       </span>
     </el-dialog>
-    <!-- 二维码 -->
-    <!-- <el-dialog title="会员二维码" :visible.sync="codeVipDialog" center width="350px">
-      <el-form :model="codeVipForm">
-        <img :src="codeVipForm.code" alt="二维码" width="100%">
-      </el-form>
-      <span slot="footer">
-        <el-button type="primary" @click="codeVipClick">点击下载</el-button>
-      </span>
-    </el-dialog> -->
     <!--详情界面-->
     <el-dialog title="款台详情" :visible.sync="detailsFormVisible" width="450px">
       <el-form :model="detailsForm" label-width="120px" ref="detailsForm" label-position="left">
@@ -160,18 +118,6 @@
         <el-form-item label="对接token：">
           <span>{{detailsForm.etoken}}</span>
         </el-form-item>
-        <!-- <el-form-item label="扫呗终端ID：">
-          <span>{{detailsForm.terminal_id}}</span>
-        </el-form-item>
-        <el-form-item label="微收银设备号：">
-          <span>{{detailsForm.device_num}}</span>
-        </el-form-item>
-        <el-form-item label="新大陆设备号：">
-          <span>{{detailsForm.newland_num}}</span>
-        </el-form-item>
-        <el-form-item label="富友设备号：">
-          <span>{{detailsForm.fuiou_num}}</span>
-        </el-form-item> -->
       </el-form>
     </el-dialog>
     <el-dialog
@@ -235,36 +181,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <!-- <el-col :span="12">
-            <el-form-item label="扫呗终端ID" prop="terminal_id">
-              <el-input v-model="addEmpForm.terminal_id" placeholder="请输入扫呗终端ID"></el-input>
-            </el-form-item>
-          </el-col> -->
         </el-row>
-        <!-- <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="支付宝操作员编号" prop="ali_operation_id">
-              <el-input v-model="addEmpForm.ali_operation_id" placeholder="请输入支付宝操作员编号"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="微收银设备号" prop="wsy_num">
-              <el-input v-model="addEmpForm.wsy_num" placeholder="请输入微收银设备号"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="新大陆设备号" prop="ndl_num">
-              <el-input v-model="addEmpForm.ndl_num" placeholder="请输入新大陆设备号"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="富友设备号" prop="fuiou_id">
-              <el-input v-model="addEmpForm.fuiou_id" placeholder="请输入富友设备号"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row> -->
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addEmpDialogVisible = false">取 消</el-button>
@@ -335,10 +252,6 @@ export default {
       codeForm: {
         code: ""
       },
-      // codeVipDialog: false,
-      // codeVipForm: {
-      //   code: ""
-      // },
       detailsFormVisible: false,
       detailsForm: {},
       optionsStore: []
@@ -347,42 +260,44 @@ export default {
   methods: {
     historyGo() {
       if (this.$route.query.sid) {
-        this.$router.go(-2) 
-      }else{
-        this.$router.go(-1) 
+        this.$router.go(-2);
+      } else {
+        this.$router.go(-1);
       }
     },
     clickEmp() {
       let para = {
         store_id: this.$route.query.sid,
-        level: '2'
-      }
+        level: "2"
+      };
       queryChangeCount(para).then(res => {
-        this.$prompt('请输入门店数量', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+        this.$prompt("请输入门店数量", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
           inputPattern: /^[0-9]+$/,
-          inputErrorMessage: '数量格式不正确',
-          inputValue: res.data.counts
-        }).then(({ value }) => {
-          let para = {
-            store_id: this.$route.query.sid,
-            level: '2',
-            counts: value
-          }
-          updateChangeCount(para).then(res => {
-            this.$message({
-              type: 'success',
-              message: res.message
-            });  
+          inputErrorMessage: "数量格式不正确",
+          inputValue: res.data.counts.toString()
+        })
+          .then(({ value }) => {
+            let para = {
+              store_id: this.$route.query.sid,
+              level: "2",
+              counts: value
+            };
+            updateChangeCount(para).then(res => {
+              this.$message({
+                type: "success",
+                message: res.message
+              });
+            });
           })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '取消输入'
-          });  
-        });
-      })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "取消输入"
+            });
+          });
+      });
     },
     handleModify(index, row) {
       this.addEmpDialogVisible = true;
@@ -390,8 +305,8 @@ export default {
       this.$nextTick(() => {
         let c = util.deepcopy(row);
         this.addEmpForm = c;
-        this.addEmpForm.wsy_num = row.device_num
-        this.addEmpForm.linkman = row.linkman
+        this.addEmpForm.wsy_num = row.device_num;
+        this.addEmpForm.linkman = row.linkman;
         this.optionsStore = [
           {
             id: row.storeId,
@@ -412,14 +327,6 @@ export default {
         });
       });
     },
-    // handleVipCode(index, row) {
-    //   this.codeVipDialog = true;
-    //   this.$nextTick(() => {
-    //     this.codeVipForm.code = `${getEmpMemCode}?mid=${row.mid}&storeId=${
-    //       row.storeId
-    //     }&eid=${row.eid}`;
-    //   });
-    // },
     codeVipClick() {
       window.location.href = this.codeVipForm.code;
     },
@@ -480,7 +387,7 @@ export default {
       this.addEmpDialogVisible = true;
       this.dialogType = true;
       this.$nextTick(() => {
-        this.addEmpForm = {
+        (this.addEmpForm = {
           mid: this.$route.query.mid,
           username: "",
           phone: "",
@@ -492,8 +399,8 @@ export default {
           ndl_num: "",
           fuiou_id: "",
           linkman: ""
-        },
-        this.$refs.addEmpForm.resetFields();
+        }),
+          this.$refs.addEmpForm.resetFields();
       });
     },
     addStoreSubmit(formName) {

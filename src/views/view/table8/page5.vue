@@ -403,7 +403,7 @@
                 <!-- <img v-if="imageUrl.img_other" :src="imageUrl.img_other" class="avatar"> -->
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
-              <a :href="imageUrl.img_other">下载</a>
+              <a :href="imageUrl.img_other" v-if="imageUrl.img_other">下载</a>
             </el-form-item>
           </el-col>
         </el-row>
@@ -977,6 +977,7 @@ export default {
           this.imageUrl.thum_img_tax_reg = imageUrl.thum_img_tax_reg || "";
           this.imageUrl.thum_img_person_a = imageUrl.thum_img_person_a || ''
           this.imageUrl.thum_img_person_b = imageUrl.thum_img_person_b || ''
+          this.imageUrl.img_other = imageUrl.img_other
 
           if (res.data.timely_sign && res.data.timely_sign === "1") {
             this.imageUrl.timely_sign = res.data.timely_sign
