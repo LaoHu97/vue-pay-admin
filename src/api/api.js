@@ -134,3 +134,51 @@ export const queryOrderDetail = params => { return instance.post(`${preUrlPath}/
 export const updateExceptionOrder = params => { return instance.post(`${preUrlPath}/admin/wp/admin/updateExceptionOrder`, params).then(res => res.data); };
 //查询订单列表
 export const queryOrderList = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryOrderList`, params).then(res => res.data); };
+
+export const querySpecialRate = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/querySpecialRate`, params).then(res => res.data);
+};
+
+export const addSpecialRate = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/addSpecialRate`, params).then(res => res.data);
+};
+
+export const updateSpecialRate = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/updateSpecialRate`, params).then(res => res.data);
+};
+
+export const examineChangeRate = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/examineChangeRate`, params).then(res => res.data);
+};
+
+export const queryChangeRate = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/queryChangeRate`, params).then(res => res.data);
+};
+
+export const queryChangeRateList = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/queryChangeRateList`, params).then(res => res.data);
+};
+
+export const queryRebate = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/queryRebate`, params).then(res => res.data);
+};
+
+export const updateAgentRebate = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/updateAgentRebate`, params).then(res => res.data);
+};
+
+export const updateAgentRebateStatus = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/updateAgentRebateStatus`, params).then(res => res.data);
+};
+
+export const queryAgentRebateDetail = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/queryAgentRebateDetail`, params).then(res => res.data);
+};
+
+export const updateAgentRebateDetail = params => {
+  return instance.post(`${preUrlPath}/admin/wp/admin/updateAgentRebateDetail`, params).then(res => res.data);
+};
+
+export const selectAgentIdByName = params => {
+  return instance.post(`${preUrlPath}/admin/wp/comm/selectAgentIdByName`, params).then(res => res.data);
+};

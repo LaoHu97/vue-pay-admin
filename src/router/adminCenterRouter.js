@@ -124,4 +124,51 @@ export default [{
     },
     component: () => import('@/views/view/table4/order04.vue')
   }]
+}, {
+  path: 'shop',
+  name: '费率管理',
+  meat: {
+    name: '费率管理',
+    icon: 'icon-tuanduicankaoxian-'
+  },
+  component: index,
+  children: [{
+    path: 'specialRatePage1',
+    name: '特殊费率',
+    meat: {
+      name: '特殊费率'
+    },
+    component: () => import('@/views/view/table5/specialRatePage1.vue')
+  }, {
+    path: 'specialRatePage2',
+    name: '费率审核',
+    meat: {
+      name: '费率审核'
+    },
+    component: () => import('@/views/view/table5/specialRatePage2.vue')
+  }]
+}, {
+  path: 'shop',
+  name: '返佣管理',
+  meat: {
+    name: '返佣管理',
+    icon: 'icon-tuanduicankaoxian-'
+  },
+  component: index,
+  children: [{
+    path: 'rebatePage1',
+    name: '代理返佣',
+    meat: {
+      name: '代理返佣'
+    },
+    component: () => import('@/views/view/table6/rebatePage1.vue')
+  }, {
+    path: 'rebatePage2',
+    name: '返佣明细',
+    meat: {
+      name: '返佣明细',
+      hidden: true
+    },
+    component: () => import('@/views/view/table6/rebatePage2.vue')
+  }]
 }]

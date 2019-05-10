@@ -29,3 +29,22 @@ export const regFont = (rule, value, callback) => {
     callback();
   }
 };
+export const validateAmount = (rule, value, callback) => {
+  if (value === '') {
+    callback();
+  } else if (!/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/.test(value)) {
+    callback(new Error('请输入正确的金额格式'));
+  } else {
+    callback();
+  }
+};
+
+export const validateNumber = (rule, value, callback) => {
+  if (value === '') {
+    callback();
+  } else if (!/(^[1-9]\d*$)/.test(value)) {
+    callback(new Error('请输入正整数格式'));
+  } else {
+    callback();
+  }
+};
