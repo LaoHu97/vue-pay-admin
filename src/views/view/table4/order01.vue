@@ -67,7 +67,7 @@
         <el-table-column prop="goods_price" label="支付金额"/>
         <el-table-column label="操作" align="center" width="280">
           <template slot-scope="scope">
-            <el-button type="success" size="mini" @click="fillOrder(scope.$index, scope.row)">补录订单</el-button>
+            <el-button type="success" size="mini" :disabled="scope.row.replacement_status === '1'" @click="fillOrder(scope.$index, scope.row)">补录订单</el-button>
             <el-button type="warning" size="mini" @click="editOrder(scope.$index, scope.row)">修 改</el-button>
             <el-button type="info" size="mini" @click="detailsOrder(scope.$index, scope.row)">详 情</el-button>
           </template>
@@ -108,7 +108,7 @@
           <span>{{detailsForm.transaction_id}}</span>
         </el-form-item>
         <el-form-item label="订单来源：">
-          <span>{{detailsForm.order_source === 'NEWLAND' ? '新大陆' : detailsForm.order_source === 'FUIOU' ? '富有' : detailsForm.order_source === 'NEWLAND_Bill' ? '新大陆对账单'  : '未知'}}</span>
+          <span>{{detailsForm.channel === 'NEWLAND' ? '新大陆' : '富有'}}</span>
         </el-form-item>
         <el-form-item label="订单类型：">
           <span>{{detailsForm.order_type === '0' ? '支付' : detailsForm.order_type === '1' ? '退款' : '未知'}}</span>
