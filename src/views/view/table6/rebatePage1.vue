@@ -91,8 +91,8 @@
         <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
         <el-table-column label="操作" align="center" width="300">
           <template slot-scope="scope">
-            <el-button type="danger" size="mini" :disabled="scope.row.status !== '1'" @click="clickAgentRebate(scope.$index, scope.row)">修改返佣</el-button>
-            <el-button type="warning" size="mini" :disabled="scope.row.status === '2' || scope.row.status === '4'" @click="clickAgentRebateStatus(scope.$index, scope.row)">修改状态</el-button>
+            <el-button type="danger" size="mini" :disabled="scope.row.status !== '4'" @click="clickAgentRebate(scope.$index, scope.row)">修改返佣</el-button>
+            <el-button type="warning" size="mini" :disabled="scope.row.status === '1' || scope.row.status === '3'" @click="clickAgentRebateStatus(scope.$index, scope.row)">修改状态</el-button>
             <el-button type="primary" size="mini" @click="clickAgentRebateDetail(scope.$index, scope.row)">查看明细</el-button>
           </template>
         </el-table-column>
@@ -172,23 +172,23 @@ export default {
     return {
       filters: {
         selechTime: '',
-        status: '1',
+        status: '4',
         agentId: '',
         startTime: '',
         endTime: ''
       },
       statusOptions: [{
         value: '1',
-        label: '待核算'
-      }, {
-        value: '2',
         label: '待结算'
       }, {
-        value: '3',
+        value: '2',
         label: '结算中'
       }, {
-        value: '4',
+        value: '3',
         label: '已结算'
+      }, {
+        value: '4',
+        label: '待核算'
       }],
 
       dialogVisibleAgentRebate: false,
@@ -214,10 +214,10 @@ export default {
       AgentRebateStatusId: '',
       AgentRebateStatus: '',
       agentRebateStatusOptions: [{
-        value: '2',
+        value: '1',
         label: '待结算'
       },{
-        value: '4',
+        value: '3',
         label: '已结算'
       }],
       optionsAgent: [],
@@ -229,7 +229,7 @@ export default {
       return row.settled_date.slice(0, 7)
     },
     formatterStatus(row, column){
-      return row.status === '1' ? '待核算' : row.status === '2' ? '待结算' : row.status === '3' ? '结算中' : row.status === '4' ? '已结算' : '未知'
+      return row.status === '4' ? '待核算' : row.status === '1' ? '待结算' : row.status === '2' ? '结算中' : row.status === '3' ? '已结算' : '未知'
     },
     clickAgentRebateDetail(index, row) {
       this.$router.push({ path: '/deal/shop/rebatePage2', query: { agentId: row.agent_id, date: row.settled_date, status: row.status } })

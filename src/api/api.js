@@ -182,3 +182,63 @@ export const updateAgentRebateDetail = params => {
 export const selectAgentIdByName = params => {
   return instance.post(`${preUrlPath}/admin/wp/comm/selectAgentIdByName`, params).then(res => res.data);
 };
+
+export const queryMiniProgram = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/queryMiniProgram`, params).then(res => res.data);
+};
+
+export const addModifyDomain = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/addModifyDomain`, params).then(res => res.data);
+};
+
+export const getModifyDomain = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/getModifyDomain`, params).then(res => res.data);
+};
+
+export const commitMini = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/commitMini`, params).then(res => res.data);
+};
+
+export const bindTester = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/bindTester`, params).then(res => res.data);
+};
+
+export const queryCommitMini = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/queryCommitMini`, params).then(res => res.data);
+};
+
+export const getQrcode = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/getQrcode`, params).then(res => res.data);
+};
+
+export const getCategory = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/getCategory`, params).then(res => res.data);
+};
+
+export const getPage = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/getPage`, params).then(res => res.data);
+};
+
+export const submitAudit = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/submitAudit`, params).then(res => res.data);
+};
+
+export const getMiniDetail = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/getMiniDetail`, params).then(res => res.data);
+};
+
+export const getAuditStatus = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/getAuditStatus`, params).then(res => res.data);
+};
+
+export const release = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/release`, params).then(res => res.data);
+};
+
+export const undocodeaudit = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/undocodeaudit`, params).then(res => res.data);
+};
+
+export const changeVisitStatus = params => {
+  return instance.post(`${preUrlPath}/admin/mer/manager/changeVisitStatus`, params).then(res => res.data);
+};

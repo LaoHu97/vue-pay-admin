@@ -31,4 +31,7 @@ body {
   fill: currentColor;
   overflow: hidden;
 }
+.el-message-box__message p {
+  text-align: center;
+}
 </style>

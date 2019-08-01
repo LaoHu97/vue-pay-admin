@@ -171,4 +171,28 @@ export default [{
     },
     component: () => import('@/views/view/table6/rebatePage2.vue')
   }]
+}, {
+  path: 'shop',
+  name: '小程序管理',
+  meat: {
+    name: '小程序管理',
+    icon: 'icon-tuanduicankaoxian-'
+  },
+  component: index,
+  children: [{
+    path: 'mini1',
+    name: '小程序列表',
+    meat: {
+      name: '小程序列表'
+    },
+    component: () => import('@/views/view/table7/mini1.vue')
+  }, {
+    path: 'mini2',
+    name: '小程序设置',
+    meat: {
+      name: '小程序设置',
+      hidden: true
+    },
+    component: () => import('@/views/view/table7/mini2.vue')
+  }]
 }]
