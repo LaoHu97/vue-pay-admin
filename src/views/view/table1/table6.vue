@@ -222,6 +222,17 @@
           <div>
             <el-row>
               <el-col :span="12">
+                <el-form-item label="直连间连">
+                  <span>{{ formDetail.connType === 'ZL' ? '直连' : formDetail.connType === 'JL' ? '间连' : '' }}</span>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="支付宝账号">
+                  <span>{{ formDetail.aliAccountNub }}</span>
+                </el-form-item>
+              </el-col>
+            </el-row><el-row>
+              <el-col :span="12">
                 <el-form-item label="商户结算入网类型">
                   <span>{{ formDetail.settlement_mer_type === 'QY' ? '企业' : formDetail.settlement_mer_type === 'GT' ? '个体' : formDetail.settlement_mer_type === 'XW' ? '小微' : '' }}</span>
                 </el-form-item>

@@ -2,7 +2,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/admin': {
-        target: 'http://192.168.1.187:8080',
+        target: 'http://dev.weupay.com',
         ws: true,
         changeOrigin: true
       }
@@ -16,5 +16,5 @@ module.exports = {
   css: undefined,
   lintOnSave: false,
   indexPath: 'admin.html',
-  assetsDir: 'admin'
+  assetsDir: './'
 }

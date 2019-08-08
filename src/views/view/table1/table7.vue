@@ -230,6 +230,30 @@
         >
           <el-input v-model="formDialog.reserve1" placeholder="请输入商户号"/>
         </el-form-item>
+        <el-form-item
+          label="账号"
+          prop="accountNum"
+          :rules="[{ required: true, message: '请输入账号', trigger: 'blur' }]"
+          v-if="formDialog.terminal_type === '14'"
+        >
+          <el-input v-model="formDialog.accountNum" placeholder="请输入账号"/>
+        </el-form-item>
+        <el-form-item
+          label="密码"
+          prop="password"
+          :rules="[{ required: true, message: '请输入密码', trigger: 'blur' }]"
+          v-if="formDialog.terminal_type === '14'"
+        >
+          <el-input v-model="formDialog.password" placeholder="请输入密码"/>
+        </el-form-item>
+        <el-form-item
+          label="工号"
+          prop="jobNum"
+          :rules="[{ required: true, message: '请输入工号', trigger: 'blur' }]"
+          v-if="formDialog.terminal_type === '14'"
+        >
+          <el-input v-model="formDialog.jobNum" placeholder="请输入工号"/>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogRefundVisible = false">取 消</el-button>
@@ -262,6 +286,15 @@
         </el-form-item>
         <el-form-item label="创建时间：">
           <span>{{formatterGmtCreate(detForm)}}</span>
+        </el-form-item>
+        <el-form-item label="账号：" v-if="detForm.terminal_type === '14'">
+          <span>{{detForm.accountNum}}</span>
+        </el-form-item>
+        <el-form-item label="密码：" v-if="detForm.terminal_type === '14'">
+          <span>{{detForm.password}}</span>
+        </el-form-item>
+        <el-form-item label="工号：" v-if="detForm.terminal_type === '14'">
+          <span>{{detForm.jobNum}}</span>
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -321,7 +354,10 @@ export default {
         apply_type: "3",
         active_code: "",
         mCode: "",
-        reserve1: ""
+        reserve1: "",
+        accountNum: "",
+        password: "",
+        jobNum: ""
       },
       pickerOptions: {
         disabledDate(time) {
@@ -354,6 +390,8 @@ export default {
           ? "新大陆POS"
           : row.terminal_type === "13"
             ? "微收银"
+            : row.terminal_type === "14"
+            ? "钱客多"
             : "未知";
     },
     formatterGmtCreate(row, column) {
