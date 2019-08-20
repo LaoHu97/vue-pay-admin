@@ -188,7 +188,7 @@
             <div class="grid_content3">
               <p class="grid_content_center">
                 <span>提交时间：</span>
-                {{FormatTime(updateCode.gmt_create)}}
+                {{FormatTime(updateCode.commit_time)}}
               </p>
               <p class="grid_content_center">
                 <span>描述：</span>

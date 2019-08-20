@@ -8,6 +8,7 @@ module.exports = {
       }
     }
   },
+  baseUrl: '',
   outputDir: undefined,
   runtimeCompiler: true,
   productionSourceMap: false,
@@ -15,5 +16,5 @@ module.exports = {
   css: undefined,
   lintOnSave: false,
   indexPath: 'admin.html',
-  assetsDir: 'admin'
+  assetsDir: './'
 }
