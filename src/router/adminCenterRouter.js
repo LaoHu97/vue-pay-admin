@@ -103,6 +103,13 @@ export default [{
     },
     component: () => import('@/views/view/table4/order01.vue')
   }, {
+    path: 'order5',
+    name: '修补订单',
+    meat: {
+      name: '修补订单'
+    },
+    component: () => import('@/views/view/table4/order05.vue')
+  }, {
     path: 'order2',
     name: '待处理门店数据',
     meat: {

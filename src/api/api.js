@@ -182,3 +182,15 @@ export const updateAgentRebateDetail = params => {
 export const selectAgentIdByName = params => {
   return instance.post(`${preUrlPath}/admin/wp/comm/selectAgentIdByName`, params).then(res => res.data);
 };
+
+export const queryPendingOrder = params => {
+  return Axios.post(`${preUrlPath}/admin/revise/queryPendingOrder`, params).then(res => res.data);
+};
+
+export const pendingOrderPutOrder = params => {
+  return Axios.post(`${preUrlPath}/admin/revise/pendingOrderPutOrder`, params).then(res => res.data);
+};
+
+export const updatePendingOrder = params => {
+  return Axios.post(`${preUrlPath}/admin/revise/updatePendingOrder`, params).then(res => res.data);
+};
