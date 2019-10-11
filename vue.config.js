@@ -2,7 +2,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/admin': {
-        target: 'https://devpay.wandingkeji.cn',
+        target: 'https://pay.wandingkeji.cn',
         ws: true,
         changeOrigin: true
       },

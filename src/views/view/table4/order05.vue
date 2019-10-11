@@ -59,12 +59,12 @@
     </el-form>
     <!--列表-->
     <div v-loading="listLoading">
-      <el-table :data="users" border="" stripe highlight-current-row>
-        <el-table-column prop="order_id" label="订单号"/>
-        <el-table-column prop="mname" label="商户名称"/>
-        <el-table-column prop="store_name" label="门店名称"/>
-        <el-table-column :formatter="formatCreate_time" label="支付时间"/>
-        <el-table-column prop="goods_price" label="支付金额"/>
+      <el-table :data="users" border stripe highlight-current-row>
+        <el-table-column prop="order_id" label="订单号" />
+        <el-table-column prop="mname" label="商户名称" />
+        <el-table-column prop="store_name" label="门店名称" />
+        <el-table-column :formatter="formatCreate_time" label="支付时间" />
+        <el-table-column prop="goods_price" label="支付金额" />
         <el-table-column label="操作" align="center" width="280">
           <template slot-scope="scope">
             <!-- <el-button type="success" size="mini" :disabled="scope.row.replacement_status === '1'" @click="fillOrder(scope.$index, scope.row)">补录订单</el-button> -->
@@ -75,10 +75,16 @@
       </el-table>
     </div>
     <el-dialog title="修改待补订单" :visible.sync="orderDialogVisible" width="30%">
-      <el-form :model="editOrderForm" :rules="editOrderFormRules" ref="editOrderForm" label-position="left" label-width="120px">
+      <el-form
+        :model="editOrderForm"
+        :rules="editOrderFormRules"
+        ref="editOrderForm"
+        label-position="left"
+        label-width="120px"
+      >
         <el-form-item label="订单状态" prop="status">
-          <el-radio v-model="editOrderForm.status" label="0">处理</el-radio>
-          <el-radio v-model="editOrderForm.status" label="1">不处理</el-radio>
+          <el-radio v-model="editOrderForm.status" label="0" @change="orderStatusChange">处理</el-radio>
+          <el-radio v-model="editOrderForm.status" label="1" @change="orderStatusChange">不处理</el-radio>
         </el-form-item>
         <el-form-item label="支付方式" prop="payWay">
           <el-select v-model="editOrderForm.payWay" placeholder="请选择">
@@ -177,7 +183,7 @@
         @current-change="handleCurrentChange"
         :page-size="20"
         :total="total"
-        background=""
+        background
         style="text-align:center;background:#fff;padding:15px;"
       />
     </el-row>
@@ -198,6 +204,14 @@ import { optionsPaymentAll } from "@/util/mockData.js";
 import getUsersList from "@/mixins/Users";
 import getRemoteSearch from "@/mixins/RemoteSearch";
 
+const rules = {
+  status: [{ required: true, message: "请选择订单状态", trigger: "change" }],
+  payWay: [{ required: true, message: "请选择支付方式", trigger: "change" }],
+  mName: [{ required: true, message: "请输入商户名称", trigger: "blur" }],
+  sName: [{ required: true, message: "请输入门店名称", trigger: "blur" }],
+  orderType: [{ required: true, message: "请输入订单类型", trigger: "change" }]
+};
+
 export default {
   mixins: [getUsersList, getRemoteSearch],
   data() {
@@ -206,8 +220,19 @@ export default {
         startTime: "",
         endTime: "",
         dateTime: [
-          new Date(new Date().getFullYear(), new Date().getMonth(),new Date().getDate()-1).getTime(),
-          new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()-1,23,59,59).getTime()
+          new Date(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            new Date().getDate() - 1
+          ).getTime(),
+          new Date(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            new Date().getDate() - 1,
+            23,
+            59,
+            59
+          ).getTime()
         ],
         status: "0"
       },
@@ -238,46 +263,43 @@ export default {
       optionsPayment: optionsPaymentAll,
       detailsDialogVisible: false,
       detailsForm: {},
-      editOrderFormRules:{
-          status: [
-            { required: true, message: '请选择订单状态', trigger: 'change' }
-          ],
-          payWay: [
-            { required: true, message: '请选择支付方式', trigger: 'change' }
-          ],
-          mName: [
-            { required: true, message: '请输入商户名称', trigger: 'blur' }
-          ],
-          sName: [
-            { required: true, message: '请输入门店名称', trigger: 'blur' }
-          ],
-          orderType: [
-            { required: true, message: '请输入订单类型', trigger: 'change' }
-          ]
-      }
+      editOrderFormRules: rules
     };
   },
   methods: {
     formatCreate_time(row, column) {
-      return util.formatDate.format(new Date(row.pay_time), "yyyy/MM/dd hh:mm:ss");
+      return util.formatDate.format(
+        new Date(row.pay_time),
+        "yyyy/MM/dd hh:mm:ss"
+      );
     },
     formatPay_way(row, column) {
       return util.formatPayment(row.pay_way);
     },
     formatPayment(data) {
-      return util.formatPayment(data)
+      return util.formatPayment(data);
     },
     formatOderType(data) {
-      return data === 'INSERT' ? '添加' : data === 'UPDATE' ? '更新' : '未知'
+      return data === "INSERT" ? "添加" : data === "UPDATE" ? "更新" : "未知";
+    },
+    orderStatusChange(e) {
+      console.log(e);
+      if (e === "1") {
+        this.editOrderFormRules = {};
+        this.$refs.editOrderForm.clearValidate()
+        
+      } else {
+        this.editOrderFormRules = rules;
+      }
     },
     detailsOrder(index, row) {
-      this.detailsDialogVisible = true
+      this.detailsDialogVisible = true;
       this.$nextTick(() => {
-        this.detailsForm = util.deepcopy(row)
-      })
+        this.detailsForm = util.deepcopy(row);
+      });
     },
     submitOrder(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           let para = util.deepcopy(this.editOrderForm);
           para.id = para.id.toString();
@@ -292,7 +314,7 @@ export default {
             });
           });
         }
-      })
+      });
     },
     editOrder(index, row) {
       this.orderDialogVisible = true;
@@ -310,7 +332,7 @@ export default {
           pendingOrderPutOrder({ id: row.id.toString() }).then(res => {
             this.$message({
               type: "success",
-              message: '补录成功'
+              message: "补录成功"
             });
             this.getUsers();
           });
@@ -357,13 +379,13 @@ export default {
     },
     getList() {
       let para = this.filters;
-      para.pageNum = this.page
-      para.rowNum = 20
+      para.pageNum = this.page;
+      para.rowNum = 20;
       para.startTime = para.dateTime ? para.dateTime[0].toString() : "";
       para.endTime = para.dateTime ? para.dateTime[1].toString() : "";
       queryPendingOrder(para).then(res => {
         console.log(res);
-        
+
         this.users = res.data.orderList;
         this.total = res.data.totalCount;
       });
