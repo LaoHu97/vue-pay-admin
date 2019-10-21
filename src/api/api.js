@@ -194,3 +194,7 @@ export const pendingOrderPutOrder = params => {
 export const updatePendingOrder = params => {
   return Axios.post(`${preUrlPath}/admin/revise/updatePendingOrder`, params).then(res => res.data);
 };
+
+export const discardPendingOrder = params => {
+  return Axios.post(`${preUrlPath}/admin/revise/discardPendingOrder`, params).then(res => res.data);
+};

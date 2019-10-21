@@ -68,13 +68,14 @@
         <el-table-column label="操作" align="center" width="280">
           <template slot-scope="scope">
             <!-- <el-button type="success" size="mini" :disabled="scope.row.replacement_status === '1'" @click="fillOrder(scope.$index, scope.row)">补录订单</el-button> -->
-            <el-button type="warning" size="mini" @click="editOrder(scope.$index, scope.row)">修 改</el-button>
+            <el-button type="warning" size="mini" @click="removeOrder(scope.$index, scope.row)">丢 弃</el-button>
+            <el-button type="warning" size="mini" @click="editOrder(scope.$index, scope.row)">补 单</el-button>
             <el-button type="info" size="mini" @click="detailsOrder(scope.$index, scope.row)">详 情</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <el-dialog title="修改待补订单" :visible.sync="orderDialogVisible" width="30%">
+    <el-dialog title="补单" :visible.sync="orderDialogVisible" width="30%">
       <el-form
         :model="editOrderForm"
         :rules="editOrderFormRules"
@@ -82,10 +83,10 @@
         label-position="left"
         label-width="120px"
       >
-        <el-form-item label="订单状态" prop="status">
+        <!-- <el-form-item label="订单状态" prop="status">
           <el-radio v-model="editOrderForm.status" label="0" @change="orderStatusChange">处理</el-radio>
           <el-radio v-model="editOrderForm.status" label="1" @change="orderStatusChange">不处理</el-radio>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="支付方式" prop="payWay">
           <el-select v-model="editOrderForm.payWay" placeholder="请选择">
             <el-option
@@ -198,7 +199,8 @@ import {
   updateReplaceOrder,
   queryPendingOrder,
   pendingOrderPutOrder,
-  updatePendingOrder
+  updatePendingOrder,
+  discardPendingOrder
 } from "@/api/api";
 import { optionsPaymentAll } from "@/util/mockData.js";
 import getUsersList from "@/mixins/Users";
@@ -281,6 +283,28 @@ export default {
     },
     formatOderType(data) {
       return data === "INSERT" ? "添加" : data === "UPDATE" ? "更新" : "未知";
+    },
+    removeOrder(index, row) {
+      this.$confirm("是否丢弃此订单？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          discardPendingOrder({ id: row.id.toString() }).then(res => {
+            this.$message({
+              type: "success",
+              message: res.msg
+            });
+            this.getUsers();
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     },
     orderStatusChange(e) {
       console.log(e);
