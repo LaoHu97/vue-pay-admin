@@ -69,7 +69,18 @@
           <template slot-scope="scope">
             <!-- <el-button type="success" size="mini" :disabled="scope.row.replacement_status === '1'" @click="fillOrder(scope.$index, scope.row)">补录订单</el-button> -->
             <el-button type="warning" size="mini" @click="removeOrder(scope.$index, scope.row)">丢 弃</el-button>
-            <el-button type="warning" size="mini" @click="editOrder(scope.$index, scope.row)">补 单</el-button>
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="scope.row.is_repair === '0'"
+              @click="editOrder(scope.$index, scope.row)"
+            >补 单</el-button>
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="scope.row.is_repair === '1'"
+              @click="rollbackOrder(scope.$index, scope.row)"
+            >回 滚</el-button>
             <el-button type="info" size="mini" @click="detailsOrder(scope.$index, scope.row)">详 情</el-button>
           </template>
         </el-table-column>
@@ -86,7 +97,7 @@
         <!-- <el-form-item label="订单状态" prop="status">
           <el-radio v-model="editOrderForm.status" label="0" @change="orderStatusChange">处理</el-radio>
           <el-radio v-model="editOrderForm.status" label="1" @change="orderStatusChange">不处理</el-radio>
-        </el-form-item> -->
+        </el-form-item>-->
         <el-form-item label="支付方式" prop="payWay">
           <el-select v-model="editOrderForm.payWay" placeholder="请选择">
             <el-option
@@ -98,10 +109,44 @@
           </el-select>
         </el-form-item>
         <el-form-item label="商户名称" prop="mName">
-          <el-input v-model="editOrderForm.mName"></el-input>
+          <el-select
+            v-model="editOrderForm.mName"
+            placeholder="请输入商户名称关键字查询"
+            :multiple="false"
+            filterable
+            remote
+            :remote-method="remoteMerchants"
+            :loading="merchantsLoading"
+            clearable
+            @focus="clickMerchants"
+          >
+            <el-option
+              v-for="item in optionsMerchants"
+              :key="item"
+              :value="item"
+              :label="item"
+            ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="门店名称" prop="sName">
-          <el-input v-model="editOrderForm.sName"></el-input>
+          <el-select
+            v-model="editOrderForm.sName"
+            placeholder="请输入门店名称关键字查询"
+            :multiple="false"
+            filterable
+            remote
+            :remote-method="remoteStore"
+            :loading="storeLoading"
+            clearable
+            @focus="clickStore"
+          >
+            <el-option
+              v-for="item in optionsStore"
+              :key="item"
+              :value="item"
+              :label="item"
+            ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="订单类型" prop="orderType">
           <el-select v-model="editOrderForm.orderType" placeholder="请选择">
@@ -200,7 +245,10 @@ import {
   queryPendingOrder,
   pendingOrderPutOrder,
   updatePendingOrder,
-  discardPendingOrder
+  discardPendingOrder,
+  rollBackPendingOrder,
+  queryMerchantsInfo,
+  queryStoreInfo
 } from "@/api/api";
 import { optionsPaymentAll } from "@/util/mockData.js";
 import getUsersList from "@/mixins/Users";
@@ -209,8 +257,8 @@ import getRemoteSearch from "@/mixins/RemoteSearch";
 const rules = {
   status: [{ required: true, message: "请选择订单状态", trigger: "change" }],
   payWay: [{ required: true, message: "请选择支付方式", trigger: "change" }],
-  mName: [{ required: true, message: "请输入商户名称", trigger: "blur" }],
-  sName: [{ required: true, message: "请输入门店名称", trigger: "blur" }],
+  mName: [{ required: true, message: "请输入商户名称", trigger: "change" }],
+  sName: [{ required: true, message: "请输入门店名称", trigger: "change" }],
   orderType: [{ required: true, message: "请输入订单类型", trigger: "change" }]
 };
 
@@ -265,7 +313,13 @@ export default {
       optionsPayment: optionsPaymentAll,
       detailsDialogVisible: false,
       detailsForm: {},
-      editOrderFormRules: rules
+      editOrderFormRules: rules,
+
+      optionsMerchants: [],
+      merchantsLoading: false,
+
+      optionsStore: [],
+      storeLoading: false
     };
   },
   methods: {
@@ -283,6 +337,72 @@ export default {
     },
     formatOderType(data) {
       return data === "INSERT" ? "添加" : data === "UPDATE" ? "更新" : "未知";
+    },
+    clickStore() {
+      this.storeLoading = true;
+      queryStoreInfo({ sName: '' }).then(res => {
+        this.storeLoading = false;
+        this.optionsStore = res.data;
+      });
+    },
+    remoteStore(query) {
+      if (query !== "") {
+        this.storeLoading = true;
+        setTimeout(() => {
+          this.storeLoading = false;
+          queryStoreInfo({
+            sName: query
+          }).then(res => {
+            this.optionsStore = res.data;
+          });
+        }, 200);
+      } else {
+        this.optionsStore = [];
+      }
+    },
+    clickMerchants() {
+      this.merchantsLoading = true;
+      queryMerchantsInfo({ mName: '' }).then(res => {
+        this.merchantsLoading = false;
+        this.optionsMerchants = res.data;
+      });
+    },
+    remoteMerchants(query) {
+      if (query !== "") {
+        this.merchantsLoading = true;
+        setTimeout(() => {
+          this.merchantsLoading = false;
+          queryMerchantsInfo({
+            mName: query
+          }).then(res => {
+            this.optionsMerchants = res.data;
+          });
+        }, 200);
+      } else {
+        this.optionsMerchants = [];
+      }
+    },
+    rollbackOrder(index, row) {
+      this.$confirm("是否回滚此订单？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          rollBackPendingOrder({ id: row.id.toString() }).then(res => {
+            this.$message({
+              type: "success",
+              message: res.msg
+            });
+            this.getUsers();
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     },
     removeOrder(index, row) {
       this.$confirm("是否丢弃此订单？", "提示", {
@@ -310,8 +430,7 @@ export default {
       console.log(e);
       if (e === "1") {
         this.editOrderFormRules = {};
-        this.$refs.editOrderForm.clearValidate()
-        
+        this.$refs.editOrderForm.clearValidate();
       } else {
         this.editOrderFormRules = rules;
       }

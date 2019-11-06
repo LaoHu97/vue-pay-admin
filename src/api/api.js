@@ -198,3 +198,15 @@ export const updatePendingOrder = params => {
 export const discardPendingOrder = params => {
   return Axios.post(`${preUrlPath}/admin/revise/discardPendingOrder`, params).then(res => res.data);
 };
+
+export const rollBackPendingOrder = params => {
+  return Axios.post(`${preUrlPath}/admin/revise/rollBackPendingOrder`, params).then(res => res.data);
+};
+
+export const queryMerchantsInfo = params => {
+  return Axios.post(`${preUrlPath}/admin/artificialStatistics/queryMerchantsInfo`, params).then(res => res.data);
+};
+
+export const queryStoreInfo = params => {
+  return Axios.post(`${preUrlPath}/admin/artificialStatistics/queryStoreInfo`, params).then(res => res.data);
+};
