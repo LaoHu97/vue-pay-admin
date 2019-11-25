@@ -21,5 +21,5 @@ module.exports = {
   css: undefined,
   lintOnSave: false,
   indexPath: 'admin.html',
-  assetsDir: './'
+  assetsDir: './admin'
 }

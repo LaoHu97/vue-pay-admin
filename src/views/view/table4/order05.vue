@@ -68,17 +68,17 @@
         <el-table-column label="操作" align="center" width="280">
           <template slot-scope="scope">
             <!-- <el-button type="success" size="mini" :disabled="scope.row.replacement_status === '1'" @click="fillOrder(scope.$index, scope.row)">补录订单</el-button> -->
-            <el-button type="warning" size="mini" @click="removeOrder(scope.$index, scope.row)">丢 弃</el-button>
+            <el-button type="warning" size="mini" v-if="scope.row.is_accounts_balance === '0'" @click="removeOrder(scope.$index, scope.row)">丢 弃</el-button>
             <el-button
               type="warning"
               size="mini"
-              v-if="scope.row.is_repair === '0'"
+              v-if="scope.row.is_repair === '0' && scope.row.is_accounts_balance === '0'"
               @click="editOrder(scope.$index, scope.row)"
             >补 单</el-button>
             <el-button
               type="warning"
               size="mini"
-              v-if="scope.row.is_repair === '1'"
+              v-if="scope.row.is_accounts_balance === '1'"
               @click="rollbackOrder(scope.$index, scope.row)"
             >回 滚</el-button>
             <el-button type="info" size="mini" @click="detailsOrder(scope.$index, scope.row)">详 情</el-button>
@@ -184,7 +184,7 @@
           <span>{{detailsForm.transaction_id}}</span>
         </el-form-item>
         <el-form-item label="订单来源：">
-          <span>{{detailsForm.channel === 'NEWLAND' ? '新大陆' : '富有'}}</span>
+          <span>{{detailsForm.source === 1 ? '易融码' : detailsForm.source === 2 ? '富友' : detailsForm.source === 3 ? '新大陆' : detailsForm.source === 4 ? '扫呗' : detailsForm.source === 5 ? '微信' : detailsForm.source === 6 ? '支付宝' : '未知'}}</span>
         </el-form-item>
         <el-form-item label="订单类型：">
           <span>{{detailsForm.order_type === '0' ? '支付' : detailsForm.order_type === '1' ? '退款' : '未知'}}</span>
@@ -207,11 +207,11 @@
         <el-form-item label="费率(千分比)：">
           <span>{{detailsForm.rate}}</span>
         </el-form-item>
-        <el-form-item label="补录类型：">
-          <span>{{formatOderType(detailsForm.reserve2)}}</span>
+        <el-form-item label="异常类型：">
+          <span>{{formatOderType(detailsForm.ex_type)}}</span>
         </el-form-item>
-        <el-form-item label="补录状态：">
-          <span>{{detailsForm.replacement_status === '0' ? '未处理' : detailsForm.replacement_status === '1' ? '已处理' : '未知'}}</span>
+        <el-form-item label="补单状态：">
+          <span>{{detailsForm.is_repair === '0' ? '未补单' : detailsForm.is_repair === '1' ? '已补单' : '未知'}}</span>
         </el-form-item>
         <el-form-item label="支付时间：">
           <span>{{formatCreate_time(detailsForm)}}</span>
@@ -336,7 +336,7 @@ export default {
       return util.formatPayment(data);
     },
     formatOderType(data) {
-      return data === "INSERT" ? "添加" : data === "UPDATE" ? "更新" : "未知";
+      return data === 1 ? "数据不一致" : data === 2 ? "漏单" : "未知";
     },
     clickStore() {
       this.storeLoading = true;

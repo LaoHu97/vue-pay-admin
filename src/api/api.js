@@ -210,3 +210,7 @@ export const queryMerchantsInfo = params => {
 export const queryStoreInfo = params => {
   return Axios.post(`${preUrlPath}/admin/artificialStatistics/queryStoreInfo`, params).then(res => res.data);
 };
+
+export const merchantsDayStatistics = params => {
+  return Axios.post(`${preUrlPath}/admin/artificialStatistics/merchantsDayStatistics`, params).then(res => res.data);
+};

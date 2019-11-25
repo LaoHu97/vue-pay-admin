@@ -95,27 +95,38 @@ export default [{
     icon: 'icon-tuanduicankaoxian-'
   },
   component: index,
-  children: [{
-    path: 'order1',
-    name: '待补订单',
-    meat: {
-      name: '待补订单'
-    },
-    component: () => import('@/views/view/table4/order01.vue')
-  }, {
+  children: [
+  //   {
+  //   path: 'order1',
+  //   name: '待补订单',
+  //   meat: {
+  //     name: '待补订单'
+  //   },
+  //   component: () => import('@/views/view/table4/order01.vue')
+  // }, 
+  {
     path: 'order5',
     name: '修补订单',
     meat: {
       name: '修补订单'
     },
     component: () => import('@/views/view/table4/order05.vue')
-  }, {
-    path: 'order2',
-    name: '待处理门店数据',
+  }, 
+  // {
+  //   path: 'order2',
+  //   name: '待处理门店数据',
+  //   meat: {
+  //     name: '待处理门店数据'
+  //   },
+  //   component: () => import('@/views/view/table4/order02.vue')
+  // },
+  {
+    path: 'order6',
+    name: '重新统计',
     meat: {
-      name: '待处理门店数据'
+      name: '重新统计'
     },
-    component: () => import('@/views/view/table4/order02.vue')
+    component: () => import('@/views/view/table4/order06.vue')
   }, {
     path: 'order3',
     name: '支付列表',
