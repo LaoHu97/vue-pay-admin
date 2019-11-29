@@ -189,4 +189,20 @@ export default [{
     },
     component: () => import('@/views/view/table6/rebatePage2.vue')
   }]
+}, {
+  path: 'extend',
+  name: '功能管理',
+  meat: {
+    name: '功能管理',
+    icon: 'icon-tuanduicankaoxian-'
+  },
+  component: index,
+  children: [{
+    path: 'extend1',
+    name: '商户列表',
+    meat: {
+      name: '商户列表'
+    },
+    component: () => import('@/views/view/table7/extend1.vue')
+  }]
 }]
