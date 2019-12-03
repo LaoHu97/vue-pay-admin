@@ -2,10 +2,15 @@ module.exports = {
   devServer: {
     proxy: {
       '/admin': {
-        target: 'http://dev.weupay.com',
+        target: 'https://devpay.wandingkeji.cn',
         ws: true,
         changeOrigin: true
-      }
+      },
+      '/pay': {
+        target: 'https://devpay.wandingkeji.cn',
+        ws: true,
+        changeOrigin: true
+      },
     }
   },
   baseUrl: '',

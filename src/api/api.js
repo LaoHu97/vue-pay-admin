@@ -134,3 +134,21 @@ export const queryOrderDetail = params => { return instance.post(`${preUrlPath}/
 export const updateExceptionOrder = params => { return instance.post(`${preUrlPath}/admin/wp/admin/updateExceptionOrder`, params).then(res => res.data); };
 //查询订单列表
 export const queryOrderList = params => { return instance.post(`${preUrlPath}/admin/wp/admin/queryOrderList`, params).then(res => res.data); };
+
+
+
+export const privilegeList = params => {
+  return instance.post(`${preUrlPath}/pay/privilege/list`, params).then(res => res.data);
+};
+
+export const privilegeListedit = params => {
+  return instance.post(`${preUrlPath}/pay/privilege/edit`, params).then(res => res.data);
+};
+
+export const queryMerFaceMachine = params => {
+  return instance.post(`${preUrlPath}/pay/api/qmp/face/queryMerFaceMachine`, params).then(res => res.data);
+};
+
+export const modifyPwd = params => {
+  return instance.post(`${preUrlPath}/pay/api/qmp/face/modifyPwd`, params).then(res => res.data);
+}; 
