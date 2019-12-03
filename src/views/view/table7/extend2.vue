@@ -28,11 +28,6 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="商户账号" prop="maccount">
-              <el-input v-model="filters.maccount" placeholder="请输入商户账号" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
             <el-form-item>
               <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
               <el-button @click="resetForm('filters')" round>重置</el-button>
@@ -45,27 +40,14 @@
     <div v-loading="listLoading">
       <el-table :data="users" border stripe highlight-current-row>
         <el-table-column prop="mname" align="center" label="商户名称" />
-        <el-table-column prop="createTime" align="center" label="创建时间" />
+        <el-table-column prop="printname" align="center" label="设备名称" />
         <el-table-column label="操作" align="center" width="120">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="clickLook(scope.$index, scope.row)">功能管理</el-button>
+            <el-button type="primary" size="mini" @click="clickLook(scope.$index, scope.row)">密码重置</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <el-dialog title="选择功能" :visible.sync="dialogVisible" width="450px">
-      <div>
-        <el-checkbox-group v-model="checkList">
-          <el-checkbox class="checkbox_view" border label="OPEN">开通支付</el-checkbox>
-          <el-checkbox class="checkbox_view" border label="EXEMPT">退款免密</el-checkbox>
-          <el-checkbox class="checkbox_view" border label="AUTH">预授权</el-checkbox>
-        </el-checkbox-group>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submiltCheckbox">确 定</el-button>
-      </span>
-    </el-dialog>
     <!--工具条-->
     <el-row>
       <el-pagination
@@ -83,7 +65,7 @@
 
 <script>
 import * as util from "../../../util/util.js";
-import { privilegeList, privilegeListedit } from "@/api/api";
+import { queryMerFaceMachine, modifyPwd } from "@/api/api";
 import getUsersList from "@/mixins/Users";
 import getRemoteSearch from "@/mixins/RemoteSearch";
 
@@ -92,53 +74,44 @@ export default {
   data() {
     return {
       filters: {
-        mname: "",
-        maccount: ""
-      },
-      dialogVisible: false,
-      checkList: [],
-      mid: ""
+        mname: ""
+      }
     };
   },
   methods: {
-    submiltCheckbox() {
-      this.$confirm("确认操作, 是否继续?", "提示", {
+    clickLook(index, row) {
+      this.$confirm("是否将密码重置为123456?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
           let para = {
-            privilegeList: this.checkList,
-            mid: this.mid
+            isReset: true,
+            mCode: row.machineCode,
+            type: row.type
           }
-          privilegeListedit(para).then(res => {
+          modifyPwd(para).then(res => {
             this.getUsers()
             this.$message({
               type: "success",
               message: res.message
             });
-            this.dialogVisible = false
           })
         })
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消"
+            message: "已取消操作"
           });
         });
-    },
-    clickLook(index, row) {
-      this.dialogVisible = true;
-      this.mid = row.mid;
-      this.checkList = row.privilegeList
     },
     getList() {
       let para = this.filters;
       para.pageNum = this.page.toString();
       para.numPerPage = 20;
-      privilegeList(para).then(res => {
-        this.users = res.data.privilegeList;
+      queryMerFaceMachine(para).then(res => {
+        this.users = res.data.terminalList;
         this.total = res.data.totalCount;
       });
     },

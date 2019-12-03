@@ -214,3 +214,19 @@ export const queryStoreInfo = params => {
 export const merchantsDayStatistics = params => {
   return Axios.post(`${preUrlPath}/admin/artificialStatistics/merchantsDayStatistics`, params).then(res => res.data);
 };
+
+export const privilegeList = params => {
+  return instance.post(`${preUrlPath}/pay/privilege/list`, params).then(res => res.data);
+};
+
+export const privilegeListedit = params => {
+  return instance.post(`${preUrlPath}/pay/privilege/edit`, params).then(res => res.data);
+};
+
+export const queryMerFaceMachine = params => {
+  return instance.post(`${preUrlPath}/pay/api/qmp/face/queryMerFaceMachine`, params).then(res => res.data);
+};
+
+export const modifyPwd = params => {
+  return instance.post(`${preUrlPath}/pay/api/qmp/face/modifyPwd`, params).then(res => res.data);
+};

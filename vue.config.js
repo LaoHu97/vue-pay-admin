@@ -6,8 +6,8 @@ module.exports = {
         ws: true,
         changeOrigin: true
       },
-      '/btp': {
-        target: 'http://2x8g9y.natappfree.cc',
+      '/pay': {
+        target: 'https://devpay.wandingkeji.cn',
         ws: true,
         changeOrigin: true
       },
