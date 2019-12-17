@@ -224,9 +224,33 @@ export const privilegeListedit = params => {
 };
 
 export const queryMerFaceMachine = params => {
-  return instance.post(`${preUrlPath}/pay/api/qmp/face/queryMerFaceMachine`, params).then(res => res.data);
+  return instance.post(`${preUrlPath}/admin/api/qmp/face/queryMerFaceMachine `, params).then(res => res.data);
 };
 
 export const modifyPwd = params => {
-  return instance.post(`${preUrlPath}/pay/api/qmp/face/modifyPwd`, params).then(res => res.data);
+  return instance.post(`${preUrlPath}/admin/api/qmp/face/resetPwd`, params).then(res => res.data);
+};
+
+export const querySpeRateInfo = params => {
+  return Axios.post(`${preUrlPath}/admin/artificialStatistics/querySpeRateInfo`, params).then(res => res.data);
+};
+
+export const queryAgentInfo = params => {
+  return Axios.post(`${preUrlPath}/admin/artificialStatistics/queryAgentInfo`, params).then(res => res.data);
+};
+
+export const queryAllPriDef = params => {
+  return instance.post(`${preUrlPath}/admin/privilege/def/queryAllPriDef`, params).then(res => res.data);
+};
+
+export const queryMerPrivilege = params => {
+  return instance.post(`${preUrlPath}/admin/privilege/queryMerPrivilege`, params).then(res => res.data);
+};
+
+export const opMerPrivilege = params => {
+  return instance.post(`${preUrlPath}/admin//privilege/opMerPrivilege`, params).then(res => res.data);
+};
+
+export const queryMachineDetail = params => {
+  return instance.post(`${preUrlPath}/admin/api/qmp/face/queryMachineDetail`, params).then(res => res.data);
 };

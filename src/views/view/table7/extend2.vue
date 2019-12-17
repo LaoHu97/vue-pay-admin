@@ -23,8 +23,15 @@
       <div class="search_top">
         <el-row>
           <el-col :span="6">
-            <el-form-item label="商户名称" prop="mname">
-              <el-input v-model="filters.mname" placeholder="请输入关键字查询" />
+            <el-form-item label="设备类型" prop="type">
+              <el-select v-model="filters.type" placeholder="请选择设备类型">
+                <el-option label="青蛙设备" :value="7"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="设备编号" prop="mCode">
+              <el-input v-model="filters.mCode" placeholder="请输入设备编号" />
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -39,15 +46,33 @@
     <!--列表-->
     <div v-loading="listLoading">
       <el-table :data="users" border stripe highlight-current-row>
-        <el-table-column prop="mname" align="center" label="商户名称" />
-        <el-table-column prop="printname" align="center" label="设备名称" />
-        <el-table-column label="操作" align="center" width="120">
+        <el-table-column prop="machineCode" align="center" label="设备编号" />
+        <el-table-column prop="type" align="center" label="设备类型" :formatter="formatterType" />
+        <el-table-column prop="mname" align="center" label="所属商户" />
+        <el-table-column label="操作" align="center" width="200">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" @click="clickLook(scope.$index, scope.row)">密码重置</el-button>
+            <el-button type="info" size="mini" @click="clickDetail(scope.$index, scope.row)">详情</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
+    <el-dialog title="设备详情" :visible.sync="detailFormVisible" width="30%">
+      <el-form :model="detailForm" label-width="120px" label-position="left">
+        <el-form-item label="所属门店：">
+          <span>{{detailForm.sname}}</span>
+        </el-form-item>
+        <el-form-item label="所属款台：">
+          <span>{{detailForm.ename}}</span>
+        </el-form-item>
+        <el-form-item label="设备名称：">
+          <span>{{detailForm.printname}}</span>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button type="primary" @click.native="detailFormVisible = false">关 闭</el-button>
+      </div>
+    </el-dialog>
     <!--工具条-->
     <el-row>
       <el-pagination
@@ -65,22 +90,36 @@
 
 <script>
 import * as util from "../../../util/util.js";
-import { queryMerFaceMachine, modifyPwd } from "@/api/api";
+import { queryMerFaceMachine, modifyPwd, queryMachineDetail } from "@/api/api";
 import getUsersList from "@/mixins/Users";
 import getRemoteSearch from "@/mixins/RemoteSearch";
+import { log } from 'util';
 
 export default {
   mixins: [getUsersList, getRemoteSearch],
   data() {
     return {
       filters: {
-        mname: ""
-      }
+        type: 7,
+        mCode: ""
+      },
+
+      detailFormVisible: false,
+      detailForm: {}
     };
   },
   methods: {
+    formatterType(row, column){
+      return row.type === 7 ? '青蛙设备' : ''
+    },
+    clickDetail(index, row){
+      this.detailFormVisible = true
+      queryMachineDetail({mCode: row.machineCode, type: row.type}).then(res => {
+        this.detailForm = res.data.printList[0]
+      })
+    },
     clickLook(index, row) {
-      this.$confirm("是否将密码重置为123456?", "提示", {
+      this.$confirm("是否将密码重置为888888?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -107,7 +146,7 @@ export default {
         });
     },
     getList() {
-      let para = this.filters;
+      let para = util.deepcopy(this.filters);
       para.pageNum = this.page.toString();
       para.numPerPage = 20;
       queryMerFaceMachine(para).then(res => {

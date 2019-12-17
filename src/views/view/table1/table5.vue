@@ -271,24 +271,24 @@
         </el-row>
       </div>
     </el-card>
-    <!-- <el-card class="box-card">
+    <el-card class="box-card">
       <div slot="header">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-caidan"></use>
         </svg>
-        <span>硬件配置</span>
+        <span>开通产品</span>
       </div>
       <div class="box-card-pay">
         <el-row>
-          <el-col :span="8">
-            <svg class="box-card-pay-icon" aria-hidden="true">
-              <use xlink:href="#icon-dayinji"></use>
+          <el-col :span="8" v-for="(item, index) in merPrivilegeList" :key="index">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-caidan"></use>
             </svg>
-            <el-button type="text" size="medium" @click="clickPrint">云打印</el-button>
+            {{item.privilegeDesc}}
           </el-col>
         </el-row>
       </div>
-    </el-card> -->
+    </el-card>
     <!--修改分配业务员界面-->
     <el-dialog title="分配业务员" :visible.sync="editFormVisible" width="30%">
       <el-form :model="editSaleForm">
@@ -412,7 +412,8 @@ import {
   selectSaleByName,
   updateAgentSalesman,
   queryAgentShopMer,
-  resetMerMpwd
+  resetMerMpwd,
+  queryMerPrivilege
 } from "@/api/api";
 import CryptoJS from "crypto-js";
 import * as util from "../../../util/util.js";
@@ -429,7 +430,9 @@ export default {
       editSaleForm: {
         sale: ""
       },
-      dialogPhoneVisible: false
+      dialogPhoneVisible: false,
+
+      merPrivilegeList: []
     };
   },
   mounted() {
@@ -486,7 +489,19 @@ export default {
       });
       queryAgentShopMer({ mid: this.$route.query.mid }).then(res => {
         this.boxCardText = res.data.returnMap;
+        this.getMerPrivilege()
         loading.close();
+      });
+    },
+    getMerPrivilege() {
+      let para = {
+        mid: this.$route.query.mid,
+        pageNum: '1',
+        numPerPage: 20,
+        status: 1
+      }
+      queryMerPrivilege(para).then(res => {
+        this.merPrivilegeList = res.data.privilegeList;
       });
     },
     //显示修改业务员界面

@@ -188,11 +188,11 @@ export default {
       },
       statusOptions: [
         {
-          value: "0",
+          value: "2",
           label: "支付失败"
         },
         {
-          value: "1",
+          value: "0",
           label: "待支付"
         }
       ],

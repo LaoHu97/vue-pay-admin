@@ -61,10 +61,13 @@
     <div v-loading="listLoading">
       <el-table :data="users" border stripe highlight-current-row>
         <el-table-column prop="order_id" label="订单号" />
+        <el-table-column prop="order_type" label="订单类型" :formatter="formatorder_type" />
+        <el-table-column prop="pay_way" label="支付方式" :formatter="formatPay_way" />
         <el-table-column prop="mname" label="商户名称" />
         <el-table-column prop="store_name" label="门店名称" />
         <el-table-column :formatter="formatCreate_time" label="支付时间" />
         <el-table-column prop="goods_price" label="支付金额" />
+        <el-table-column prop="factorage" label="手续费" />
         <el-table-column label="操作" align="center" width="280">
           <template slot-scope="scope">
             <!-- <el-button type="success" size="mini" :disabled="scope.row.replacement_status === '1'" @click="fillOrder(scope.$index, scope.row)">补录订单</el-button> -->
@@ -160,14 +163,50 @@
         <el-form-item label="手续费" prop="factorage">
           <el-input-number v-model="editOrderForm.factorage" :min="0" :precision="2"></el-input-number>
         </el-form-item>
-        <el-form-item label="特殊费率名称" prop="speName">
-          <el-input v-model="editOrderForm.speName"></el-input>
+        <el-form-item label="特殊费率名称" prop="srName">
+          <!-- <el-input v-model="editOrderForm.srName"></el-input> -->
+          <el-select
+            v-model="editOrderForm.srName"
+            placeholder="请输入特殊费率名称"
+            :multiple="false"
+            filterable
+            remote
+            :remote-method="remotespeName"
+            :loading="speNameLoading"
+            clearable
+            @focus="clickspeName"
+          >
+            <el-option
+              v-for="item in optionsspeName"
+              :key="item"
+              :value="item"
+              :label="item"
+            ></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="代理名称" prop="agentName">
-          <el-input v-model="editOrderForm.agentName"></el-input>
+        <el-form-item label="代理名称" prop="aName">
+          <!-- <el-input v-model="editOrderForm.aName"></el-input> -->
+          <el-select
+            v-model="editOrderForm.aName"
+            placeholder="请输入代理名称"
+            :multiple="false"
+            filterable
+            remote
+            :remote-method="remoteagentName"
+            :loading="agentNameLoading"
+            clearable
+            @focus="clickagentName"
+          >
+            <el-option
+              v-for="item in optionsagentName"
+              :key="item"
+              :value="item"
+              :label="item"
+            ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="优惠金额" prop="discount">
-          <el-input v-model="editOrderForm.discount"></el-input>
+          <el-input-number v-model="editOrderForm.discount" :min="0" :precision="2"></el-input-number>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -202,7 +241,7 @@
           <span>￥ {{detailsForm.goods_price}}</span>
         </el-form-item>
         <el-form-item label="手续费：">
-          <span>￥ {{detailsForm.reserve3}}</span>
+          <span>￥ {{detailsForm.factorage}}</span>
         </el-form-item>
         <el-form-item label="费率(千分比)：">
           <span>{{detailsForm.rate}}</span>
@@ -248,7 +287,9 @@ import {
   discardPendingOrder,
   rollBackPendingOrder,
   queryMerchantsInfo,
-  queryStoreInfo
+  queryStoreInfo,
+  querySpeRateInfo,
+  queryAgentInfo
 } from "@/api/api";
 import { optionsPaymentAll } from "@/util/mockData.js";
 import getUsersList from "@/mixins/Users";
@@ -306,8 +347,8 @@ export default {
         sName: "",
         orderType: "",
         factorage: "",
-        speName: "",
-        agentName: "",
+        srName: "",
+        aName: "",
         discount: ""
       },
       optionsPayment: optionsPaymentAll,
@@ -319,7 +360,13 @@ export default {
       merchantsLoading: false,
 
       optionsStore: [],
-      storeLoading: false
+      storeLoading: false,
+
+      optionsspeName: [],
+      speNameLoading: false,
+
+      optionsagentName: [],
+      agentNameLoading: false
     };
   },
   methods: {
@@ -338,9 +385,56 @@ export default {
     formatOderType(data) {
       return data === 1 ? "数据不一致" : data === 2 ? "漏单" : "未知";
     },
+    formatorder_type(row){
+      return row.order_type === '0' ? '支付' : row.order_type === '1' ? '退款' : '未知'
+    },
+    clickagentName() {
+      this.agentNameLoading = true;
+      queryAgentInfo({ aName: '' }).then(res => {
+        this.agentNameLoading = false;
+        this.optionsagentName = res.data;
+      });
+    },
+    remoteagentName(query) {
+      if (query !== "") {
+        this.agentNameLoading = true;
+        setTimeout(() => {
+          this.agentNameLoading = false;
+          queryAgentInfo({
+            aName: query
+          }).then(res => {
+            this.optionsagentName = res.data;
+          });
+        }, 200);
+      } else {
+        this.optionsagentName = [];
+      }
+    },
+    clickspeName() {
+      this.speNameLoading = true;
+      querySpeRateInfo({ srName: '' }).then(res => {
+        this.speNameLoading = false;
+        this.optionsspeName = res.data;
+      });
+    },
+    remotespeName(query) {
+      if (query !== "") {
+        this.speNameLoading = true;
+        setTimeout(() => {
+          this.speNameLoading = false;
+          querySpeRateInfo({
+            srName: query
+          }).then(res => {
+            this.optionsspeName = res.data;
+          });
+        }, 200);
+      } else {
+        this.optionsspeName = [];
+      }
+    },
     clickStore() {
       this.storeLoading = true;
-      queryStoreInfo({ sName: '' }).then(res => {
+      queryStoreInfo({ sName: this.editOrderForm.sName, mName: this.editOrderForm.mName }).then(res => {
         this.storeLoading = false;
         this.optionsStore = res.data;
       });
@@ -351,7 +445,8 @@ export default {
         setTimeout(() => {
           this.storeLoading = false;
           queryStoreInfo({
-            sName: query
+            sName: query,
+            mName: this.editOrderForm.mName
           }).then(res => {
             this.optionsStore = res.data;
           });
@@ -362,7 +457,7 @@ export default {
     },
     clickMerchants() {
       this.merchantsLoading = true;
-      queryMerchantsInfo({ mName: '' }).then(res => {
+      queryMerchantsInfo({ mName: this.editOrderForm.mName }).then(res => {
         this.merchantsLoading = false;
         this.optionsMerchants = res.data;
       });
@@ -448,6 +543,7 @@ export default {
           para.id = para.id.toString();
           para.rate = para.rate.toString();
           para.factorage = para.factorage.toString();
+          para.discount = para.discount.toString()
           updatePendingOrder(para).then(res => {
             this.getUsers();
             this.orderDialogVisible = false;
@@ -463,6 +559,20 @@ export default {
       this.orderDialogVisible = true;
       this.$nextTick(() => {
         this.editOrderForm.id = row.id;
+        this.editOrderForm.status = row.status
+        this.editOrderForm.rate = row.rate
+        this.editOrderForm.payWay = row.pay_way
+        this.editOrderForm.mName = row.mname
+        this.editOrderForm.sName = row.store_name
+        this.editOrderForm.orderType = row.order_type
+        this.editOrderForm.factorage = row.factorage
+        this.editOrderForm.srName = row.spe_name
+        this.editOrderForm.aName = row.user_name
+        this.editOrderForm.discount = row.discount
+        this.clickagentName()
+        this.clickspeName()
+        this.clickStore()
+        this.clickMerchants()
       });
     },
     fillOrder(index, row) {
@@ -526,9 +636,9 @@ export default {
       para.rowNum = 20;
       para.startTime = para.dateTime ? para.dateTime[0].toString() : "";
       para.endTime = para.dateTime ? para.dateTime[1].toString() : "";
+      this.listLoading = true
       queryPendingOrder(para).then(res => {
-        console.log(res);
-
+        this.listLoading = false
         this.users = res.data.orderList;
         this.total = res.data.totalCount;
       });

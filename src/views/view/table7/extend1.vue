@@ -23,19 +23,43 @@
       <div class="search_top">
         <el-row>
           <el-col :span="6">
-            <el-form-item label="商户名称" prop="mname">
-              <el-input v-model="filters.mname" placeholder="请输入关键字查询" />
+            <el-form-item label="产品功能" prop="privilegeKey">
+              <el-select v-model="filters.privilegeKey" clearable placeholder="请选择">
+                <el-option
+                  v-for="item in optionsPrivilegeKey"
+                  :key="item.id"
+                  :label="item.privilegeDesc"
+                  :value="item.privilegeKey">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="商户账号" prop="maccount">
-              <el-input v-model="filters.maccount" placeholder="请输入商户账号" />
+            <el-form-item label="选择商户" prop="mid">
+              <el-select
+                v-model="filters.mid"
+                placeholder="请输入商户关键字查询"
+                :multiple="false"
+                filterable
+                remote
+                :remote-method="remoteMer"
+                :loading="merLoading"
+                clearable
+                @focus="clickMer"
+              >
+                <el-option
+                  v-for="item in optionsMer"
+                  :key="item.mid"
+                  :value="item.mid"
+                  :label="item.mname"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item>
               <el-button type="primary" @click="getUsers" round icon="el-icon-search">查询</el-button>
-              <el-button @click="resetForm('filters')" round>重置</el-button>
+              <el-button @click="resetForm('filters')" round>开通</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -45,27 +69,16 @@
     <div v-loading="listLoading">
       <el-table :data="users" border stripe highlight-current-row>
         <el-table-column prop="mname" align="center" label="商户名称" />
-        <el-table-column prop="createTime" align="center" label="创建时间" />
+        <el-table-column prop="privilegeDesc" align="center" label="开通功能" />
+        <el-table-column prop="openTime" align="center" label="开通时间" />
+        <el-table-column prop="status" align="center" label="状态" :formatter="formatterStatus" />
         <el-table-column label="操作" align="center" width="120">
           <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="clickLook(scope.$index, scope.row)">功能管理</el-button>
+            <el-button type="primary" size="mini" @click="clickClose(scope.$index, scope.row)">{{scope.row.status === 1 ? '关闭' : scope.row.status === 0 ? '开通' : '未知' }}</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <el-dialog title="选择功能" :visible.sync="dialogVisible" width="450px">
-      <div>
-        <el-checkbox-group v-model="checkList">
-          <el-checkbox class="checkbox_view" border label="OPEN">开通支付</el-checkbox>
-          <el-checkbox class="checkbox_view" border label="EXEMPT">退款免密</el-checkbox>
-          <el-checkbox class="checkbox_view" border label="AUTH">预授权</el-checkbox>
-        </el-checkbox-group>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submiltCheckbox">确 定</el-button>
-      </span>
-    </el-dialog>
     <!--工具条-->
     <el-row>
       <el-pagination
@@ -83,7 +96,7 @@
 
 <script>
 import * as util from "../../../util/util.js";
-import { privilegeList, privilegeListedit } from "@/api/api";
+import { queryAllPriDef, queryMerPrivilege, queryMerMname, opMerPrivilege } from "@/api/api";
 import getUsersList from "@/mixins/Users";
 import getRemoteSearch from "@/mixins/RemoteSearch";
 
@@ -92,61 +105,131 @@ export default {
   data() {
     return {
       filters: {
-        mname: "",
-        maccount: ""
+        privilegeKey: null,
+        mid: null
       },
-      dialogVisible: false,
-      checkList: [],
-      mid: ""
+      merLoading: false,
+      optionsMer: [],
+
+      optionsPrivilegeKey: []
     };
   },
+  mounted() {
+    this.getOptionsPrivilegeKey()
+  },
   methods: {
-    submiltCheckbox() {
-      this.$confirm("确认操作, 是否继续?", "提示", {
+    formatterStatus(row, column){
+      return row.status === 1 ? '开通' : row.status === 0 ? '关闭' : '未知'
+    },
+    getOptionsPrivilegeKey() {
+      queryAllPriDef().then(res => {
+        this.optionsPrivilegeKey = res.data.privilegeList
+      })
+    },
+    clickClose(index, row) {
+      this.$confirm(`商户【${row.mname}】确定要${row.status === 1 ? '关闭' : row.status === 0 ? '开通' : '未知'}【${row.privilegeDesc}】？`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
           let para = {
-            privilegeList: this.checkList,
-            mid: this.mid
+            status: row.status === 1 ? 0 : row.status === 0 ? 1 : '',
+            mid: row.mid,
+            privilegeKey: row.privilegeKey
           }
-          privilegeListedit(para).then(res => {
-            this.getUsers()
+          opMerPrivilege(para).then(res => {
             this.$message({
-              type: "success",
-              message: res.message
+              message: res.message,
+              type: 'success'
             });
-            this.dialogVisible = false
+            this.getUsers()
           })
         })
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消"
+            message: "已取消操作"
           });
         });
     },
-    clickLook(index, row) {
-      this.dialogVisible = true;
-      this.mid = row.mid;
-      this.checkList = row.privilegeList
+    clickMer() {
+      this.merLoading = true;
+      queryMerMname({ mname: "" }).then(res => {
+        this.merLoading = false;
+        this.optionsMer = res.data;
+      });
+    },
+    remoteMer(query) {
+      if (query !== "") {
+        this.merLoading = true;
+        setTimeout(() => {
+          this.merLoading = false;
+          queryMerMname({
+            mname: query
+          }).then(res => {
+            this.optionsMer = res.data;
+          });
+        }, 200);
+      } else {
+        this.optionsMer = [];
+      }
     },
     getList() {
-      let para = this.filters;
+      let para = util.deepcopy(this.filters);
       para.pageNum = this.page.toString();
       para.numPerPage = 20;
-      privilegeList(para).then(res => {
+      queryMerPrivilege(para).then(res => {
         this.users = res.data.privilegeList;
         this.total = res.data.totalCount;
       });
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields();
+      if (!this.filters.privilegeKey) {
+        this.$message({
+          message: '请选择产品功能',
+          type: 'warning'
+        });
+        return
+      }
+      if (!this.filters.mid) {
+        this.$message({
+          message: '请选择商户',
+          type: 'warning'
+        });
+        return
+      }
+      let mName = this.optionsMer.find(data => {
+        return data.mid === this.filters.mid
+      }).mname
+      let privilegeDesc = this.optionsPrivilegeKey.find(data => {
+        return data.privilegeKey === this.filters.privilegeKey
+      }).privilegeDesc
+      this.$confirm(`商户【${mName}】确定要开通【${privilegeDesc}】？`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          let para = util.deepcopy(this.filters)
+          para.status = 1
+          opMerPrivilege(para).then(res => {
+            this.$message({
+              message: res.message,
+              type: 'success'
+            });
+            this.getUsers()
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消操作"
+          });
+        });
+
     }
-  },
-  mounted() {}
+  }
 };
 </script>
 <style scoped>

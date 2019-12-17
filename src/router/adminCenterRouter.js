@@ -199,16 +199,16 @@ export default [{
   component: index,
   children: [{
     path: 'extend1',
-    name: '商户功能',
+    name: '产品开通管理',
     meat: {
-      name: '商户功能'
+      name: '产品开通管理'
     },
     component: () => import('@/views/view/table7/extend1.vue')
   }, {
     path: 'extend2',
-    name: '青蛙设备',
+    name: '刷脸设备',
     meat: {
-      name: '青蛙设备'
+      name: '刷脸设备'
     },
     component: () => import('@/views/view/table7/extend2.vue')
   }]
