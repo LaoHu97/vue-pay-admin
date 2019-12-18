@@ -141,7 +141,16 @@ export default [{
       name: '异常订单'
     },
     component: () => import('@/views/view/table4/order04.vue')
-  }]
+  }, 
+  {
+    path: 'order7',
+    name: '预授权异常订单',
+    meat: {
+      name: '预授权异常订单'
+    },
+    component: () => import('@/views/view/table4/order07.vue')
+  }
+]
 }, {
   path: 'shop',
   name: '费率管理',
@@ -211,5 +220,14 @@ export default [{
       name: '刷脸设备'
     },
     component: () => import('@/views/view/table7/extend2.vue')
-  }]
+  }, 
+  // {
+  //   path: 'extend3',
+  //   name: '青蛙设备广告',
+  //   meat: {
+  //     name: '青蛙设备广告'
+  //   },
+  //   component: () => import('@/views/view/table7/extend3.vue')
+  // }
+]
 }]

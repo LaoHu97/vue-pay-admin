@@ -60,10 +60,10 @@
     <el-dialog title="设备详情" :visible.sync="detailFormVisible" width="30%">
       <el-form :model="detailForm" label-width="120px" label-position="left">
         <el-form-item label="所属门店：">
-          <span>{{detailForm.sname}}</span>
+          <span>{{detailForm.sname || '未绑定'}}</span>
         </el-form-item>
         <el-form-item label="所属款台：">
-          <span>{{detailForm.ename}}</span>
+          <span>{{detailForm.ename || '未绑定'}}</span>
         </el-form-item>
         <el-form-item label="设备名称：">
           <span>{{detailForm.printname}}</span>

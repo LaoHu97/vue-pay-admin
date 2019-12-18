@@ -228,6 +228,9 @@
         <el-form-item label="订单类型：">
           <span>{{detailsForm.order_type === '0' ? '支付' : detailsForm.order_type === '1' ? '退款' : '未知'}}</span>
         </el-form-item>
+        <el-form-item label="第三方商户号：">
+          <span>{{detailsForm.third_mid}}</span>
+        </el-form-item>
         <el-form-item label="商户名称：">
           <span>{{detailsForm.mname}}</span>
         </el-form-item>

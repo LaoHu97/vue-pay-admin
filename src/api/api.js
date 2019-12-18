@@ -254,3 +254,11 @@ export const opMerPrivilege = params => {
 export const queryMachineDetail = params => {
   return instance.post(`${preUrlPath}/admin/api/qmp/face/queryMachineDetail`, params).then(res => res.data);
 };
+
+export const queryError = params => {
+  return instance.post(`${preUrlPath}/pay/payment/deposit/queryError`, params).then(res => res.data);
+};
+
+export const yichangdingdanquery = params => {
+  return instance.post(`${preUrlPath}/pay/payment/deposit/query`, params).then(res => res.data);
+};
